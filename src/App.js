@@ -1,24 +1,17 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
-import RegisterForm from './components/RegisterForm';
-import LoginForm from './components/LoginForm';
+// src/App.js
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import HomePage from './components/HomePage';
+import LoginPage from './components/LoginPage';
+import RegisterPage from './components/RegisterPage';
 
 function App() {
   return (
     <Router>
-      <div className="App">
-        <nav>
-          <ul>
-            <li><Link to="/register">S'inscrire</Link></li>
-            <li><Link to="/login">Se connecter</Link></li>
-          </ul>
-        </nav>
-
-        <Routes>
-          <Route path="/register" element={<RegisterForm />} />
-          <Route path="/login" element={<LoginForm />} />
-        </Routes>
-      </div>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
+      </Routes>
     </Router>
   );
 }
