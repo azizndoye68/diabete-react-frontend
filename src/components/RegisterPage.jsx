@@ -32,7 +32,7 @@ function RegisterForm() {
 
   return (
     <Container className="mt-5" style={{ maxWidth: '500px' }}>
-      <h2 className="mb-4 text-center">Inscription</h2>
+      <h2 className="text-success mb-4 text-center">Inscription</h2>
 
       {message && <Alert variant={message.includes('Erreur') ? 'danger' : 'success'}>{message}</Alert>}
 
@@ -97,7 +97,7 @@ function RegisterForm() {
           />
         </Form.Group>
 
-        <Button variant="primary" type="submit" className="w-100">
+        <Button variant="success" type="submit" className="w-100">
           S'inscrire
         </Button>
       </Form>

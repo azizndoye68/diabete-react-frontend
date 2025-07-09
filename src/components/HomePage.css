@@ -1,0 +1,38 @@
+/* HomePage.css */
+
+.top-bar {
+  background-color: #52cb81;
+  font-size: 0.9rem;
+}
+
+.nav-btn {
+  padding: 0.4rem 1rem;
+  font-weight: 600;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.nav-btn:hover {
+  background-color: #ffffff;
+  color: #3c207e;
+}
+
+.main-section {
+  background: linear-gradient(to right, #f8f9fa, #e9ecef);
+  min-height: 85vh;
+}
+
+.animated-image {
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}

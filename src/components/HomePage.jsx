@@ -2,36 +2,77 @@
 import React from 'react';
 import { Button, Navbar, Container, Nav } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
+import { FaPhoneAlt, FaEnvelope, FaQuestionCircle } from 'react-icons/fa';
+import suiviGlycemie from '../images/suiviGlycemie.jpg';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import './HomePage.css';
 
 function HomePage() {
     const navigate = useNavigate();
 
     return (
         <div>
+            {/* Top bar */}
+            <div className="top-bar d-flex justify-content-between align-items-center px-4 py-2 text-white">
+                <div>
+                    <span className="me-4">FR | BE</span>
+                    <FaPhoneAlt className="me-2" /> +221 77 123 45 67
+                    <span className="mx-3">|</span>
+                    Du Lundi au Vendredi | 9h - 17h
+                </div>
+                <div>
+                    <FaEnvelope className="me-2" /> contact@diabete-platforme.sn
+                </div>
+            </div>
+
             {/* Navbar */}
-            <Navbar bg="primary" variant="dark" expand="lg" className="py-3">
-                <Container>
-                    <Navbar.Brand href="/">Plateforme Diabète</Navbar.Brand>
-                    <Nav className="ml-auto">
-                        <Nav.Link onClick={() => navigate('/register')}>INSCRIPTION</Nav.Link>
-                        <Nav.Link onClick={() => navigate('/login')}>CONNEXION</Nav.Link>
+            <Navbar bg="success" variant="dark" expand="lg" className="px-4">
+                <Container fluid>
+                    <Navbar.Brand href="/" className="fw-bold fs-3 text-uppercase" style={{ color: '#ffffff', letterSpacing: '1px' }}>
+                         Suivi<span style={{ color: '#ffc107' }}>Diabète</span> SN
+                    </Navbar.Brand>
+
+                    <Nav className="ms-auto d-flex align-items-center">
+                        <Nav.Link href="#" className="text-white me-3">
+                            <FaQuestionCircle className="me-1" /> Aide
+                        </Nav.Link>
+                        <Button
+                            variant="light"
+                            className="rounded-3 me-2 nav-btn"
+                            onClick={() => navigate('/register/choice')}
+                        >
+                            INSCRIPTION
+                        </Button>
+                        <Button
+                            variant="outline-light"
+                            className="rounded-3 nav-btn"
+                            onClick={() => navigate('/login')}
+                        >
+                            CONNEXION
+                        </Button>
                     </Nav>
                 </Container>
             </Navbar>
 
-            {/* Body */}
-            <div className="d-flex flex-column flex-lg-row justify-content-between align-items-center p-5" style={{ background: 'linear-gradient(to right, #f8f9fa, #e9ecef)', minHeight: '90vh' }}>
+            {/* Main section */}
+            <div className="main-section d-flex flex-column flex-lg-row justify-content-between align-items-center p-5">
                 <div style={{ maxWidth: '600px' }}>
-                    <h1 className="display-4 fw-bold text-primary mb-4">La plateforme de Télésurveillance du diabète</h1>
+                    <h1 className="display-5 fw-bold text-success mb-4">
+                        L'application dédiée à améliorer le quotidien des patients diabétiques
+                    </h1>
                     <p className="lead mb-4">
-                        La solution numérique qui améliore l’organisation des professionnels de santé et le suivi des patients diabétiques de type 1, type 2 ou gestationnel.
+                        La solution numérique de télésuivi médical pensée pour le Sénégal, qui facilite la connexion entre le patient diabétique et son équipe de soins, pour un accompagnement plus simple, régulier et accessible, où que vous soyez.
                     </p>
-                    <Button variant="primary" size="lg" onClick={() => navigate('/register')}>JE M'INSCRIS</Button>
+                    <Button variant="success" size="lg" onClick={() => navigate('/register/choice')}>
+                        JE M'INSCRIS
+                    </Button>
                 </div>
-
-                {/* Image */}
-                <img src="https://via.placeholder.com/500" alt="Illustration" className="img-fluid mt-5 mt-lg-0" />
+                <img
+                   src={suiviGlycemie}
+                    alt="suiviGlycemie"
+                    className="img-fluid animated-image mt-5 mt-lg-0"
+                    style={{ maxWidth: '500px' }}
+                />
             </div>
         </div>
     );

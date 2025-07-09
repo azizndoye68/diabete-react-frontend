@@ -1,0 +1,12 @@
+.choice-card {
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border: 1px solid #dee2e6;
+  border-radius: 12px;
+}
+
+.choice-card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 10px 20px rgba(0, 123, 255, 0.2);
+  background-color: #f8f9fa;
+}

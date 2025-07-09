@@ -23,7 +23,7 @@ function LoginForm() {
       setMessage('Connexion réussie ✅');
 
       // 🔐 Exemple si tu veux gérer un token plus tard :
-       //localStorage.setItem('token', response.data.token);
+      localStorage.setItem('token', response.data.token);
 
       // 🔄 Tu peux aussi rediriger ici après connexion si tu as une page dashboard
       // navigate('/dashboard');
@@ -35,7 +35,7 @@ function LoginForm() {
 
   return (
     <Container className="mt-5" style={{ maxWidth: '500px' }}>
-      <h2 className="mb-4 text-center">Connexion</h2>
+      <h2 className="text-success mb-4 text-center">Connexion</h2>
       {message && <Alert variant={message.includes('Erreur') ? 'danger' : 'success'}>{message}</Alert>}
 
       <Form onSubmit={handleSubmit}>
@@ -63,7 +63,7 @@ function LoginForm() {
           />
         </Form.Group>
 
-        <Button variant="primary" type="submit" className="w-100">
+        <Button variant="success" type="submit" className="w-100">
           Se connecter
         </Button>
       </Form>
