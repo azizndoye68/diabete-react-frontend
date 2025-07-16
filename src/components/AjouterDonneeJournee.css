@@ -1,0 +1,11 @@
+/* src/pages/AjouterDonneeJournee.css */
+
+.form-wrapper {
+  margin-left: 250px; /* Décalage pour la sidebar */
+  width: calc(100% - 250px);
+  min-height: 100vh;
+  background-color: #f8f9fa;
+  overflow-y: auto;
+  padding-top: 0rem;
+  padding-bottom: 3rem;
+}

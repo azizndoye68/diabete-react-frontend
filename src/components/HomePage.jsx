@@ -4,6 +4,8 @@ import { Button, Navbar, Container, Nav } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { FaPhoneAlt, FaEnvelope, FaQuestionCircle } from 'react-icons/fa';
 import suiviGlycemie from '../images/suiviGlycemie.jpg';
+import logoDiabete from '../images/logo-diabete.png';
+
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './HomePage.css';
 
@@ -28,9 +30,24 @@ function HomePage() {
             {/* Navbar */}
             <Navbar bg="success" variant="dark" expand="lg" className="px-4">
                 <Container fluid>
-                    <Navbar.Brand href="/" className="fw-bold fs-3 text-uppercase" style={{ color: '#ffffff', letterSpacing: '1px' }}>
-                         Suivi<span style={{ color: '#ffc107' }}>Diabète</span> SN
+                    <Navbar.Brand
+                        href="/"
+                        className="d-flex align-items-center fw-bold text-uppercase"
+                        style={{ color: '#ffffff', letterSpacing: '1px' }}
+                    >
+                        <img
+                            src={logoDiabete}
+                            alt="Logo Diabète"
+                            width="60"
+                            height="60"
+                            className="me-2"
+                            style={{ borderRadius: '4px' }}
+                        />
+                        <span className="fs-4">
+                            Suivi<span style={{ color: '#ffc107' }}>Diabète</span> SN
+                        </span>
                     </Navbar.Brand>
+
 
                     <Nav className="ms-auto d-flex align-items-center">
                         <Nav.Link href="#" className="text-white me-3">
