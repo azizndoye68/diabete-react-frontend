@@ -7,7 +7,7 @@ import defaultAvatar from '../images/default-avatar.jpg';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import './SidebarPatient.css'; // Tu peux créer ce fichier pour tes styles spécifiques
 
-function SidebarPatient() {
+function SidebarPatient({ onShowAide }) {
   const [user, setUser] = useState({ nom: '', prenom: '' });
   const navigate = useNavigate();
 
@@ -60,7 +60,7 @@ function SidebarPatient() {
         <li className="nav-link text-white mb-1" onClick={() => navigate('/carnet')} style={{ cursor: 'pointer' }}>
           <i className="bi bi-journal-bookmark-fill me-2"></i> Carnet
         </li>
-        <li className="nav-link text-white mb-1" onClick={() => navigate('/stats')} style={{ cursor: 'pointer' }}>
+        <li className="nav-link text-white mb-1" onClick={() => navigate('/statistiques')} style={{ cursor: 'pointer' }}>
           <i className="bi bi-bar-chart-line-fill me-2"></i> Mes stats
         </li>
         <li className="nav-link text-white mb-1" onClick={() => navigate('/suivi')} style={{ cursor: 'pointer' }}>
@@ -75,7 +75,7 @@ function SidebarPatient() {
         <li className="nav-link text-white mb-1" onClick={() => navigate('/objets')} style={{ cursor: 'pointer' }}>
           <i className="bi bi-smartwatch me-2"></i> Objets connectés
         </li>
-        <li className="nav-link text-white" onClick={() => navigate('/aide')} style={{ cursor: 'pointer' }}>
+        <li className="nav-link text-white" onClick={onShowAide} style={{ cursor: 'pointer' }}>
           <i className="bi bi-question-circle-fill me-2"></i> Aide
         </li>
         <li className="nav-link text-white" onClick={handleLogout} style={{ cursor: 'pointer' }}>

@@ -1,5 +1,5 @@
 // src/pages/AjouterDonneeJournee.jsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import api from '../services/api';
 import { Container, Form, Button, Card, Row } from 'react-bootstrap';
 import SidebarPatient from '../components/SidebarPatient';
@@ -13,15 +13,29 @@ function AjouterDonneeJournee() {
     insuline: '',
     activite: '',
     symptome: '',
-    evenement: '',
-    poids: ''
+    // evenement: '',
+    // poids: ''
   });
+
+  const [message, setMessage] = useState('');
+  const [patientId, setPatientId] = useState(null);
 
   const now = new Date();
   const dateString = now.toLocaleDateString('fr-FR');
   const timeString = now.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
 
-  const [message, setMessage] = useState('');
+  // Récupère l'ID du patient connecté
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const response = await api.get('/api/auth/profile'); // Microservice auth
+        setPatientId(response.data.id); // Assure-toi que `id` est bien retourné
+      } catch (error) {
+        console.error("Erreur lors de la récupération de l'utilisateur", error);
+      }
+    };
+    fetchProfile();
+  }, []);
 
   const handleChange = (e) => {
     setDonnees({ ...donnees, [e.target.name]: e.target.value });
@@ -30,36 +44,30 @@ function AjouterDonneeJournee() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (!patientId) {
+      setMessage("Erreur : utilisateur non identifié.");
+      return;
+    }
+
     const payload = {
       ...donnees,
-      date: new Date().toISOString() // Ajout de la date automatique
-      // patientId: ... // Ajoute si nécessaire
+      date: new Date().toISOString(),
+      patientId: patientId
     };
 
     try {
-      const response = await api.post('/api/suivis', payload);
+      const response = await api.post('/api/suivis', payload); // Microservice suivi
       console.log('Enregistrement réussi', response.data);
-      setMessage('✅ Données enregistrées avec succès.');
-      setDonnees({
-        glycemie: '',
-        moment: '',
-        repas: '',
-        insuline: '',
-        activite: '',
-        symptome: '',
-        evenement: '',
-        poids: ''
-      });
+      setMessage('Données enregistrées avec succès ✅');
     } catch (error) {
-      console.error('Erreur lors de l\'enregistrement', error.response?.data || error.message);
-      setMessage('❌ Erreur lors de l\'enregistrement.');
+      console.error('Erreur lors de l\'enregistrement', error);
+      setMessage('Erreur lors de l\'enregistrement ❌');
     }
   };
 
   return (
     <Row className="m-0 vh-100">
       <SidebarPatient />
-
       <div className="form-wrapper d-flex justify-content-center">
         <Container className="mt-5" style={{ maxWidth: '700px' }}>
           <Card className="p-4 shadow-sm">
@@ -140,7 +148,7 @@ function AjouterDonneeJournee() {
                 </Form.Select>
               </Form.Group>
 
-              <Form.Group className="mb-4">
+             {/* <Form.Group className="mb-4">
                 <Form.Label>Événement de santé</Form.Label>
                 <Form.Select name="evenement" value={donnees.evenement} onChange={handleChange}>
                   <option value="">-- Sélectionner --</option>
@@ -152,7 +160,7 @@ function AjouterDonneeJournee() {
                   <option value="autre">Autre</option>
                 </Form.Select>
               </Form.Group>
-
+              
               <Form.Group className="mb-3">
                 <Form.Label>Poids (Kg)</Form.Label>
                 <Form.Control
@@ -164,7 +172,7 @@ function AjouterDonneeJournee() {
                   placeholder="Entrez le poids"
                 />
               </Form.Group>
-
+              */}
               <Button variant="success" type="submit" className="w-100">
                 Enregistrer mes données
               </Button>

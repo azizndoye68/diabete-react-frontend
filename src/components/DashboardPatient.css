@@ -1,0 +1,10 @@
+.dashboard-content {
+  background-color: #f8f9fa;
+  min-height: 100vh;
+}
+
+.dashboard-card {
+  background-color: white;
+  border-radius: 12px;
+}
+

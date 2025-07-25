@@ -6,6 +6,8 @@ import RegisterPage from './components/RegisterPage';
 import RegisterChoice from './components/RegisterChoice';
 import DashboardPatient from './components/DashboardPatient';
 import AjouterDonneesJournee from './components/AjouterDonneesJournee';
+import CarnetGlycemie from './components/CarnetGlycemie';
+import Statistiques from './components/Statistiques';
 
 
 function App() {
@@ -18,6 +20,9 @@ function App() {
         <Route path="/register/choice" element={<RegisterChoice />} />
         <Route path="/dashboard" element={<DashboardPatient />} />
         <Route path="/ajouter-donnees" element={<AjouterDonneesJournee />} />
+        <Route path="/carnet" element={<CarnetGlycemie />} />
+        <Route path="/statistiques" element={<Statistiques />} />
+        {/* Ajoute d'autres routes ici si nécessaire */}
       </Routes>
     </Router>
   );
