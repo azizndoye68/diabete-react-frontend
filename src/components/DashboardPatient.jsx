@@ -7,13 +7,12 @@ import api from '../services/api';
 import './DashboardPatient.css';
 import { useNavigate } from 'react-router-dom';
 import AideModal from '../components/AideModal';
-import GlycemieChart from '../components/GlycemieChart'; // tout en haut
+import GlycemieChart from '../components/GlycemieChart';
 
 function DashboardPatient() {
+  const [patient, setPatient] = useState(null); // ✅ patient complet
   const [glycemie, setGlycemie] = useState(null);
   const [glycemies, setGlycemies] = useState([]);
-
-  // const [rappels, setRappels] = useState([]); // ➤ Désactivé temporairement
   const [showAide, setShowAide] = useState(false);
   const navigate = useNavigate();
 
@@ -21,32 +20,39 @@ function DashboardPatient() {
     const fetchData = async () => {
       try {
         const profileRes = await api.get('/api/auth/profile');
-        const patientId = profileRes.data.id;
+        const utilisateurId = profileRes.data.id;
 
+        // Récupération des infos détaillées du patient
+        const patientRes = await api.get(`/api/patients/byUtilisateur/${utilisateurId}`);
+        setPatient(patientRes.data);
+
+        // Dernière glycémie et mesures récentes
         const [glyRes, recentGlyRes] = await Promise.all([
-          api.get(`/api/suivis/last?patientId=${patientId}`),
-          api.get(`/api/suivis/recentes?patientId=${patientId}`)
+          api.get(`/api/suivis/last?patientId=${patientRes.data.id}`),
+          api.get(`/api/suivis/recentes?patientId=${patientRes.data.id}`)
         ]);
 
         setGlycemie(glyRes.data);
-        setGlycemies(recentGlyRes.data); // <-- ici les données pour le graphique
+        setGlycemies(recentGlyRes.data);
       } catch (error) {
-        console.error('Erreur lors du chargement des données du tableau de bord', error);
+        console.error('Erreur lors du chargement des données du dashboard patient', error);
       }
     };
+
     fetchData();
   }, []);
 
-  // const rappelsFiltrés = rappels.filter(r =>
-  //   r.type === 'insuline' || r.type === 'rendez-vous'
-  // ); // ➤ Désactivé
-
   return (
     <Row className="m-0 vh-100">
-      <SidebarPatient onShowAide={() => setShowAide(true)} />
+      {/* On passe patient à la sidebar pour afficher prénom/nom */}
+      <SidebarPatient onShowAide={() => setShowAide(true)} patient={patient} />
 
       <Col md={{ span: 9, offset: 3 }} className="content p-5 dashboard-container">
-        <h3 className="mb-4">Tableau de bord</h3>
+
+        {/* Bonjour [Prénom Nom] */}
+        {patient && (
+          <h3 className="mb-4">Bonjour {patient.prenom} {patient.nom}</h3>
+        )}
 
         <Row xs={1} md={2} className="g-4">
 
@@ -56,9 +62,7 @@ function DashboardPatient() {
               {glycemie ? (
                 <>
                   <h2 className="text-success fw-bold">{glycemie.glycemie} g/L</h2>
-                  <p>
-                    {glycemie.moment === 'avant_repas' ? 'Avant' : 'Après'} le {glycemie.repas}
-                  </p>
+                  <p>{glycemie.moment === 'avant_repas' ? 'Avant' : 'Après'} le {glycemie.repas}</p>
                   <p className="text-muted">
                     Mesuré le {glycemie.dateSuivi
                       ? new Date(glycemie.dateSuivi).toLocaleString('fr-FR', {
@@ -86,32 +90,11 @@ function DashboardPatient() {
                 <p className="text-muted">Pas encore assez de données pour afficher une tendance</p>
               )}
               <p className="text-muted">Stabilité sur 7 jours</p>
-               <Button variant="outline-success" size="sm" onClick={() => navigate('/carnet')}>
+              <Button variant="outline-success" size="sm" onClick={() => navigate('/carnet')}>
                 Voir l'historique
               </Button>
             </DashboardCard>
           </Col>
-
-          {/* Rappels - Désactivé temporairement */}
-          {/* 
-          <Col>
-            <DashboardCard title={<><i className="bi bi-bell-fill me-2 text-warning"></i>Rappels</>}>
-              {rappelsFiltrés.length > 0 ? (
-                rappelsFiltrés.map((rappel, index) => (
-                  <div key={index} className="alert alert-success py-2 mb-2">
-                    <strong>{rappel.titre}</strong><br />
-                    <small>{new Date(rappel.date).toLocaleString('fr-FR')}</small>
-                  </div>
-                ))
-              ) : (
-                <p className="text-muted">Aucun rappel d'insuline ou de rendez-vous</p>
-              )}
-              <Button variant="outline-success" size="sm" className="w-100 mt-2">
-                + Ajouter un rappel
-              </Button>
-            </DashboardCard>
-          </Col>
-          */}
 
           {/* Accès rapide */}
           <Col>
@@ -133,7 +116,6 @@ function DashboardPatient() {
         </Row>
       </Col>
 
-      {/* Modale d’aide */}
       <AideModal show={showAide} onHide={() => setShowAide(false)} />
     </Row>
   );

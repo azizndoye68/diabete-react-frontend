@@ -1,27 +1,13 @@
 // src/components/SidebarPatient.jsx
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Image } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
-import api from '../services/api';
 import defaultAvatar from '../images/default-avatar.jpg';
 import 'bootstrap-icons/font/bootstrap-icons.css';
-import './SidebarPatient.css'; // Tu peux créer ce fichier pour tes styles spécifiques
+import './SidebarPatient.css';
 
-function SidebarPatient({ onShowAide }) {
-  const [user, setUser] = useState({ nom: '', prenom: '' });
+function SidebarPatient({ onShowAide, patient }) {
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const response = await api.get('/api/auth/profile');
-        setUser(response.data);
-      } catch (error) {
-        console.error('Erreur lors de la récupération du profil', error);
-      }
-    };
-    fetchUser();
-  }, []);
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -30,31 +16,37 @@ function SidebarPatient({ onShowAide }) {
 
   return (
     <div className="sidebar bg-success text-white d-flex flex-column p-4" style={{ position: 'fixed', height: '100vh', width: '250px' }}>
-        <div className="app-header d-flex align-items-center justify-content-center mb-3"
-             onClick={() => navigate('/dashboard')}
-             style={{ cursor: 'pointer' }}>
-            <Image
-                src={require('../images/logo-diabete.png')}
-                alt="Logo santé"
-                width="50"
-                height="50"
-                className="me-2"
-              />
-              <span className="fw-bold text-uppercase" style={{ fontSize: '16px', color: '#ffffff' }}>
-                Suivi<span style={{ color: '#ffc107' }}>Diabète</span> SN
-            </span>
-        </div>
-
+      
+      {/* Logo */}
+      <div className="app-header d-flex align-items-center justify-content-center mb-3"
+           onClick={() => navigate('/dashboard-patient')}
+           style={{ cursor: 'pointer' }}>
+        <Image
+          src={require('../images/logo-diabete.png')}
+          alt="Logo santé"
+          width="50"
+          height="50"
+          className="me-2"
+        />
+        <span className="fw-bold text-uppercase" style={{ fontSize: '16px', color: '#ffffff' }}>
+          Suivi<span style={{ color: '#ffc107' }}>Diabète</span> SN
+        </span>
+      </div>
 
       {/* Profil */}
-      <div className="d-flex align-items-center mb-4 mt-4" style={{ cursor: 'pointer' }} onClick={() => navigate('/profile')}>
+      <div className="sidebar-header d-flex align-items-center mb-4 mt-4" style={{ cursor: 'pointer' }} onClick={() => navigate('/profile')}>
         <Image src={defaultAvatar} roundedCircle width="50" height="50" />
-        <span className="ms-3 fw-bold">{user.prenom} {user.nom}</span>
+        {patient && (
+          <div className="ms-3">
+            <div className="fw-bold">{patient.prenom} {patient.nom}</div>
+            <small className="text-light">Patient</small>
+          </div>
+        )}
       </div>
 
       {/* Menu */}
       <ul className="list-unstyled">
-        <li className="nav-link text-white mb-1" onClick={() => navigate('/dashboard')} style={{ cursor: 'pointer' }}>
+        <li className="nav-link text-white mb-1" onClick={() => navigate('/dashboard-patient')} style={{ cursor: 'pointer' }}>
           <i className="bi bi-speedometer2 me-2"></i> Tableau de bord
         </li>
         <li className="nav-link text-white mb-1" onClick={() => navigate('/carnet')} style={{ cursor: 'pointer' }}>

@@ -1,0 +1,31 @@
+.messagerie {
+  display: flex;
+  background: #f8f9fa;
+  min-height: 100vh;
+}
+
+.messagerie-content {
+  margin-left: 240px; /* sidebar */
+}
+
+.chat-box {
+  height: 80vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-messages {
+  flex-grow: 1;
+  overflow-y: auto;
+  max-height: 65vh;
+}
+
+.message-moi {
+  text-align: right;
+  background-color: #d4f8d4;
+}
+
+.message-autre {
+  text-align: left;
+  background-color: #f1f1f1;
+}

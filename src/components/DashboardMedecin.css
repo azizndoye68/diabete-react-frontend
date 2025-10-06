@@ -1,0 +1,22 @@
+.dashboard-medecin-container {
+  display: flex;
+  background-color: #f8f9fa;
+  min-height: 100vh;
+}
+
+.dashboard-content {
+  flex-grow: 1;
+  overflow-y: auto;
+}
+
+.nav-tabs .nav-link {
+  color: #198754;
+  font-weight: 500;
+  border: none;
+}
+
+.nav-tabs .nav-link.active {
+  background-color: #198754;
+  color: #fff !important;
+  border-radius: 5px 5px 0 0;
+}

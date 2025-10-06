@@ -80,7 +80,7 @@ function RegisterChoice() {
 
       <Row className="justify-content-center">
         <Col xs={12} md={6} lg={4} className="mb-4">
-          <Card className="choice-card p-3" onClick={() => navigate('/register')}>
+          <Card className="choice-card p-3" onClick={() => navigate('/register/patient')}>
             <Card.Img
               variant="top"
               src="https://cdn-icons-png.flaticon.com/512/1077/1077063.png"
@@ -95,7 +95,7 @@ function RegisterChoice() {
         </Col>
 
         <Col xs={12} md={6} lg={4} className="mb-4">
-          <Card className="choice-card p-3" onClick={() => navigate('/register/professionnel')}>
+          <Card className="choice-card p-3" onClick={() => navigate('/register/medecin')}>
             <Card.Img
               variant="top"
               src="https://cdn-icons-png.flaticon.com/512/3774/3774299.png"
