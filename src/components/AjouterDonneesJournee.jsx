@@ -12,29 +12,30 @@ function AjouterDonneeJournee() {
     repas: '',
     insuline: '',
     activite: '',
-    symptome: '',
-    // evenement: '',
-    // poids: ''
+    symptome: ''
   });
 
   const [message, setMessage] = useState('');
-  const [patientId, setPatientId] = useState(null);
+  const [patient, setPatient] = useState(null);
 
   const now = new Date();
   const dateString = now.toLocaleDateString('fr-FR');
   const timeString = now.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
 
-  // Récupère l'ID du patient connecté
+  // 🔹 Récupère le patient lié à l'utilisateur connecté
   useEffect(() => {
-    const fetchProfile = async () => {
+    const fetchPatient = async () => {
       try {
-        const response = await api.get('/api/auth/profile'); // Microservice auth
-        setPatientId(response.data.id); // Assure-toi que `id` est bien retourné
+        const profileRes = await api.get('/api/auth/profile'); // retourne l'utilisateur
+        const utilisateurId = profileRes.data.id;
+
+        const patientRes = await api.get(`/api/patients/byUtilisateur/${utilisateurId}`);
+        setPatient(patientRes.data);
       } catch (error) {
-        console.error("Erreur lors de la récupération de l'utilisateur", error);
+        console.error("Erreur lors de la récupération du patient", error);
       }
     };
-    fetchProfile();
+    fetchPatient();
   }, []);
 
   const handleChange = (e) => {
@@ -44,19 +45,19 @@ function AjouterDonneeJournee() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!patientId) {
-      setMessage("Erreur : utilisateur non identifié.");
+    if (!patient) {
+      setMessage("Erreur : patient non identifié.");
       return;
     }
 
     const payload = {
       ...donnees,
-      date: new Date().toISOString(),
-      patientId: patientId
+      dateSuivi: new Date().toISOString(),
+      patientId: patient.id // ✅ Utilise le patient correct
     };
 
     try {
-      const response = await api.post('/api/suivis', payload); // Microservice suivi
+      const response = await api.post('/api/suivis', payload);
       console.log('Enregistrement réussi', response.data);
       setMessage('Données enregistrées avec succès ✅');
     } catch (error) {
@@ -67,7 +68,7 @@ function AjouterDonneeJournee() {
 
   return (
     <Row className="m-0 vh-100">
-      <SidebarPatient />
+      <SidebarPatient patient={patient} />
       <div className="form-wrapper d-flex justify-content-center">
         <Container className="mt-5" style={{ maxWidth: '700px' }}>
           <Card className="p-4 shadow-sm">
@@ -148,31 +149,6 @@ function AjouterDonneeJournee() {
                 </Form.Select>
               </Form.Group>
 
-             {/* <Form.Group className="mb-4">
-                <Form.Label>Événement de santé</Form.Label>
-                <Form.Select name="evenement" value={donnees.evenement} onChange={handleChange}>
-                  <option value="">-- Sélectionner --</option>
-                  <option value="stress">Stress</option>
-                  <option value="maladie">Maladie</option>
-                  <option value="allergie">Allergie</option>
-                  <option value="fièvre">Fièvre</option>
-                  <option value="aucun">Aucun</option>
-                  <option value="autre">Autre</option>
-                </Form.Select>
-              </Form.Group>
-              
-              <Form.Group className="mb-3">
-                <Form.Label>Poids (Kg)</Form.Label>
-                <Form.Control
-                  type="number"
-                  name="poids"
-                  value={donnees.poids}
-                  onChange={handleChange}
-                  required
-                  placeholder="Entrez le poids"
-                />
-              </Form.Group>
-              */}
               <Button variant="success" type="submit" className="w-100">
                 Enregistrer mes données
               </Button>

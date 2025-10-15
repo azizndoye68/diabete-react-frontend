@@ -13,7 +13,8 @@ import Education from './components/Education';
 import DashboardMedecin from './components/DashboardMedecin';
 import Messagerie from './components/Messagerie';
 import PatientsMedecin from './components/PatientsMedecin';
-import PatientDetail from './components/PatientDetail';
+import PatientsTable from './components/PatientsTable';
+import RendezVousCalendar from './components/RendezVousTable';
 
 
 function App() {
@@ -33,7 +34,8 @@ function App() {
         <Route path="/education" element={<Education />} />
         <Route path="/medecin/messagerie" element={<Messagerie />} />
         <Route path="/medecin/patients" element={<PatientsMedecin />} />
-        <Route path="/medecin/patients/:id" element={<PatientDetail />} />
+        <Route path="/medecin/patients-table" element={<PatientsTable />} />
+        <Route path="/medecin/rendezvous" element={<RendezVousCalendar />} />  
         {/* Ajoute d'autres routes ici si nécessaire */}
       </Routes>
     </Router>

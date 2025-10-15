@@ -10,7 +10,7 @@ import AideModal from '../components/AideModal';
 import GlycemieChart from '../components/GlycemieChart';
 
 function DashboardPatient() {
-  const [patient, setPatient] = useState(null); // ✅ patient complet
+  const [patient, setPatient] = useState(null); 
   const [glycemie, setGlycemie] = useState(null);
   const [glycemies, setGlycemies] = useState([]);
   const [showAide, setShowAide] = useState(false);
@@ -19,23 +19,37 @@ function DashboardPatient() {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        // 🔹 Profil utilisateur connecté
         const profileRes = await api.get('/api/auth/profile');
         const utilisateurId = profileRes.data.id;
 
-        // Récupération des infos détaillées du patient
+        // 🔹 Patient lié à cet utilisateur
         const patientRes = await api.get(`/api/patients/byUtilisateur/${utilisateurId}`);
         setPatient(patientRes.data);
 
-        // Dernière glycémie et mesures récentes
-        const [glyRes, recentGlyRes] = await Promise.all([
-          api.get(`/api/suivis/last?patientId=${patientRes.data.id}`),
-          api.get(`/api/suivis/recentes?patientId=${patientRes.data.id}`)
-        ]);
+        const realPatientId = patientRes.data.id; // Utiliser l'id réel du patient
+        console.log("📍 Patient ID utilisé pour les suivis:", realPatientId);
 
-        setGlycemie(glyRes.data);
-        setGlycemies(recentGlyRes.data);
+        // 🔹 Récupérer le dernier suivi et les 7 derniers suivis
+        let lastGly = null;
+        let recentGly = [];
+
+        try {
+          const [glyRes, recentGlyRes] = await Promise.all([
+            api.get(`/api/suivis/last?patientId=${realPatientId}`),
+            api.get(`/api/suivis/recentes?patientId=${realPatientId}`)
+          ]);
+          lastGly = glyRes.data;
+          recentGly = recentGlyRes.data;
+        } catch (err) {
+          console.warn("⚠️ Pas de suivi pour ce patient encore", err);
+        }
+
+        setGlycemie(lastGly);
+        setGlycemies(recentGly);
+
       } catch (error) {
-        console.error('Erreur lors du chargement des données du dashboard patient', error);
+        console.error('❌ Erreur lors du chargement du dashboard patient:', error);
       }
     };
 
@@ -44,12 +58,10 @@ function DashboardPatient() {
 
   return (
     <Row className="m-0 vh-100">
-      {/* On passe patient à la sidebar pour afficher prénom/nom */}
       <SidebarPatient onShowAide={() => setShowAide(true)} patient={patient} />
 
       <Col md={{ span: 9, offset: 3 }} className="content p-5 dashboard-container">
 
-        {/* Bonjour [Prénom Nom] */}
         {patient && (
           <h3 className="mb-4">Bonjour {patient.prenom} {patient.nom}</h3>
         )}

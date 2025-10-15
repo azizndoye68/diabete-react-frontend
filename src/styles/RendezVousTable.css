@@ -1,0 +1,168 @@
+/* Container principal (calendrier + sidebar) */
+.rdv-layout {
+  display: flex;
+  min-height: 100vh;
+  background: #f6f8f6;
+}
+
+/* Conteneur du calendrier (zone principale) */
+.rdv-calendar-container {
+  flex: 1;
+  padding: 24px;
+  box-sizing: border-box;
+}
+
+/* Entête / titre */
+.rdv-calendar-container h4 {
+  margin-bottom: 12px;
+  color: #14532d; /* vert profond */
+  font-weight: 700;
+}
+
+/* Toolbar du react-big-calendar */
+.rbc-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.rbc-toolbar .rbc-btn-group button {
+  background: #ffffff;
+  border: 1px solid #e6ede6;
+  color: #14532d;
+  padding: 6px 10px;
+  margin-right: 8px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.rbc-toolbar .rbc-btn-group button:hover {
+  background: #e9f7ef;
+  box-shadow: 0 1px 3px rgba(20,83,45,0.08);
+}
+
+.rbc-toolbar .rbc-btn-group .rbc-active {
+  background: #14532d;
+  color: #fff;
+  border-color: transparent;
+}
+
+/* Titre central (mois / semaine / jour) */
+.rbc-toolbar .rbc-toolbar-label {
+  font-weight: 600;
+  color: #14532d;
+}
+
+/* Vue jour / semaine / mois - header des colonnes */
+.rbc-header {
+  background: #f1fbf6;
+  color: #14532d;
+  font-weight: 600;
+  border-bottom: 1px solid #e6efe6;
+  padding: 8px 10px;
+}
+
+/* Cellules du calendrier */
+.rbc-month-view, .rbc-time-view, .rbc-day-slot {
+  background: #fff;
+}
+
+/* Evénements */
+.rbc-event {
+  background-color: #16a34a !important; /* vert bootstrap-like */
+  color: #fff !important;
+  border: none !important;
+  padding: 6px 8px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  box-shadow: 0 1px 3px rgba(20,83,45,0.15);
+}
+
+/* Evénement sélectionné */
+.rbc-event.rbc-selected, .rbc-event:focus {
+  outline: 2px solid rgba(20,83,45,0.18);
+}
+
+/* Slot (zone cliquable) hover */
+.rbc-time-slot:hover, .rbc-day-slot .rbc-date-cell:hover {
+  background: rgba(25,135,84,0.04);
+}
+
+/* Styles pour événements multi-jours et affichage compact */
+.rbc-event-label {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+/* Responsiveness : réduire paddings sur petits écrans */
+@media (max-width: 992px) {
+  .rdv-calendar-container {
+    padding: 12px;
+  }
+
+  .rbc-toolbar .rbc-btn-group button {
+    padding: 6px 8px;
+    margin-right: 6px;
+  }
+
+  .rbc-event {
+    font-size: 0.82rem;
+    padding: 5px 6px;
+  }
+}
+
+/* Styles de la modale (RendezVousModal + edit) */
+.rdv-modal .modal-content {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.rdv-modal .modal-header {
+  background: #f1fbf6;
+  border-bottom: 1px solid #e6efe6;
+}
+
+.rdv-modal .modal-title {
+  color: #14532d;
+  font-weight: 700;
+}
+
+.rdv-modal .btn-success {
+  background: #16a34a;
+  border-color: #16a34a;
+}
+
+.rdv-modal .btn-secondary {
+  background: #fff;
+  color: #14532d;
+  border: 1px solid #e6efe6;
+}
+
+/* Petite aide / légende en haut à droite (optionnelle) */
+.rdv-legend {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 12px;
+  align-items: center;
+}
+
+.rdv-legend .legend-item {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  font-size: 0.9rem;
+  color: #495057;
+}
+
+.rdv-legend .dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+/* Couleurs pour statuts si tu veux en afficher */
+.dot.planned { background: #0ea5a2; }   /* teal */
+.dot.confirmed { background: #16a34a; } /* vert */
+.dot.cancelled { background: #ef4444; } /* rouge */
+.dot.done { background: #64748b; }      /* gris */

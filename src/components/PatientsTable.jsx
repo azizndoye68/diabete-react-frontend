@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import DataTable from "react-data-table-component";
-import { Button, Badge } from "react-bootstrap";
+import { Button, Badge, Form } from "react-bootstrap";
 import { Bell, Mail, AlertTriangle } from "lucide-react";
 import api from "../services/api";
 
@@ -22,53 +22,103 @@ function PatientsTable({ medecinId }) {
   const [patients, setPatients] = useState([]);
   const [filtered, setFiltered] = useState([]);
   const [search, setSearch] = useState("");
+  const [filterReferent, setFilterReferent] = useState(false);
 
   useEffect(() => {
     const fetchPatients = async () => {
       try {
+        // 1️⃣ Récupérer tous les patients
         const res = await api.get(`/api/patients`);
-        setPatients(res.data);
-        setFiltered(res.data);
+        const patientsData = res.data;
+
+        // 2️⃣ Ajouter la dernière glycémie et le médecin référent pour chaque patient
+        const patientsComplete = await Promise.all(
+          patientsData.map(async (p) => {
+            let derniereGlycemie = "--";
+            let medecinPrenom = null;
+            let medecinNom = null;
+
+            try {
+              // Récupérer la dernière mesure de glycémie
+              const mesureRes = await api.get(`/api/suivis/last?patientId=${p.id}`);
+              derniereGlycemie = mesureRes.data?.glycemie ?? "--";
+            } catch {
+              derniereGlycemie = "--";
+            }
+
+            try {
+              // Récupérer les infos du médecin référent si medecinId existe
+              if (p.medecinId) {
+                const medRes = await api.get(`/api/medecins/${p.medecinId}`);
+                medecinPrenom = medRes.data?.prenom ?? null;
+                medecinNom = medRes.data?.nom ?? null;
+              }
+            } catch {
+              medecinPrenom = null;
+              medecinNom = null;
+            }
+
+            return { ...p, derniereGlycemie, medecinPrenom, medecinNom };
+          })
+        );
+
+        setPatients(patientsComplete);
+        setFiltered(patientsComplete);
       } catch (error) {
         console.error("Erreur chargement patients :", error);
       }
     };
+
     fetchPatients();
   }, [medecinId]);
 
-  // 🔍 Filtrage
+  // 🔍 Filtrage par recherche + médecin référent
   useEffect(() => {
-    const filteredData = patients.filter(
+    let data = [...patients];
+
+    // Recherche par nom ou prénom du patient
+    data = data.filter(
       (p) =>
-        p.nom.toLowerCase().includes(search.toLowerCase()) ||
-        p.prenom.toLowerCase().includes(search.toLowerCase())
+        p.nom?.toLowerCase().includes(search.toLowerCase()) ||
+        p.prenom?.toLowerCase().includes(search.toLowerCase())
     );
-    setFiltered(filteredData);
-  }, [search, patients]);
+
+    // Filtrer uniquement les patients du médecin connecté
+    if (filterReferent && medecinId) {
+      data = data.filter((p) => p.medecinId === medecinId);
+    }
+
+    setFiltered(data);
+  }, [search, filterReferent, patients, medecinId]);
 
   // 🧩 Colonnes du tableau
   const columns = [
     { name: "Nom", selector: (row) => row.nom, sortable: true },
     { name: "Prénom", selector: (row) => row.prenom, sortable: true },
-    {
-      name: "Date d'inscription",
-      selector: (row) => row.dateInscription || "--",
-      sortable: true,
-    },
-    {
-      name: "Dernière connexion",
-      selector: (row) => row.derniereConnexion || "--",
-      sortable: true,
-    },
-    {
+    { name: "Type de diabète", selector: (row) => row.typeDiabete, sortable: true },
+    
+     {
       name: "Insuline",
-      selector: (row) => (row.traitement?.toLowerCase().includes("insuline") ? "Oui" : "Non"),
-      sortable: true,
+      selector: (row) =>
+        row.traitement?.toLowerCase().includes("insuline") ? "Oui" : "Non",
       cell: (row) =>
         row.traitement?.toLowerCase().includes("insuline") ? (
           <Badge bg="success">Oui</Badge>
         ) : (
           <Badge bg="secondary">Non</Badge>
+        ),
+    },
+     {
+      name: "Dernière glycémie (g/l)",
+      selector: (row) => row.derniereGlycemie ?? "--",
+      sortable: true,
+      cell: (row) =>
+        row.derniereGlycemie !== "--" ? (
+          <Badge bg={row.derniereGlycemie < 1 ? "warning" : "success"}>
+            {row.derniereGlycemie}
+          </Badge>
+        ) : (
+          <Badge bg="secondary">--</Badge>
         ),
     },
     {
@@ -82,12 +132,38 @@ function PatientsTable({ medecinId }) {
       ),
     },
     {
+      name: "Médecin référent",
+      selector: (row) =>
+        row.medecinPrenom && row.medecinNom
+          ? `${row.medecinPrenom} ${row.medecinNom}`
+          : "Non référencé",
+      sortable: true,
+      cell: (row) => (
+        <span>
+          {row.medecinPrenom && row.medecinNom ? (
+            <Badge bg="success">
+              {row.medecinPrenom} {row.medecinNom}
+            </Badge>
+          ) : (
+            <Badge bg="secondary">Non référencé</Badge>
+          )}
+        </span>
+      ),
+    },
+    {
+      name: "Date d'inscription",
+      selector: (row) => row.dateEnregistrement || "--",
+      sortable: true,
+    },
+   
+    
+    {
       name: "Action",
       cell: (row) => (
         <Button
           size="sm"
           variant="outline-success"
-          onClick={() => window.location.href = `/patient/${row.id}`}
+          onClick={() => (window.location.href = `/patient/${row.id}`)}
         >
           Accéder au compte
         </Button>
@@ -97,7 +173,17 @@ function PatientsTable({ medecinId }) {
 
   return (
     <div className="patients-table p-3 bg-white rounded shadow-sm">
-      <h5 className="mb-3">Patients en cours de suivi</h5>
+      <div className="d-flex justify-content-between align-items-center mb-3">
+        <h5>Patients en cours de suivi</h5>
+
+        <Form.Check
+          type="switch"
+          id="filter-referent"
+          label="Afficher uniquement mes patients"
+          checked={filterReferent}
+          onChange={(e) => setFilterReferent(e.target.checked)}
+        />
+      </div>
 
       <input
         type="text"

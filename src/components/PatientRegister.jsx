@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import api from '../services/api';
-import { Container, Button, Form, Alert } from 'react-bootstrap';
+import { Container, Button, Form, Alert, ProgressBar } from 'react-bootstrap';
 
 function RegisterPatientForm() {
   const [step, setStep] = useState(1);
   const [message, setMessage] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+
   const [formData, setFormData] = useState({
     username: '',
     email: '',
@@ -20,16 +22,20 @@ function RegisterPatientForm() {
     adresse: '',
     ville: '',
     region: '',
+    numeroProfessionnelMedecin: '' // 🔹 champ ajouté
   });
 
-  // Gérer les changements de champ
   const handleChange = (e) => {
     setFormData({...formData, [e.target.name]: e.target.value});
   };
 
-  // Envoyer les infos d'auth (étape 1)
-  const submitAuth = async () => {
+  // 🔹 Envoi final au backend après toutes les étapes
+  const handleFinalSubmit = async () => {
+    setIsLoading(true);
+    setMessage('');
+
     try {
+      // 1️⃣ Créer compte Auth
       const authResponse = await api.post('/api/auth/register', {
         username: formData.username,
         email: formData.email,
@@ -37,11 +43,10 @@ function RegisterPatientForm() {
         role: formData.role,
       });
 
-     // ✅ Déclaration une seule fois
       const utilisateurId = authResponse.data.id;
-      console.log("ID utilisateur :", utilisateurId);
+      console.log("✅ ID utilisateur créé :", utilisateurId);
 
-      // Envoyer ensuite les infos patient (étape 2)
+      // 2️⃣ Créer patient avec le code médecin
       await api.post('/api/patients', {
         utilisateurId: utilisateurId,
         prenom: formData.prenom,
@@ -54,116 +59,80 @@ function RegisterPatientForm() {
         adresse: formData.adresse,
         ville: formData.ville,
         region: formData.region,
+        numeroProfessionnelMedecin: formData.numeroProfessionnelMedecin,
       });
 
-      setMessage('Inscription réussie ✅');
-      setStep(3); // terminer
-
+      setMessage('✅ Inscription réussie ! Vous pouvez maintenant vous connecter.');
+      setStep(4);
     } catch (error) {
       console.error(error);
-      setMessage('Erreur lors de l\'inscription ❌');
+      setMessage('❌ Erreur lors de l\'inscription. Vérifiez vos informations ou le code médecin.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const handleSubmitStep1 = (e) => {
-    e.preventDefault();
-    setStep(2);
-  };
+  // Étapes
+  const handleNext = () => setStep((prev) => prev + 1);
+  const handlePrev = () => setStep((prev) => prev - 1);
 
-  const handleSubmitStep2 = (e) => {
-    e.preventDefault();
-    submitAuth();
-  };
+  // Progression visuelle
+  const progress = (step / 3) * 100;
 
   return (
-    <Container style={{ maxWidth: '600px', marginTop: '2rem' }}>
+    <Container style={{ maxWidth: '650px', marginTop: '2rem' }}>
       <h2 className="mb-4 text-success text-center">Inscription Patient</h2>
+      <ProgressBar now={progress} className="mb-3" variant="success" />
 
-      {message && <Alert variant={message.includes('Erreur') ? 'danger' : 'success'}>{message}</Alert>}
+      {message && (
+        <Alert variant={message.includes('❌') ? 'danger' : 'success'}>
+          {message}
+        </Alert>
+      )}
 
+      {/* Étape 1 : Identifiants */}
       {step === 1 && (
-        <Form onSubmit={handleSubmitStep1}>
+        <Form onSubmit={(e) => { e.preventDefault(); handleNext(); }}>
           <Form.Group className="mb-3">
             <Form.Label>Nom d'utilisateur</Form.Label>
-            <Form.Control
-              type="text"
-              name="username"
-              value={formData.username}
-              onChange={handleChange}
-              required
-            />
+            <Form.Control name="username" value={formData.username} onChange={handleChange} required />
           </Form.Group>
 
           <Form.Group className="mb-3">
             <Form.Label>Email</Form.Label>
-            <Form.Control
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              required
-            />
+            <Form.Control type="email" name="email" value={formData.email} onChange={handleChange} required />
           </Form.Group>
 
           <Form.Group className="mb-3">
             <Form.Label>Mot de passe</Form.Label>
-            <Form.Control
-              type="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              required
-            />
+            <Form.Control type="password" name="password" value={formData.password} onChange={handleChange} required />
           </Form.Group>
 
           <Button variant="success" type="submit" className="w-100">Suivant</Button>
         </Form>
       )}
 
+      {/* Étape 2 : Infos personnelles */}
       {step === 2 && (
-        <Form onSubmit={handleSubmitStep2}>
+        <Form onSubmit={(e) => { e.preventDefault(); handleNext(); }}>
           <Form.Group className="mb-3">
             <Form.Label>Prénom</Form.Label>
-            <Form.Control
-              type="text"
-              name="prenom"
-              value={formData.prenom}
-              onChange={handleChange}
-              required
-            />
+            <Form.Control name="prenom" value={formData.prenom} onChange={handleChange} required />
           </Form.Group>
 
           <Form.Group className="mb-3">
             <Form.Label>Nom</Form.Label>
-            <Form.Control
-              type="text"
-              name="nom"
-              value={formData.nom}
-              onChange={handleChange}
-              required
-            />
+            <Form.Control name="nom" value={formData.nom} onChange={handleChange} required />
           </Form.Group>
 
           <Form.Group className="mb-3">
             <Form.Label>Téléphone</Form.Label>
-            <Form.Control
-              type="tel"
-              name="telephone"
-              value={formData.telephone}
-              onChange={handleChange}
-              required
-            />
+            <Form.Control type="tel" name="telephone" value={formData.telephone} onChange={handleChange} required />
           </Form.Group>
 
           <Form.Group className="mb-3">
             <Form.Label>Date de naissance</Form.Label>
-            <Form.Control
-              type="date"
-              name="dateNaissance"
-              value={formData.dateNaissance}
-              onChange={handleChange}
-              required
-            />
+            <Form.Control type="date" name="dateNaissance" value={formData.dateNaissance} onChange={handleChange} required />
           </Form.Group>
 
           <Form.Group className="mb-3">
@@ -187,58 +156,58 @@ function RegisterPatientForm() {
 
           <Form.Group className="mb-3">
             <Form.Label>Traitement</Form.Label>
-            <Form.Control
-              type="text"
-              name="traitement"
-              value={formData.traitement}
-              onChange={handleChange}
-            />
+            <Form.Control name="traitement" value={formData.traitement} onChange={handleChange} />
           </Form.Group>
 
+          <Button variant="secondary" onClick={handlePrev} className="me-2">Retour</Button>
+          <Button variant="success" type="submit">Suivant</Button>
+        </Form>
+      )}
+
+      {/* Étape 3 : Adresse + Code médecin */}
+      {step === 3 && (
+        <Form onSubmit={(e) => { e.preventDefault(); handleFinalSubmit(); }}>
           <Form.Group className="mb-3">
             <Form.Label>Adresse</Form.Label>
-            <Form.Control
-              type="text"
-              name="adresse"
-              value={formData.adresse}
-              onChange={handleChange}
-            />
+            <Form.Control name="adresse" value={formData.adresse} onChange={handleChange} />
           </Form.Group>
 
           <Form.Group className="mb-3">
             <Form.Label>Ville</Form.Label>
-            <Form.Control
-              type="text"
-              name="ville"
-              value={formData.ville}
-              onChange={handleChange}
-            />
+            <Form.Control name="ville" value={formData.ville} onChange={handleChange} />
           </Form.Group>
 
           <Form.Group className="mb-3">
             <Form.Label>Région</Form.Label>
-            <Form.Control
-              type="text"
-              name="region"
-              value={formData.region}
-              onChange={handleChange}
-            />
+            <Form.Control name="region" value={formData.region} onChange={handleChange} />
           </Form.Group>
 
-          <Button variant="secondary" className="me-2" onClick={() => setStep(1)}>
-            Retour
-          </Button>
-          <Button variant="success" type="submit">
-            S'inscrire
+          <Form.Group className="mb-3">
+            <Form.Label>Code de suivi (numéro professionnel du médecin)</Form.Label>
+            <Form.Control
+              name="numeroProfessionnelMedecin"
+              value={formData.numeroProfessionnelMedecin}
+              onChange={handleChange}
+              placeholder="Ex : MED25A1F"
+              required
+            />
+            <Form.Text className="text-muted">
+              Demandez ce code à votre médecin avant de vous inscrire.
+            </Form.Text>
+          </Form.Group>
+
+          <Button variant="secondary" onClick={handlePrev} className="me-2">Retour</Button>
+          <Button variant="success" type="submit" disabled={isLoading}>
+            {isLoading ? 'Inscription...' : "S'inscrire"}
           </Button>
         </Form>
       )}
 
-      {step === 3 && (
-        <div className="text-center">
-          <h4>Inscription réussie ! Vous pouvez maintenant vous connecter.</h4>
+      {step === 4 && (
+        <div className="text-center mt-4">
+          <h4 className="text-success">🎉 Inscription réussie !</h4>
           <Button variant="success" onClick={() => window.location.href = '/login'}>
-            Connexion
+            Se connecter
           </Button>
         </div>
       )}
