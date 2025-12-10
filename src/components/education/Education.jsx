@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from "react";
-import { Row, Col, Card, Button } from "react-bootstrap";
-import SidebarPatient from "./SidebarPatient";
-import api from "../services/api";
-import EducationService from "../services/EducationService";
-import EducationContentCard from "./EducationContentCard";
+import React, { useEffect, useState } from 'react';
+import { Row, Col, Card, Button } from 'react-bootstrap';
+import SidebarPatient from '../components/SidebarPatient';
+import api from '../../services/api';
+import EducationService from '../../services/EducationService';
 
 function Education() {
+
   const [patientId, setPatientId] = useState(null);
   const [contenus, setContenus] = useState([]);
   const [campagnes, setCampagnes] = useState([]);
@@ -69,25 +69,34 @@ function Education() {
   return (
     <Row className="m-0 vh-100">
       <SidebarPatient />
-
       <Col md={{ span: 9, offset: 3 }} className="p-4">
+
         <h3 className="mb-4">Éducation au diabète</h3>
 
-        {/* Contenus éducatifs */}
+        {/* --------------------------- Contenus Éducatifs --------------------------- */}
         <h4 className="mt-4">📘 Contenus éducatifs</h4>
         <Row xs={1} md={2} lg={2} className="g-4">
-          {contenus.map((item) => (
-            <Col key={item.id}>
-              <EducationContentCard item={item} />
+          {contenus.map((item, index) => (
+            <Col key={index}>
+              <Card className="h-100">
+                <Card.Img variant="top" src={item.imageUrl} height="180" style={{ objectFit: 'cover' }} />
+                <Card.Body>
+                  <Card.Title>{item.titre}</Card.Title>
+                  <Card.Text>{item.description}</Card.Text>
+                  <Button variant="success" href={item.lien} target="_blank">
+                    Voir
+                  </Button>
+                </Card.Body>
+              </Card>
             </Col>
           ))}
         </Row>
 
-        {/* Campagnes */}
+        {/* --------------------------- Campagnes --------------------------- */}
         <h4 className="mt-5">📢 Campagnes de sensibilisation</h4>
         <Row xs={1} md={2} lg={2} className="g-4">
-          {campagnes.map((item) => (
-            <Col key={item.id}>
+          {campagnes.map((item, index) => (
+            <Col key={index}>
               <Card className="h-100">
                 <Card.Body>
                   <Card.Title>{item.titre}</Card.Title>
@@ -98,8 +107,9 @@ function Education() {
           ))}
         </Row>
 
-        {/* Conseils personnalisés */}
+        {/* --------------------------- Conseils personnalisés --------------------------- */}
         <h4 className="mt-5">💬 Conseils personnalisés</h4>
+        
         {conseils.length === 0 ? (
           <p>Aucun conseil personnalisé pour le moment.</p>
         ) : (
@@ -108,11 +118,14 @@ function Education() {
               <li key={c.id} className="list-group-item">
                 <strong>{c.titre}</strong>
                 <p>{c.contenu || c.texte || "Contenu indisponible"}</p>
-                <small>Date : {new Date(c.dateCreation).toLocaleString()}</small>
+                <small>
+                  Date : {new Date(c.dateCreation).toLocaleString()}
+                </small>
               </li>
             ))}
           </ul>
         )}
+
       </Col>
     </Row>
   );

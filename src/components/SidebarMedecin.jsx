@@ -3,13 +3,14 @@ import React, { useState } from "react";
 import { Nav, Image } from "react-bootstrap";
 import { useNavigate, useLocation } from "react-router-dom";
 import {
-  FaUsers,
   FaChartLine,
   FaEnvelope,
   FaBook,
   FaTachometerAlt,
   FaSignOutAlt,
   FaBars,
+  FaTeamspeak,
+  
 } from "react-icons/fa";
 import defaultAvatar from "../images/default-avatar.jpg";
 import "./SidebarMedecin.css";
@@ -26,10 +27,10 @@ function SidebarMedecin({ user }) {
 
   const navItems = [
     { path: "/dashboard-medecin", label: "Dashboard", icon: <FaTachometerAlt /> },
-    { path: "/medecin/patients-table", label: "Patients", icon: <FaUsers /> },
     { path: "/medecin/stats", label: "Statistiques", icon: <FaChartLine /> },
     { path: "/medecin/messagerie", label: "Messagerie", icon: <FaEnvelope /> },
     { path: "/medecin/education", label: "Éducation", icon: <FaBook /> },
+    { path: "/medecin/equipes", label: "Équipes médicales", icon: <FaTeamspeak /> },
   ];
 
   return (

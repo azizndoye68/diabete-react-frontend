@@ -55,13 +55,13 @@ function SidebarPatient({ onShowAide, patient }) {
         <li className="nav-link text-white mb-1" onClick={() => navigate('/statistiques')} style={{ cursor: 'pointer' }}>
           <i className="bi bi-bar-chart-line-fill me-2"></i> Mes stats
         </li>
-        <li className="nav-link text-white mb-1" onClick={() => navigate('/suivi')} style={{ cursor: 'pointer' }}>
+        <li className="nav-link text-white mb-1" onClick={() => navigate('/mon-suivi')} style={{ cursor: 'pointer' }}>
           <i className="bi bi-heart-pulse-fill me-2"></i> Mon suivi
         </li>
         <li className="nav-link text-white mb-1" onClick={() => navigate('/equipe')} style={{ cursor: 'pointer' }}>
           <i className="bi bi-people-fill me-2"></i> Équipe soignante
         </li>
-        <li className="nav-link text-white mb-1" onClick={() => navigate('/education')} style={{ cursor: 'pointer' }}>
+        <li className="nav-link text-white mb-1" onClick={() => navigate('/education/')} style={{ cursor: 'pointer' }}>
           <i className="bi bi-book-half me-2"></i> Éducation
         </li>
         <li className="nav-link text-white mb-1" onClick={() => navigate('/objets')} style={{ cursor: 'pointer' }}>

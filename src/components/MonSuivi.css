@@ -1,0 +1,73 @@
+.mon-suivi-page {
+  display: flex;
+}
+
+/* Main content */
+.main-content {
+  flex-grow: 1;
+  margin-left: 250px; /* espace pour la sidebar */
+  padding: 2rem;
+  background-color: #f9f9f9;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+/* Wrapper cartes */
+.cards-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  justify-content: space-between;
+}
+
+/* Cartes */
+.suivi-card {
+  flex: 1 1 30%;
+  min-width: 220px;
+  border: none;
+  border-radius: 12px;
+  background-color: #fff;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  padding: 1.5rem;
+}
+
+.suivi-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+
+/* Cercle icône */
+.icon-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.circle-icon {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  overflow: hidden; /* important pour que l'image ne dépasse pas */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #e0f7e9;
+}
+
+.suivi-icon {
+  width: 100%;      /* remplit toute la largeur du cercle */
+  height: 100%;     /* remplit toute la hauteur du cercle */
+  object-fit: cover; /* ajuste l'image pour remplir le cercle sans déformer */
+}
+
+/* Titre */
+.suivi-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #333;
+  text-align: center;
+  margin-top: 0.5rem;
+}

@@ -1,0 +1,61 @@
+.medecin-layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+.teams-page {
+  flex: 1;
+  padding: 2rem;
+  margin-left: 250px; /* selon ta sidebar */
+  background: #f6f8fa;
+}
+
+.teams-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.25rem;
+}
+
+.create-box {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  max-width: 520px;
+}
+
+.teams-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 1rem;
+}
+
+.team-card {
+  background: #fff;
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+  display: flex;
+  flex-direction: column;
+}
+
+.team-top { display:flex; justify-content:space-between; align-items:flex-start; gap:1rem; }
+
+.team-name { margin: 0; font-size: 1.15rem; color: #0b5; }
+
+.team-actions button { margin-left: .5rem; }
+
+.team-details { margin-top: .75rem; }
+
+.team-details h5 { margin-bottom: .5rem; }
+
+.btn-add { margin-top: .5rem; }
+
+.btn-delete {
+  margin-top: 1rem;
+  background: #dc3545;
+  color: white;
+  border: none;
+  padding: .45rem .75rem;
+  border-radius: 6px;
+}

@@ -1,0 +1,27 @@
+.education-container {
+  padding: 2rem;
+}
+
+.education-tabs {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.education-tabs button {
+  padding: 0.5rem 1rem;
+  border: none;
+  background-color: #e9ecef;
+  cursor: pointer;
+  border-radius: 0.25rem;
+  font-weight: 500;
+}
+
+.education-tabs button.active {
+  background-color: #198754;
+  color: white;
+}
+
+.education-content {
+  margin-top: 1rem;
+}

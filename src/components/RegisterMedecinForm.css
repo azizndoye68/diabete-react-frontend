@@ -1,0 +1,34 @@
+.register-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 90vh;
+  background: linear-gradient(to bottom right, #e8f5e9, #ffffff);
+}
+
+.register-card {
+  width: 100%;
+  max-width: 550px;
+  padding: 2rem;
+  border-radius: 20px;
+  border: none;
+  background-color: #fff;
+  transition: all 0.3s ease-in-out;
+}
+
+.register-card:hover {
+  box-shadow: 0 0 25px rgba(0, 128, 0, 0.15);
+}
+
+form label {
+  font-weight: 500;
+  color: #2e7d32;
+}
+
+button {
+  font-weight: 600 !important;
+}
+
+.alert {
+  border-radius: 10px;
+}

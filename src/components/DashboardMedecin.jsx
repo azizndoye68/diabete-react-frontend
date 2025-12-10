@@ -4,7 +4,7 @@ import { Container, Row, Col, Nav, Button } from "react-bootstrap";
 import SidebarMedecin from "../components/SidebarMedecin";
 import PatientsTable from "../components/PatientsTable";
 import AlerteSection from "../components/AlerteSection";
-import MessagesSection from "../components/MessagesSection";
+import MessagesSection from "./MessagesSection";
 import StatsSection from "../components/StatsSection";
 import RendezVousCalendar from "./RendezVousTable";
 import RendezVousModal from "../components/RendezVousModal";
@@ -96,7 +96,14 @@ function DashboardMedecin() {
               <h3 className="fw-bold text-success">
                 Bonjour Dr. {medecin?.prenom || ""} {medecin?.nom || ""}
               </h3>
+
+              {medecin?.numeroProfessionnel && (
+                <p className="text-secondary mb-1">
+                  <strong>Numéro professionnel :</strong> {medecin.numeroProfessionnel}
+                </p>
+              )}
               <p className="text-muted">Bienvenue sur votre espace professionnel 👨‍⚕️</p>
+
             </Col>
           </Row>
 

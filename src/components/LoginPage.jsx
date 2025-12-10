@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import api from '../services/api'; // 🔗 Utilisation de ton service axios
-import { Nav, Navbar, Form, Button, Container, Alert } from 'react-bootstrap';
-import { FaPhoneAlt, FaEnvelope, FaQuestionCircle } from 'react-icons/fa';
+import { Nav, Navbar, Form, Button, Container, Alert, Card } from 'react-bootstrap';
+import { FaPhoneAlt, FaEnvelope, FaQuestionCircle, FaUser } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import logoDiabete from '../images/logo-diabete.png';
 
@@ -39,9 +39,9 @@ function LoginForm() {
       } else if (role === 'MEDECIN') {
         navigate('/dashboard-medecin');
       } else if (role === 'ADMIN') {
-        navigate('/dashboard-admin'); // si tu veux gérer admin
+        navigate('/dashboard-admin'); 
       } else {
-        navigate('/'); // fallback
+        navigate('/'); 
       }
 
     } catch (error) {
@@ -108,43 +108,50 @@ function LoginForm() {
         </Container>
       </Navbar>
 
+      {/* Formulaire centré */}
       <Container className="mt-5" style={{ maxWidth: '500px' }}>
-        <h2 className="text-success mb-4 text-center">Connexion</h2>
-        {message && (
-          <Alert variant={message.includes('Erreur') ? 'danger' : 'success'}>
-            {message}
-          </Alert>
-        )}
+        <Card className="shadow-lg p-4">
+          <div className="text-center mb-4">
+            <FaUser size={50} className="text-success mb-2" />
+            <h3 className="text-success fw-bold">Connexion</h3>
+          </div>
 
-        <Form onSubmit={handleSubmit}>
-          <Form.Group className="mb-3">
-            <Form.Label>Nom utilisateur</Form.Label>
-            <Form.Control
-              type="text"
-              name="username"
-              placeholder="Nom utilisateur"
-              value={credentials.username}
-              onChange={handleChange}
-              required
-            />
-          </Form.Group>
+          {message && (
+            <Alert variant={message.includes('Erreur') ? 'danger' : 'success'}>
+              {message}
+            </Alert>
+          )}
 
-          <Form.Group className="mb-3">
-            <Form.Label>Mot de passe</Form.Label>
-            <Form.Control
-              type="password"
-              name="password"
-              placeholder="Mot de passe"
-              value={credentials.password}
-              onChange={handleChange}
-              required
-            />
-          </Form.Group>
+          <Form onSubmit={handleSubmit}>
+            <Form.Group className="mb-3">
+              <Form.Label>Nom utilisateur</Form.Label>
+              <Form.Control
+                type="text"
+                name="username"
+                placeholder="Nom utilisateur"
+                value={credentials.username}
+                onChange={handleChange}
+                required
+              />
+            </Form.Group>
 
-          <Button variant="success" type="submit" className="w-100">
-            Se connecter
-          </Button>
-        </Form>
+            <Form.Group className="mb-3">
+              <Form.Label>Mot de passe</Form.Label>
+              <Form.Control
+                type="password"
+                name="password"
+                placeholder="Mot de passe"
+                value={credentials.password}
+                onChange={handleChange}
+                required
+              />
+            </Form.Group>
+
+            <Button variant="success" type="submit" className="w-100">
+              Se connecter
+            </Button>
+          </Form>
+        </Card>
       </Container>
     </div>
   );

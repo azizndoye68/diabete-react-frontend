@@ -1,11 +1,56 @@
 /* src/pages/AjouterDonneeJournee.css */
 
-.form-wrapper {
-  margin-left: 250px; /* Décalage pour la sidebar */
-  width: calc(100% - 250px);
+/* Sidebar column (assure-toi que la sidebar elle-même n'est pas en position:fixed) */
+.sidebar-col {
+  background: transparent; /* laisse la sidebar gérer son propre style */
   min-height: 100vh;
-  background-color: #f8f9fa;
+  overflow: auto;
+}
+
+/* Colonne principale centrée */
+.main-col {
+  background-color: white;
   overflow-y: auto;
-  padding-top: 0rem;
-  padding-bottom: 3rem;
+  padding: 2.5rem 1.25rem;
+}
+
+/* wrapper centré horizontalement et positionné vers le haut (option) */
+.form-center-wrapper {
+  display: flex;
+  justify-content: center; /* centre horizontalement */
+  align-items: flex-start;  /* commence en haut, change à 'center' si tu veux vertical centering */
+  width: 100%;
+  padding-top: 2rem;
+}
+
+/* Container qui limite la largeur du formulaire et gère le "drag" correctement */
+.form-card-container {
+  width: 100%;
+  max-width: 700px;
+  padding: 0 1rem;
+  box-sizing: border-box;
+}
+
+/* Carte formulaire */
+.form-card {
+  border-radius: 8px;
+}
+
+/* Écran succès */
+.success-card {
+  border-radius: 8px;
+}
+
+/* Réactivité pour petits écrans : la sidebar devient en haut (stack) */
+@media (max-width: 991px) {
+  .sidebar-col {
+    height: auto;
+  }
+  .main-col {
+    padding: 1.5rem;
+  }
+  .form-center-wrapper {
+    align-items: center; /* centrer verticalement sur mobile */
+    padding-top: 1rem;
+  }
 }

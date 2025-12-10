@@ -1,30 +1,29 @@
-/* DashboardPatient.css ou SidebarPatient.css */
-
-/* Conteneur principal à droite, avec marge à gauche égale à la largeur sidebar */
-.content {
-  height: 100vh;
-  overflow-y: auto;
-  background-color: #f8f9fa;
-  margin-left: 250px; /* Assure que le contenu ne soit pas caché sous la sidebar */
-  padding: 2rem;
-}
-
 /* Sidebar fixe à gauche */
 .sidebar {
-  height: 100vh;
   position: fixed;
   top: 0;
   left: 0;
-  width: 250px; /* largeur fixe, très importante */
+  width: 250px; /* largeur fixe */
+  height: 100vh;
   background-color: #198754; /* vert bootstrap success */
   color: white;
-  overflow-y: auto; /* scroll si le contenu dépasse */
-  padding: 1.5rem;
   display: flex;
   flex-direction: column;
+  padding: 1.5rem;
+  box-sizing: border-box; /* inclut padding dans la largeur */
+  overflow-y: auto;
 }
 
-/* Liste verticale qui occupe tout l’espace */
+/* Conteneur principal à droite, prend tout l'espace restant */
+.content {
+  margin-left: 250px; /* espace égal à la sidebar */
+  padding: 2rem;
+  background-color: #f8f9fa;
+  height: 100vh;
+  overflow-y: auto;
+}
+
+/* Menu de navigation vertical */
 .sidebar ul {
   display: flex;
   flex-direction: column;
@@ -35,7 +34,6 @@
   list-style: none;
 }
 
-/* Style des éléments du menu */
 .sidebar ul li {
   padding: 10px;
   cursor: pointer;
@@ -46,24 +44,21 @@
   font-weight: 500;
 }
 
-/* Icones dans les éléments du menu */
 .sidebar ul li i {
   margin-right: 10px;
   font-size: 1.2rem;
 }
 
-/* Hover sur les éléments */
 .sidebar ul li:hover {
   background-color: rgba(255, 255, 255, 0.2);
-  color: #ffc107; /* jaune bootstrap warning */
+  color: #ffc107;
 }
 
 .app-header {
-  background-color: #157347; /* Vert plus foncé que bg-success */
+  background-color: #157347;
   padding: 15px;
   font-size: 18px;
   letter-spacing: 1px;
   border-radius: 6px;
   margin-bottom: 20px;
 }
-

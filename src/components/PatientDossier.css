@@ -1,0 +1,31 @@
+.patient-dossier h2 {
+  color: #198754;
+  font-weight: bold;
+  text-align: center;
+}
+
+.patient-dossier .card {
+  border-radius: 12px;
+}
+
+.patient-dossier .card-header {
+  background-color: #e9f7ef;
+  font-weight: bold;
+  color: #198754;
+  font-size: 16px;
+}
+
+.patient-dossier .table th {
+  background-color: #f0f9f4;
+  color: #198754;
+  font-weight: bold;
+}
+
+.patient-dossier .table td,
+.patient-dossier .table th {
+  vertical-align: middle;
+}
+
+.patient-dossier .badge {
+  font-size: 0.9em;
+}
