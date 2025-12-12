@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Row, Col, Card, Button } from "react-bootstrap";
+import { Row, Col, Card } from "react-bootstrap";
 import SidebarPatient from "./SidebarPatient";
 import api from "../services/api";
 import EducationService from "../services/EducationService";

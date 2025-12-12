@@ -151,7 +151,25 @@ function RegisterMedecinForm() {
             </Form.Group>
             <Form.Group className="mb-3">
               <Form.Label>Spécialité</Form.Label>
-              <Form.Control type="text" name="specialite" value={formData.specialite} onChange={handleChange} required />
+              <Form.Select 
+                name="specialite" 
+                value={formData.specialite} 
+                onChange={handleChange} 
+                required
+              >
+                <option value="">Choisir...</option>
+                <option value="Généraliste">Médecin Généraliste</option>
+                <option value="Diabétologue">Diabétologue</option>
+                <option value="Endocrinologue">Endocrinologue</option>
+                <option value="Cardiologue">Cardiologue</option>
+                <option value="Pédiatre">Pédiatre</option>
+                <option value="Gynécologue">Gynécologue</option>
+                <option value="Ophtalmologue">Ophtalmologue</option>
+                <option value="Néphrologue">Néphrologue</option>
+                <option value="Nutritionniste">Nutritionniste</option>
+                <option value="Infirmier">Infirmier</option>
+                <option value="Autre">Autre</option>
+              </Form.Select>
             </Form.Group>
             <Form.Group className="mb-3">
               <Form.Label>Adresse</Form.Label>

@@ -1,51 +1,72 @@
+// src/components/EquipePatientsTable.jsx
 import React, { useEffect, useState } from "react";
 import DataTable from "react-data-table-component";
 import { Button, Badge } from "react-bootstrap";
 import { Bell, Mail, AlertTriangle } from "lucide-react";
 import api from "../services/api";
-import { useNavigate } from "react-router-dom"; // ✅
 
 const customStyles = {
-  headCells: { style: { backgroundColor: "#e9f7ef", color: "#198754", fontWeight: "bold", fontSize: "14px" } },
-  rows: { style: { minHeight: "55px" } },
+  headCells: {
+    style: {
+      backgroundColor: "#e9f7ef",
+      color: "#198754",
+      fontWeight: "bold",
+      fontSize: "14px",
+    },
+  },
+  rows: {
+    style: { minHeight: "55px" },
+  },
 };
 
-function EquipePatientsTable({ equipeId }) {
+function EquipePatientsTable({ medecinId }) {
   const [patients, setPatients] = useState([]);
   const [search, setSearch] = useState("");
   const [filtered, setFiltered] = useState([]);
-  const navigate = useNavigate(); // ✅
 
   useEffect(() => {
-    const loadPatients = async () => {
+    const fetchPatients = async () => {
       try {
-        const res = await api.get(`/api/equipes/${equipeId}/patients`);
-        const data = res.data;
+        // Récupérer tous les patients
+        const res = await api.get(`/api/patients`);
+        const patientsData = res.data;
 
-        const patientsWithGly = await Promise.all(
-          data.map(async (p) => {
+        // Filtrer uniquement les patients dont le médecin est référent
+        const myPatients = patientsData.filter(p => p.medecinId === medecinId);
+
+        // Ajouter la dernière glycémie pour chaque patient
+        const patientsComplete = await Promise.all(
+          myPatients.map(async (p) => {
             let derniereGlycemie = "--";
+
             try {
-              const gly = await api.get(`/api/suivis/last?patientId=${p.id}`);
-              derniereGlycemie = gly.data?.glycemie ?? "--";
-            } catch {}
+              const mesureRes = await api.get(`/api/suivis/last?patientId=${p.id}`);
+              derniereGlycemie = mesureRes.data?.glycemie ?? "--";
+            } catch {
+              derniereGlycemie = "--";
+            }
+
             return { ...p, derniereGlycemie };
           })
         );
 
-        setPatients(patientsWithGly);
-        setFiltered(patientsWithGly);
-      } catch (err) {
-        console.error("Erreur chargement patients equipe:", err);
+        setPatients(patientsComplete);
+        setFiltered(patientsComplete);
+      } catch (error) {
+        console.error("Erreur chargement patients :", error);
       }
     };
-    loadPatients();
-  }, [equipeId]);
 
+    fetchPatients();
+  }, [medecinId]);
+
+  // Recherche
   useEffect(() => {
     setFiltered(
-      patients.filter((p) =>
-        (p.nom + " " + p.prenom).toLowerCase().includes(search.toLowerCase())
+      patients.filter(
+        (p) =>
+          p.nom?.toLowerCase().includes(search.toLowerCase()) ||
+          p.prenom?.toLowerCase().includes(search.toLowerCase())
       )
     );
   }, [search, patients]);
@@ -53,11 +74,20 @@ function EquipePatientsTable({ equipeId }) {
   const columns = [
     { name: "Nom", selector: (row) => row.nom, sortable: true },
     { name: "Prénom", selector: (row) => row.prenom, sortable: true },
-    { name: "Type diabète", selector: (row) => row.typeDiabete },
-
+    { name: "Type de diabète", selector: (row) => row.typeDiabete, sortable: true },
     {
-      name: "Dernière glycémie",
-      selector: (row) => row.derniereGlycemie,
+      name: "Insuline",
+      selector: (row) => (row.traitement?.toLowerCase().includes("insuline") ? "Oui" : "Non"),
+      cell: (row) =>
+        row.traitement?.toLowerCase().includes("insuline") ? (
+          <Badge bg="success">Oui</Badge>
+        ) : (
+          <Badge bg="secondary">Non</Badge>
+        ),
+    },
+    {
+      name: "Dernière glycémie (g/l)",
+      selector: (row) => row.derniereGlycemie ?? "--",
       sortable: true,
       cell: (row) =>
         row.derniereGlycemie !== "--" ? (
@@ -68,7 +98,6 @@ function EquipePatientsTable({ equipeId }) {
           <Badge bg="secondary">--</Badge>
         ),
     },
-
     {
       name: "Notifications",
       cell: () => (
@@ -79,27 +108,28 @@ function EquipePatientsTable({ equipeId }) {
         </div>
       ),
     },
-
-    { name: "Date ajout", selector: (row) => row.dateAjout || "--", sortable: true },
-
+    {
+      name: "Date d'inscription",
+      selector: (row) => row.dateEnregistrement || "--",
+      sortable: true,
+    },
     {
       name: "Action",
       cell: (row) => (
         <Button
-          variant="outline-success"
           size="sm"
-          onClick={() => navigate(`/patient/${row.id}`)} // ✅ utilisation de useNavigate
+          variant="outline-success"
+          onClick={() => (window.location.href = `/patient/${row.id}`)}
         >
-          Voir dossier
+          Accéder au compte
         </Button>
       ),
     },
   ];
 
   return (
-    <div className="p-3 bg-white rounded shadow-sm">
-      <h5 className="text-success mb-3">Patients de l'équipe</h5>
-
+    <div className="patients-table p-3 bg-white rounded shadow-sm">
+      <h5 className="mb-3">Mes patients suivis</h5>
       <input
         type="text"
         className="form-control mb-3"
@@ -113,10 +143,10 @@ function EquipePatientsTable({ equipeId }) {
         data={filtered}
         customStyles={customStyles}
         pagination
-        striped
         highlightOnHover
+        striped
         responsive
-        noDataComponent="Aucun patient dans l'équipe"
+        noDataComponent="Aucun patient trouvé"
       />
     </div>
   );

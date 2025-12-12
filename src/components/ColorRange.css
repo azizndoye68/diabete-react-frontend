@@ -1,0 +1,55 @@
+/* ColorRange.css */
+
+.color-range h5 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.seuils-text span {
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+/* Couleurs des seuils */
+.text-hypo {
+  color: #dc3545; /* rouge */
+}
+
+.text-normal {
+  color: #198754; /* vert */
+}
+
+.text-eleve {
+  color: #fd7e14; /* orange */
+}
+
+.text-hyper {
+  color: #8B0000; /* bordeaux */
+}
+
+/* Barre colorée */
+.color-bar {
+  height: 12px;
+  width: 100%;
+}
+
+.bar-hypo {
+  background-color: #dc3545;
+  width: 20%;
+}
+
+.bar-normal {
+  background-color: #198754;
+  width: 40%;
+}
+
+.bar-eleve {
+  background-color: #fd7e14;
+  width: 25%;
+}
+
+.bar-hyper {
+  background-color: #8B0000;
+  width: 15%;
+}

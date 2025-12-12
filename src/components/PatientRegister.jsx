@@ -148,10 +148,6 @@ function RegisterPatientForm() {
                 <option value="GESTATIONNEL">Gestationnel</option>
               </Form.Select>
             </Form.Group>
-            <Form.Group className="mb-4">
-              <Form.Label>Traitement</Form.Label>
-              <Form.Control name="traitement" value={formData.traitement} onChange={handleChange} />
-            </Form.Group>
 
             <div className="d-flex justify-content-between">
               <Button variant="secondary" onClick={handlePrev}>
@@ -186,7 +182,6 @@ function RegisterPatientForm() {
                 value={formData.numeroProfessionnelMedecin}
                 onChange={handleChange}
                 placeholder="Ex : MED25A1F"
-                required
               />
               <Form.Text className="text-muted">
                 Demandez ce code à votre médecin avant de vous inscrire.

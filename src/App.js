@@ -18,11 +18,12 @@ import PatientsList from './components/PatientsList';
 import MedecinsList from './components/MedecinsList';
 import MedecinsAttente from './components/MedecinsAttente';
 import EquipesMedecin from './components/EquipesMedecin';
-import EquipeDetailsPage from './components/EquipeDetailsPage';
 import PatientDossier from './components/PatientDossier';
 import EducationPage from './components/education/EducationPage';
 import Education from './components/Education';
 import MonSuivi from './components/MonSuivi';
+import CodeCouleur from './components/CodeCouleur';
+import EquipeSoignante from './components/EquipeSoignante';
 
 function App() {
   return (
@@ -46,11 +47,12 @@ function App() {
         <Route path="/admin/medecins" element={<MedecinsList />} />
         <Route path="/admin/attente" element={<MedecinsAttente />} />
         <Route path="/medecin/equipes" element={<EquipesMedecin />} />
-        <Route path="/equipes/:equipeId" element={<EquipeDetailsPage />} />
         <Route path="/patient/:id/dossier" element={<PatientDossier />} />
         <Route path="/medecin/education/" element={<EducationPage />} />
         <Route path="/education/" element={<Education />} />
         <Route path="/mon-suivi" element={<MonSuivi />} />
+        <Route path="/codes-couleurs" element={<CodeCouleur />} />
+        <Route path="/equipe-soignante" element={<EquipeSoignante />} />
         {/* Ajoute d'autres routes ici si nécessaire */}
       </Routes>
     </Router>

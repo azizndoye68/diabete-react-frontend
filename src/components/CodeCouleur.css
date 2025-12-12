@@ -1,0 +1,41 @@
+/* src/pages/CodeCouleur.css */
+
+.code-couleur-page {
+  width: 100%;
+  padding: 2rem;
+  background-color: #f8f9fa; /* fond doux */
+  min-height: 100vh;
+}
+
+.code-couleur-page h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #222; /* texte principal sombre */
+  margin-bottom: 1rem;
+}
+
+.code-couleur-page .form-check-label {
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.color-ranges-wrapper {
+  margin-top: 1.5rem;
+}
+
+.color-ranges-wrapper .color-range {
+  margin-bottom: 1.5rem;
+}
+
+/* Pour que le contenu ne soit pas caché par la sidebar */
+.main-content {
+  margin-left: 250px; /* largeur de la sidebar si fixe */
+  padding: 1rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .main-content {
+    margin-left: 0;
+  }
+}

@@ -23,11 +23,11 @@ function MonSuivi() {
     fetchPatient();
   }, []);
 
-  const suiviItems = [
+  const suiviItems = patient ? [
     { title: 'Codes couleurs', icon: '/images/graph.png', path: '/codes-couleurs' },
     { title: 'Traitement', icon: '/images/medical-kit.png', path: '/traitement' },
-    { title: 'Dossier médical', icon: '/images/folder.png', path: '/dossier-medical' },
-  ];
+    { title: 'Dossier médical', icon: '/images/folder.png', path: `/patient/${patient.id}/dossier` },
+  ] : [];
 
   return (
     <div className="mon-suivi-page">
