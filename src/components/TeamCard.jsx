@@ -1,75 +1,82 @@
 // src/components/TeamCard.jsx
 import React, { useEffect, useState } from "react";
 import { Button, Card, ListGroup } from "react-bootstrap";
-import api from "../services/api";
+import * as medecinService from "../services/medecinService";
+import AddMemberModal from "../pages/medecin/AddMemberModal";
 import "./TeamCard.css";
-import AddMemberModal from "./AddMemberModal";
 
-export default function TeamCard({ equipe, onDelete, onViewDetails }) {
+export default function TeamCard({ equipe, onDelete }) {
   const [medecins, setMedecins] = useState([]);
-  const [expanded, setExpanded] = useState(false);
   const [proprietaire, setProprietaire] = useState(null);
-
-  const [medecinConnecte, setMedecinConnecte] = useState(null);
+  const [expanded, setExpanded] = useState(false);
   const [isOwner, setIsOwner] = useState(false);
-
-  // Modals
   const [showMedModal, setShowMedModal] = useState(false);
 
-  // Charger le médecin connecté et vérifier s'il est propriétaire
+  /* ================================
+     MÉDECIN CONNECTÉ
+  ================================ */
   useEffect(() => {
     const loadMedecinConnecte = async () => {
       try {
-        const profile = await api.get("/api/auth/profile");
-        const user = profile.data;
+        // 1️⃣ Utilisateur connecté
+        const user = await medecinService.getProfile();
 
-        const med = await api.get(`/api/medecins/byUtilisateur/${user.id}`);
-        setMedecinConnecte(med.data);
+        // 2️⃣ Médecin correspondant
+        const med = await medecinService.getMedecinByUtilisateurId(user.id);
 
-        setIsOwner(med.data.id === equipe.medecinProprietaireId);
+        setIsOwner(med.id === equipe.medecinProprietaireId);
       } catch (err) {
-        console.error("Erreur récupération médecin connecté :", err);
+        console.error("Erreur médecin connecté :", err);
       }
     };
-    loadMedecinConnecte();
-  }, [equipe]);
 
-  // Charger les membres et le propriétaire
+    loadMedecinConnecte();
+  }, [equipe.medecinProprietaireId]);
+
+  /* ================================
+     CHARGEMENT DES MEMBRES & PROPRIÉTAIRE
+  ================================ */
   useEffect(() => {
-    const loadMembers = async () => {
+    const loadEquipeData = async () => {
       try {
-        // Médecins
-        const medPromises = (equipe.medecinsIds || []).map((id) =>
-          api.get(`/api/medecins/${id}`).then((r) => r.data)
+        // Médecins de l’équipe
+        const medList = await Promise.all(
+          (equipe.medecinsIds || []).map((id) =>
+            medecinService.getMedecinById(id)
+          )
         );
-        setMedecins(await Promise.all(medPromises));
+        setMedecins(medList);
 
         // Propriétaire
         if (equipe.medecinProprietaireId) {
-          const propRes = await api.get(`/api/medecins/${equipe.medecinProprietaireId}`);
-          setProprietaire(propRes.data);
+          const prop = await medecinService.getMedecinById(
+            equipe.medecinProprietaireId
+          );
+          setProprietaire(prop);
         }
       } catch (err) {
-        console.error("Erreur chargement membres équipe :", err);
+        console.error("Erreur chargement équipe :", err);
       }
     };
 
-    loadMembers();
+    loadEquipeData();
   }, [equipe]);
 
-  // Retirer un médecin
-  const handleRemoveMedecin = async (id) => {
-    if (!medecinConnecte) return;
+  /* ================================
+     RETIRER UN MÉDECIN
+  ================================ */
+  const handleRemoveMedecin = async (medecinId) => {
     try {
-      await api.post(
-        `/api/equipes/${equipe.id}/retirer-medecin?medecinId=${id}`,
-        {},
-        { headers: { medecinProprietaireId: equipe.medecinProprietaireId } }
+      await medecinService.retirerMedecinEquipe(
+        equipe.id,
+        medecinId,
+        equipe.medecinProprietaireId
       );
-      setMedecins((prev) => prev.filter((m) => m.id !== id));
+
+      setMedecins((prev) => prev.filter((m) => m.id !== medecinId));
     } catch (err) {
       console.error("Erreur suppression médecin :", err);
-      alert("Erreur lors de la suppression du médecin.");
+      alert(err?.response?.data?.message || "Suppression impossible.");
     }
   };
 
@@ -83,12 +90,16 @@ export default function TeamCard({ equipe, onDelete, onViewDetails }) {
               Propriétaire :{" "}
               {proprietaire
                 ? `Dr. ${proprietaire.prenom} ${proprietaire.nom}`
-                : equipe.medecinProprietaireId}
+                : "—"}
             </small>
           </div>
 
           <div className="d-flex gap-2">
-            <Button size="sm" variant="outline-primary" onClick={() => setExpanded((s) => !s)}>
+            <Button
+              size="sm"
+              variant="outline-primary"
+              onClick={() => setExpanded((v) => !v)}
+            >
               {expanded ? "Réduire" : "Détails"}
             </Button>
 
@@ -102,55 +113,67 @@ export default function TeamCard({ equipe, onDelete, onViewDetails }) {
 
         {expanded && (
           <div className="team-details mt-3">
-            <div className="col-md-12 mb-3">
-              <h5>Médecins ({medecins.length})</h5>
+            <h5>Médecins ({medecins.length})</h5>
 
-              {isOwner && (
-                <Button
-                  size="sm"
-                  variant="success"
-                  className="mb-2"
-                  onClick={() => setShowMedModal(true)}
+            {isOwner && (
+              <Button
+                size="sm"
+                variant="success"
+                className="mb-2"
+                onClick={() => setShowMedModal(true)}
+              >
+                + Ajouter
+              </Button>
+            )}
+
+            <ListGroup>
+              {medecins.map((m) => (
+                <ListGroup.Item
+                  key={m.id}
+                  className="d-flex justify-content-between align-items-center"
                 >
-                  + Ajouter
-                </Button>
-              )}
+                  <div>
+                    <strong>
+                      Dr. {m.prenom} {m.nom}
+                    </strong>
+                    <br />
+                    Spécialité : {m.specialite || "—"} <br />
+                    Téléphone : {m.telephone || "—"}
+                  </div>
 
-              <ListGroup>
-                {medecins.map((m) => (
-                  <ListGroup.Item key={m.id} className="d-flex justify-content-between align-items-center">
-                    <div>
-                      <strong>
-                        Dr. {m.prenom} {m.nom}
-                      </strong>
-                      <br />
-                      Spécialité : {m.specialite} <br />
-                      Téléphone : {m.telephone} <br />
-                      Email : {m.email}
-                    </div>
-                    {isOwner && m.id !== equipe.medecinProprietaireId && (
-                      <Button size="sm" variant="danger" onClick={() => handleRemoveMedecin(m.id)}>
-                        Retirer
-                      </Button>
-                    )}
-                  </ListGroup.Item>
-                ))}
-              </ListGroup>
-            </div>
+                  {isOwner && m.id !== equipe.medecinProprietaireId && (
+                    <Button
+                      size="sm"
+                      variant="danger"
+                      onClick={() => handleRemoveMedecin(m.id)}
+                    >
+                      Retirer
+                    </Button>
+                  )}
+                </ListGroup.Item>
+              ))}
+            </ListGroup>
           </div>
         )}
       </Card.Body>
 
-      {/* Modal pour ajouter des médecins */}
+      {/* MODAL AJOUT MÉDECIN */}
       <AddMemberModal
         show={showMedModal}
         onHide={() => setShowMedModal(false)}
-        type="medecin"
         equipeId={equipe.id}
         proprietaireId={equipe.medecinProprietaireId}
         existingIds={medecins.map((m) => m.id)}
-        onAdded={(nouveauMed) => setMedecins((prev) => [...prev, nouveauMed])}
-      />
+        onAdded={(nouveauMed) => {
+        if (nouveauMed && nouveauMed.id) {
+        // ajouter directement le médecin à la liste
+        setMedecins((prev) => [...prev, nouveauMed]);
+        // étendre automatiquement les détails
+        setExpanded(true);
+      }
+    }}
+  />
+
     </Card>
   );
 }

@@ -1,0 +1,143 @@
+.education-patient {
+  padding: 24px;
+  max-width: 1300px;
+  margin: auto;
+}
+
+.education-patient h2 {
+  margin-bottom: 6px;
+  color: #1f2937;
+}
+
+.subtitle {
+  color: #6b7280;
+  margin-bottom: 20px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+}
+
+.content-card {
+  background: #fff;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.08);
+}
+
+.content-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12);
+}
+
+.card-thumbnail {
+  position: relative;
+  width: 100%;
+  height: 150px;
+  overflow: hidden;
+  border-radius: 12px 12px 0 0;
+}
+
+.card-thumbnail img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.video-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.3);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 48px;
+  color: white;
+  pointer-events: none;
+}
+
+.card-header {
+  padding: 0.5rem 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.card-header h5 {
+  margin: 0;
+  font-size: 16px;
+  color: #111827;
+}
+
+.badge {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  color: white;
+  text-transform: uppercase;
+}
+
+.badge.video {
+  background-color: #ff0000; /* rouge YouTube */
+}
+
+.badge.pdf {
+  background-color: #ff8c00; /* orange PDF */
+}
+
+.badge.article {
+  background-color: #1e90ff; /* bleu Article */
+}
+
+.card-footer {
+  padding: 0.5rem 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.open-btn {
+  padding: 8px 12px;
+  background-color: #16a34a;
+  color: white;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+}
+
+.open-btn:hover {
+  background-color: #15803d;
+}
+
+/* Adaptation mobile */
+@media (max-width: 576px) {
+  .card-thumbnail {
+    height: 120px;
+  }
+
+  .card-header h5 {
+    font-size: 14px;
+  }
+
+  .badge {
+    font-size: 10px;
+    padding: 2px 8px;
+  }
+
+  .open-btn {
+    font-size: 12px;
+    padding: 6px 10px;
+  }
+}

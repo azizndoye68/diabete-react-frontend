@@ -19,6 +19,7 @@ function RegisterMedecinForm() {
     dateNaissance: '',
     sexe: '',
     specialite: '',
+    nomService: '',
     adresse: '',
     ville: '',
     region: '',
@@ -32,7 +33,6 @@ function RegisterMedecinForm() {
     try {
       setLoading(true);
       setMessage('');
-
       const authResponse = await api.post('/api/auth/register', {
         username: formData.username,
         email: formData.email,
@@ -42,10 +42,9 @@ function RegisterMedecinForm() {
 
       const id = authResponse.data.id;
       if (!id) throw new Error('Utilisateur non créé, ID manquant');
-
       setUtilisateurId(id);
       setStep(2);
-      setMessage('Compte créé ✅ Veuillez compléter vos informations professionnelles.');
+      setMessage('Compte créé ✅ Veuillez compléter vos informations.');
     } catch (error) {
       console.error(error);
       setMessage('❌ Erreur lors de la création du compte.');
@@ -58,7 +57,6 @@ function RegisterMedecinForm() {
     try {
       setLoading(true);
       setMessage('');
-
       if (!utilisateurId) throw new Error('UtilisateurId manquant');
 
       const medecinData = {
@@ -69,14 +67,15 @@ function RegisterMedecinForm() {
         dateNaissance: formData.dateNaissance,
         sexe: formData.sexe,
         specialite: formData.specialite,
+        nomService: formData.nomService,
         adresse: formData.adresse,
         ville: formData.ville,
         region: formData.region,
       };
 
       await api.post('/api/medecins', medecinData);
+      setStep(4);
       setMessage('✅ Inscription envoyée avec succès. En attente de validation par l’administrateur.');
-      setStep(3);
     } catch (error) {
       console.error(error);
       setMessage('❌ Erreur lors de la création du profil médecin.');
@@ -85,23 +84,21 @@ function RegisterMedecinForm() {
     }
   };
 
+  const totalSteps = 4;
+
   return (
     <Container className="register-container">
       <Card className="register-card shadow-lg">
         <div className="text-center mb-4">
           <FaUserMd size={50} className="text-success mb-3" />
           <h3 className="fw-bold text-success">Inscription Médecin</h3>
-          <ProgressBar now={(step / 3) * 100} className="my-3" variant="success" />
-          <p className="text-muted">Étape {step} sur 3</p>
+          <ProgressBar now={(step / totalSteps) * 100} className="my-3" variant="success" />
+          <p className="text-muted">Étape {step} sur {totalSteps}</p>
         </div>
 
-        {message && (
-          <Alert variant={message.includes('❌') ? 'danger' : 'success'}>
-            {message}
-          </Alert>
-        )}
+        {message && <Alert variant={message.includes('❌') ? 'danger' : 'success'}>{message}</Alert>}
 
-        {/* Étape 1 */}
+        {/* Étape 1 : Création compte */}
         {step === 1 && (
           <Form onSubmit={(e) => { e.preventDefault(); submitAuth(); }}>
             <Form.Group className="mb-3">
@@ -122,9 +119,9 @@ function RegisterMedecinForm() {
           </Form>
         )}
 
-        {/* Étape 2 */}
+        {/* Étape 2 : Infos personnelles */}
         {step === 2 && (
-          <Form onSubmit={(e) => { e.preventDefault(); submitMedecin(); }}>
+          <Form onSubmit={(e) => { e.preventDefault(); setStep(3); }}>
             <Form.Group className="mb-3">
               <Form.Label>Prénom</Form.Label>
               <Form.Control type="text" name="prenom" value={formData.prenom} onChange={handleChange} required />
@@ -149,14 +146,19 @@ function RegisterMedecinForm() {
                 <option value="FEMME">Femme</option>
               </Form.Select>
             </Form.Group>
+            <div className="d-flex justify-content-between">
+              <Button variant="secondary" onClick={() => setStep(1)}><FaArrowLeft /> Retour</Button>
+              <Button variant="success" type="submit">Suivant <FaArrowRight /></Button>
+            </div>
+          </Form>
+        )}
+
+        {/* Étape 3 : Infos professionnelles */}
+        {step === 3 && (
+          <Form onSubmit={(e) => { e.preventDefault(); submitMedecin(); }}>
             <Form.Group className="mb-3">
               <Form.Label>Spécialité</Form.Label>
-              <Form.Select 
-                name="specialite" 
-                value={formData.specialite} 
-                onChange={handleChange} 
-                required
-              >
+              <Form.Select name="specialite" value={formData.specialite} onChange={handleChange} required>
                 <option value="">Choisir...</option>
                 <option value="Généraliste">Médecin Généraliste</option>
                 <option value="Diabétologue">Diabétologue</option>
@@ -172,6 +174,10 @@ function RegisterMedecinForm() {
               </Form.Select>
             </Form.Group>
             <Form.Group className="mb-3">
+              <Form.Label>Nom du service ou du cabinet</Form.Label>
+              <Form.Control type="text" name="nomService" value={formData.nomService} onChange={handleChange} required />
+            </Form.Group>
+            <Form.Group className="mb-3">
               <Form.Label>Adresse</Form.Label>
               <Form.Control type="text" name="adresse" value={formData.adresse} onChange={handleChange} />
             </Form.Group>
@@ -184,9 +190,7 @@ function RegisterMedecinForm() {
               <Form.Control type="text" name="region" value={formData.region} onChange={handleChange} />
             </Form.Group>
             <div className="d-flex justify-content-between">
-              <Button variant="secondary" onClick={() => setStep(1)}>
-                <FaArrowLeft /> Retour
-              </Button>
+              <Button variant="secondary" onClick={() => setStep(2)}><FaArrowLeft /> Retour</Button>
               <Button variant="success" type="submit" disabled={loading}>
                 {loading ? <Spinner animation="border" size="sm" /> : <>Soumettre <FaCheckCircle /></>}
               </Button>
@@ -194,8 +198,8 @@ function RegisterMedecinForm() {
           </Form>
         )}
 
-        {/* Étape 3 */}
-        {step === 3 && (
+        {/* Étape 4 : Confirmation */}
+        {step === 4 && (
           <div className="text-center py-4">
             <FaCheckCircle size={60} className="text-success mb-3" />
             <h4 className="fw-bold text-success">Inscription réussie 🎉</h4>
@@ -205,6 +209,7 @@ function RegisterMedecinForm() {
             </Button>
           </div>
         )}
+
       </Card>
     </Container>
   );

@@ -1,5 +1,5 @@
 // src/components/SidebarMedecin.jsx
-import React, { useState } from "react";
+import React from "react";
 import { Nav, Image } from "react-bootstrap";
 import { useNavigate, useLocation } from "react-router-dom";
 import {
@@ -8,9 +8,7 @@ import {
   FaBook,
   FaTachometerAlt,
   FaSignOutAlt,
-  FaBars,
   FaTeamspeak,
-  
 } from "react-icons/fa";
 import defaultAvatar from "../images/default-avatar.jpg";
 import "./SidebarMedecin.css";
@@ -18,7 +16,6 @@ import "./SidebarMedecin.css";
 function SidebarMedecin({ user }) {
   const navigate = useNavigate();
   const location = useLocation();
-  const [isOpen, setIsOpen] = useState(true);
 
   const logout = () => {
     localStorage.removeItem("token");
@@ -34,32 +31,48 @@ function SidebarMedecin({ user }) {
   ];
 
   return (
-    <div className={`sidebar-medecin ${isOpen ? "open" : "collapsed"}`}>
-      {/* Bouton toggle */}
-      <div className="sidebar-toggle" onClick={() => setIsOpen(!isOpen)}>
-        <FaBars />
+    <div className="sidebar-medecin open">
+      
+      {/* 🔹 LOGO (identique au SidebarPatient) */}
+      <div
+        className="app-header d-flex align-items-center justify-content-center mb-3"
+        onClick={() => navigate("/dashboard-medecin")}
+        style={{ cursor: "pointer" }}
+      >
+        <Image
+          src={require("../images/logo-diabete.png")}
+          alt="Logo santé"
+          width="50"
+          height="50"
+          className="me-2"
+        />
+        <span
+          className="fw-bold text-uppercase"
+          style={{ fontSize: "16px", color: "#ffffff" }}
+        >
+          Suivi<span style={{ color: "#ffc107" }}>Diabète</span> SN
+        </span>
       </div>
 
-      {/* Profil */}
+      {/* 🔹 PROFIL MÉDECIN */}
       <div
-        className="sidebar-header d-flex align-items-center"
+        className="sidebar-header d-flex align-items-center mb-4 mt-3"
         onClick={() => navigate("/dashboard-medecin")}
+        style={{ cursor: "pointer" }}
       >
         <Image src={defaultAvatar} roundedCircle width={48} height={48} />
-        {isOpen && (
-          <div className="ms-2">
-            <div className="fw-bold text-white">
-              {user?.prenom || "Prénom"} {user?.nom || ""}
-            </div>
-            <small className="text-light">
-              {user?.specialite || "Médecin"}
-            </small>
+        <div className="ms-2">
+          <div className="fw-bold text-white">
+            {user?.prenom || "Prénom"} {user?.nom || ""}
           </div>
-        )}
+          <small className="text-light">
+            {user?.specialite || "Médecin"}
+          </small>
+        </div>
       </div>
 
-      {/* Navigation */}
-      <Nav className="flex-column mt-4">
+      {/* 🔹 NAVIGATION */}
+      <Nav className="flex-column mt-3">
         {navItems.map((item, idx) => (
           <Nav.Link
             key={idx}
@@ -69,15 +82,15 @@ function SidebarMedecin({ user }) {
             }`}
           >
             <span className="icon">{item.icon}</span>
-            {isOpen && <span>{item.label}</span>}
+            <span>{item.label}</span>
           </Nav.Link>
         ))}
       </Nav>
 
-      {/* Logout */}
+      {/* 🔹 LOGOUT */}
       <div className="mt-auto p-3">
         <button className="btn btn-outline-light w-100" onClick={logout}>
-          <FaSignOutAlt className="me-2" /> {isOpen && "Déconnexion"}
+          <FaSignOutAlt className="me-2" /> Déconnexion
         </button>
       </div>
     </div>

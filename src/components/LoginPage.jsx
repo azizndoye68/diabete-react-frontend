@@ -8,7 +8,7 @@ import logoDiabete from '../images/logo-diabete.png';
 function LoginForm() {
   const navigate = useNavigate();
   const [credentials, setCredentials] = useState({
-    username: '',
+    email: '',
     password: ''
   });
 
@@ -124,12 +124,12 @@ function LoginForm() {
 
           <Form onSubmit={handleSubmit}>
             <Form.Group className="mb-3">
-              <Form.Label>Nom utilisateur</Form.Label>
+              <Form.Label>Adresse email</Form.Label>
               <Form.Control
                 type="text"
-                name="username"
-                placeholder="Nom utilisateur"
-                value={credentials.username}
+                name="email"
+                placeholder="Adresse email"
+                value={credentials.email}
                 onChange={handleChange}
                 required
               />
