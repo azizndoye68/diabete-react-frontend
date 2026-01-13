@@ -1,5 +1,6 @@
 // src/pages/CodeCouleur.jsx
 import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import SidebarPatient from "../../components/SidebarPatient";
 import api from "../../services/api";
 import ColorRange from "./ColorRange"; // assure-toi que ce chemin est correct
@@ -7,21 +8,34 @@ import "./CodeCouleur.css";
 
 export default function CodeCouleur() {
   const [patient, setPatient] = useState(null);
+  const { patientId } = useParams(); // 🔑 Récupère l'ID si médecin
 
-  // Charger le patient connecté
   useEffect(() => {
     const fetchPatient = async () => {
       try {
-        const profileRes = await api.get("/api/auth/profile");
-        const utilisateurId = profileRes.data.id;
-        const patientRes = await api.get(`/api/patients/byUtilisateur/${utilisateurId}`);
-        setPatient(patientRes.data);
+        let patientData;
+
+        if (patientId) {
+          // 🔹 CAS MÉDECIN : récupérer le patient par patientId
+          const patientRes = await api.get(`/api/patients/${patientId}`);
+          patientData = patientRes.data;
+        } else {
+          // 🔹 CAS PATIENT : récupérer son propre profil
+          const profileRes = await api.get("/api/auth/profile");
+          const utilisateurId = profileRes.data.id;
+
+          const patientRes = await api.get(`/api/patients/byUtilisateur/${utilisateurId}`);
+          patientData = patientRes.data;
+        }
+
+        setPatient(patientData);
       } catch (err) {
         console.error("Erreur récupération patient :", err);
       }
     };
+
     fetchPatient();
-  }, []);
+  }, [patientId]);
 
   // Définition des seuils comme sur MyDiabby
   const seuilsGlycemie = {
@@ -31,11 +45,10 @@ export default function CodeCouleur() {
     hyper: ">2,50 g/L",
   };
 
-
   return (
     <div className="code-couleur-page d-flex">
       {/* Sidebar avec le patient */}
-      <SidebarPatient patient={patient} />
+      <SidebarPatient patient={patient} isMedecin={!!patientId} />
 
       {/* Contenu principal */}
       <div className="main-content p-4" style={{ flex: 1 }}>

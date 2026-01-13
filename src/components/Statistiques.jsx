@@ -5,7 +5,8 @@ import {
   ResponsiveContainer, CartesianGrid, BarChart, Bar, Cell, Legend
 } from 'recharts';
 import { Col, Row, Card, Badge } from 'react-bootstrap';
-import SidebarPatient from '../components/SidebarPatient';
+import { useParams } from 'react-router-dom';
+import SidebarPatient from './SidebarPatient';
 import api from '../services/api';
 
 // 🔵 Définition des plages de glycémie (en g/L)
@@ -16,7 +17,7 @@ const PLAGES = {
   hyper: { min: 1.4, color: '#e53935', label: 'Hyperglycémie (> 1.4 g/L)' },
 };
 
-// 🟢 Fonction pour déterminer la couleur selon la glycémie
+// 🟢 Couleur selon glycémie
 const getColor = (value) => {
   if (value < PLAGES.hypo.max) return PLAGES.hypo.color;
   if (value <= PLAGES.normal.max) return PLAGES.normal.color;
@@ -45,49 +46,62 @@ const CustomTooltip = ({ active, payload, label }) => {
 };
 
 function Statistiques() {
+  const { patientId } = useParams(); // 🔑 présent uniquement côté médecin
   const [data, setData] = useState([]);
   const [patient, setPatient] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // 1️⃣ Profil utilisateur
-        const profileRes = await api.get('/api/auth/profile');
-        const utilisateurId = profileRes.data.id;
+        let realPatientId;
+        let patientData;
 
-        // 2️⃣ Patient lié
-        const patientRes = await api.get(`/api/patients/byUtilisateur/${utilisateurId}`);
-        const realPatientId = patientRes.data.id;
-        setPatient(patientRes.data);
+        if (patientId) {
+          // 🔹 CAS MÉDECIN
+          const patientRes = await api.get(`/api/patients/${patientId}`);
+          patientData = patientRes.data;
+          realPatientId = patientId;
+        } else {
+          // 🔹 CAS PATIENT
+          const profileRes = await api.get('/api/auth/profile');
+          const utilisateurId = profileRes.data.id;
 
-        // 3️⃣ Mesures récentes
+          const patientRes = await api.get(`/api/patients/byUtilisateur/${utilisateurId}`);
+          patientData = patientRes.data;
+          realPatientId = patientData.id;
+        }
+
+        setPatient(patientData);
+
+        // 📊 Mesures glycémie
         const glycemieRes = await api.get(`/api/suivis/recentes?patientId=${realPatientId}`);
         const formatted = glycemieRes.data.map((m) => ({
           date: new Date(m.dateSuivi).toLocaleDateString('fr-FR', {
-            day: '2-digit', month: '2-digit'
+            day: '2-digit',
+            month: '2-digit',
           }),
           glycemie: parseFloat(m.glycemie),
         }));
 
         setData(formatted);
       } catch (error) {
-        console.error('❌ Erreur de récupération des mesures :', error);
+        console.error('❌ Erreur de récupération des statistiques :', error);
       }
     };
 
     fetchData();
-  }, []);
+  }, [patientId]);
 
   return (
     <Row className="m-0 vh-100">
-      <SidebarPatient patient={patient} />
+      <SidebarPatient patient={patient} isMedecin={!!patientId} />
 
       <Col md={{ span: 9, offset: 3 }} className="p-5 bg-light">
         <h3 className="mb-4">
           Statistiques de glycémie {patient && `de ${patient.prenom}`}
         </h3>
 
-        {/* 🔹 Légende explicative */}
+        {/* 🔹 Légende */}
         <Card className="mb-4 shadow-sm">
           <Card.Body>
             <h6 className="fw-bold mb-3">Signification des couleurs :</h6>
@@ -99,17 +113,14 @@ function Statistiques() {
                 className="me-3 p-2 border"
                 style={{ borderColor: plage.color, backgroundColor: `${plage.color}22` }}
               >
-                <i
-                  className="bi bi-circle-fill me-2"
-                  style={{ color: plage.color }}
-                ></i>
+                <i className="bi bi-circle-fill me-2" style={{ color: plage.color }}></i>
                 {plage.label}
               </Badge>
             ))}
           </Card.Body>
         </Card>
 
-        {/* 🔸 Graphique linéaire (tendance sur 7 jours) */}
+        {/* 📈 Courbe */}
         <Card className="mb-4 shadow-sm">
           <Card.Body>
             <h5 className="fw-bold mb-3">Évolution de la glycémie (7 derniers jours)</h5>
@@ -145,7 +156,7 @@ function Statistiques() {
           </Card.Body>
         </Card>
 
-        {/* 🔸 Graphique en barres (comparatif des valeurs) */}
+        {/* 📊 Histogramme */}
         {data.length > 0 && (
           <Card className="shadow-sm">
             <Card.Body>
@@ -158,7 +169,7 @@ function Statistiques() {
                   <Tooltip content={<CustomTooltip />} />
                   <Bar dataKey="glycemie" radius={[6, 6, 0, 0]}>
                     {data.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={getColor(entry.glycemie)} />
+                      <Cell key={index} fill={getColor(entry.glycemie)} />
                     ))}
                   </Bar>
                 </BarChart>

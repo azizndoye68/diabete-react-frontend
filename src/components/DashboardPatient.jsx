@@ -1,31 +1,52 @@
 // src/pages/DashboardPatient.jsx
 import React, { useEffect, useState } from 'react';
 import { Row, Col, Button } from 'react-bootstrap';
-import SidebarPatient from '../../components/SidebarPatient';
-import DashboardCard from '../../components/DashboardCard';
-import api from '../../services/api';
+import SidebarPatient from './SidebarPatient';
+import DashboardCard from './DashboardCard';
+import api from '../services/api';
 import './DashboardPatient.css';
-import { useNavigate } from 'react-router-dom';
-import AideModal from '../../components/AideModal';
-import GlycemieChart from '../../components/GlycemieChart';
+import { useNavigate, useParams } from 'react-router-dom';
+import AideModal from './AideModal';
+import GlycemieChart from './GlycemieChart';
 
 function DashboardPatient() {
   const [patient, setPatient] = useState(null);
   const [glycemie, setGlycemie] = useState(null);
   const [glycemies, setGlycemies] = useState([]);
   const [showAide, setShowAide] = useState(false);
+
   const navigate = useNavigate();
+  const { patientId } = useParams(); // 🔑 AJOUT MINIMAL
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const profileRes = await api.get('/api/auth/profile');
-        const utilisateurId = profileRes.data.id;
+        let realPatientId;
+        let patientData;
 
-        const patientRes = await api.get(`/api/patients/byUtilisateur/${utilisateurId}`);
-        setPatient(patientRes.data);
+        if (patientId) {
+          // =====================
+          // 👨‍⚕️ CAS MÉDECIN
+          // =====================
+          const patientRes = await api.get(`/api/patients/${patientId}`);
+          patientData = patientRes.data;
+          realPatientId = patientId;
+        } else {
+          // =====================
+          // 👤 CAS PATIENT CONNECTÉ
+          // =====================
+          const profileRes = await api.get('/api/auth/profile');
+          const utilisateurId = profileRes.data.id;
 
-        const realPatientId = patientRes.data.id;
+          const patientRes = await api.get(
+            `/api/patients/byUtilisateur/${utilisateurId}`
+          );
+
+          patientData = patientRes.data;
+          realPatientId = patientData.id;
+        }
+
+        setPatient(patientData);
 
         let lastGly = null;
         let recentGly = [];
@@ -35,6 +56,7 @@ function DashboardPatient() {
             api.get(`/api/suivis/last?patientId=${realPatientId}`),
             api.get(`/api/suivis/recentes?patientId=${realPatientId}`)
           ]);
+
           lastGly = glyRes.data;
           recentGly = recentGlyRes.data;
         } catch (err) {
@@ -43,19 +65,24 @@ function DashboardPatient() {
 
         setGlycemie(lastGly);
         setGlycemies(recentGly);
+
       } catch (error) {
         console.error('Erreur Dashboard:', error);
       }
     };
 
     fetchData();
-  }, []);
+  }, [patientId]);
 
   return (
     <Row className="m-0 vh-100">
       
       {/* Sidebar */}
-      <SidebarPatient onShowAide={() => setShowAide(true)} patient={patient} />
+      <SidebarPatient
+        onShowAide={() => setShowAide(true)}
+        patient={patient}
+        isMedecin={!!patientId} // 👈 INFO CONTEXTE
+      />
 
       {/* CONTENU DU DASHBOARD */}
       <Col md={{ span: 9, offset: 3 }} className="content p-5 dashboard-container">
@@ -94,15 +121,25 @@ function DashboardPatient() {
                 <p className="text-muted">Aucune mesure récente</p>
               )}
 
+              {/* ❗ Bouton Ajouter une mesure pour patient et médecin */}
               <Button 
                 variant="outline-success" 
                 size="sm" 
-                onClick={() => navigate('/ajouter-donnees')}
+                onClick={() => {
+                  if (patientId) {
+                    // Médecin → ajoute pour un patient spécifique
+                    navigate(`/medecin/patient/${patientId}/ajouter-donnees`);
+                  } else {
+                    // Patient connecté
+                    navigate('/ajouter-donnees');
+                  }
+                }}
               >
                 + Ajouter une mesure
               </Button>
             </DashboardCard>
           </Col>
+
 
           {/* Tendance Récente */}
           <Col>
@@ -120,10 +157,17 @@ function DashboardPatient() {
               <Button 
                 variant="outline-success" 
                 size="sm" 
-                onClick={() => navigate('/carnet')}
-              >
+                onClick={() => {
+                if (patientId) {
+                navigate(`/medecin/patient/${patientId}/carnet`);
+                } else {
+                navigate('/carnet');
+               }
+               }}
+        >
                 Voir l'historique
               </Button>
+
             </DashboardCard>
           </Col>
 

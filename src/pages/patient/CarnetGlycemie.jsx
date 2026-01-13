@@ -4,33 +4,48 @@ import SidebarPatient from '../../components/SidebarPatient';
 import AideModal from '../../components/AideModal';
 import api from '../../services/api';
 import './CarnetGlycemie.css';
+import { useParams } from 'react-router-dom';
 
 function CarnetGlycemie() {
   const [patient, setPatient] = useState(null);
   const [groupedByDate, setGroupedByDate] = useState({});
   const [showAide, setShowAide] = useState(false);
 
+  const { patientId } = useParams(); // 🔑 Pour le médecin
+
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // 🔹 1. Récupérer le profil utilisateur connecté
-        const profileRes = await api.get('/api/auth/profile');
-        const utilisateurId = profileRes.data.id;
+        let realPatientId;
+        let patientData;
 
-        // 🔹 2. Récupérer le patient associé à cet utilisateur
-        const patientRes = await api.get(`/api/patients/byUtilisateur/${utilisateurId}`);
-        const patientData = patientRes.data;
+        if (patientId) {
+          // =====================
+          // 👨‍⚕️ CAS MÉDECIN
+          // =====================
+          const patientRes = await api.get(`/api/patients/${patientId}`);
+          patientData = patientRes.data;
+          realPatientId = patientId;
+        } else {
+          // =====================
+          // 👤 CAS PATIENT CONNECTÉ
+          // =====================
+          const profileRes = await api.get('/api/auth/profile');
+          const utilisateurId = profileRes.data.id;
+
+          const patientRes = await api.get(`/api/patients/byUtilisateur/${utilisateurId}`);
+          patientData = patientRes.data;
+          realPatientId = patientData.id;
+        }
+
         setPatient(patientData);
 
-        const patientId = patientData.id;
-        console.log("📍 Patient ID utilisé pour le carnet :", patientId);
+        // 🔹 Récupérer les mesures de glycémie
+        const res = await api.get(`/api/suivis/recentes?patientId=${realPatientId}`);
+        const data = Array.isArray(res.data) ? res.data : [];
+        console.log("📍 Mesures récupérées :", data);
 
-        // 🔹 3. Récupérer les mesures de glycémie
-        const res = await api.get(`/api/suivis/recentes?patientId=${patientId}`);
-        const data = Array.isArray(res.data) ? res.data : [res.data];
-        console.log("✅ Données du carnet :", data);
-
-        // 🔹 4. Regrouper les mesures par date
+        // 🔹 Regrouper par date
         const grouped = data.reduce((acc, m) => {
           const date = new Date(m.dateSuivi).toLocaleDateString('fr-FR');
           if (!acc[date]) acc[date] = [];
@@ -45,7 +60,7 @@ function CarnetGlycemie() {
     };
 
     fetchData();
-  }, []);
+  }, [patientId]);
 
   // Icônes selon le moment de la prise
   const getMomentIcon = (moment) => {
@@ -62,11 +77,14 @@ function CarnetGlycemie() {
     <>
       <Row className="m-0 vh-100">
         {/* Sidebar fixe */}
-        <SidebarPatient onShowAide={() => setShowAide(true)} patient={patient} />
+        <SidebarPatient
+          onShowAide={() => setShowAide(true)}
+          patient={patient}
+          isMedecin={!!patientId} // 👈 Indique si le visiteur est médecin
+        />
 
         {/* Contenu principal */}
         <Col md={{ span: 9, offset: 3 }} className="p-5 overflow-auto">
-
           <h4 className="mb-4">Carnet de glycémie</h4>
 
           {Object.entries(groupedByDate).length === 0 && (
@@ -83,9 +101,6 @@ function CarnetGlycemie() {
                     <div>
                       {getMomentIcon(m.moment)}
                       <strong>{m.glycemie} g/L</strong> — {m.moment === 'avant_repas' ? 'Avant' : 'Après'} {m.repas.replace('_', ' ')}
-                      {/* <div className="text-muted small mt-1">
-                        Symptôme : {m.symptome || 'Aucun'} • Activité : {m.Objectactivite || 'Non précisée'} • Insuline : {m.insuline || 'Aucune'}
-                      </div> */}
                     </div>
                     <Badge bg="secondary" pill>
                       {new Date(m.dateSuivi).toLocaleTimeString('fr-FR', {
@@ -102,7 +117,7 @@ function CarnetGlycemie() {
       </Row>
 
       {/* Modal d’aide */}
-      {showAide && <AideModal onClose={() => setShowAide(false)} />}
+      {showAide && <AideModal show={showAide} onHide={() => setShowAide(false)} />}
     </>
   );
 }

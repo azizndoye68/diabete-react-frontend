@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { Container, Row, Col, Nav, Button } from "react-bootstrap";
 import SidebarMedecin from "../../components/SidebarMedecin";
-import PatientsTable from "../../components/PatientsTable";
+import PatientsTable from "./PatientsTable";
 import AlerteSection from "./AlerteSection";
 import MessagesSection from "./MessagesSection";
 import StatsSection from "./StatsSection";

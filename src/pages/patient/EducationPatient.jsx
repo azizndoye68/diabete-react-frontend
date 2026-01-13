@@ -1,12 +1,15 @@
 // src/pages/patient/EducationPatient.jsx
 import React, { useEffect, useState } from "react";
 import { Container, Row, Col, Button } from "react-bootstrap";
+import { useParams } from "react-router-dom";
 import SidebarPatient from "../../components/SidebarPatient";
 import { getContenus } from "../../services/patientService";
 import api from "../../services/api";
 import "./EducationPatient.css";
 
 export default function EducationPatient() {
+  const { patientId } = useParams(); // ✅ AJOUT (cas médecin)
+
   const [contenus, setContenus] = useState([]);
   const [loading, setLoading] = useState(true);
   const [patient, setPatient] = useState(null);
@@ -26,27 +29,38 @@ export default function EducationPatient() {
     loadContenus();
   }, []);
 
-  // 🔹 Charger le patient pour la sidebar
+  // 🔹 Charger le patient pour la sidebar (PATIENT ou MÉDECIN)
   useEffect(() => {
     const fetchPatient = async () => {
       try {
-        const profileRes = await api.get("/api/auth/profile");
-        const userData = profileRes.data;
+        let patientData;
 
-        const patientRes = await api.get(`/api/patients/byUtilisateur/${userData.id}`);
-        const patientData = patientRes.data;
+        if (patientId) {
+          // 🔵 CAS MÉDECIN
+          const patientRes = await api.get(`/api/patients/${patientId}`);
+          patientData = patientRes.data;
+        } else {
+          // 🟢 CAS PATIENT (code existant conservé)
+          const profileRes = await api.get("/api/auth/profile");
+          const userData = profileRes.data;
+
+          const patientRes = await api.get(
+            `/api/patients/byUtilisateur/${userData.id}`
+          );
+          patientData = patientRes.data;
+        }
 
         setPatient(patientData);
       } catch (e) {
         console.error("Erreur récupération patient :", e);
       }
     };
+
     fetchPatient();
-  }, []);
+  }, [patientId]);
 
   const getThumbnail = (c) => {
     if (c.type === "VIDEO") {
-      // Assumes YouTube URL, adapt if autre plateforme
       const videoId = c.url.split("v=")[1]?.split("&")[0];
       return videoId
         ? `https://img.youtube.com/vi/${videoId}/0.jpg`
@@ -65,7 +79,7 @@ export default function EducationPatient() {
       <Row className="g-0 vh-100">
         {/* Sidebar */}
         <Col xs={12} md={3} className="p-0">
-          <SidebarPatient patient={patient} />
+          <SidebarPatient patient={patient} isMedecin={!!patientId} />
         </Col>
 
         {/* Contenu principal */}
@@ -103,7 +117,8 @@ export default function EducationPatient() {
                     {/* Date et bouton */}
                     <div className="card-footer mt-2 d-flex justify-content-between align-items-center">
                       <small className="text-muted">
-                        📅 {new Date(c.datePublication).toLocaleDateString("fr-FR")}
+                        📅{" "}
+                        {new Date(c.datePublication).toLocaleDateString("fr-FR")}
                       </small>
                       <Button
                         href={c.url}

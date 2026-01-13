@@ -18,8 +18,11 @@ import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 
 export default function PatientDossier() {
-  const { id } = useParams();
-  const dossierRef = useRef(null); // ➤ Référence du contenu à exporter
+  // 🔑 SUPPORT PATIENT + MÉDECIN
+  const { id, patientId } = useParams();
+  const realPatientId = patientId || id;
+
+  const dossierRef = useRef(null);
 
   const [patient, setPatient] = useState(null);
   const [suivis, setSuivis] = useState([]);
@@ -32,7 +35,7 @@ export default function PatientDossier() {
     const element = dossierRef.current;
 
     const canvas = await html2canvas(element, {
-      scale: 2, // haute qualité
+      scale: 2,
       useCORS: true,
       logging: false
     });
@@ -43,10 +46,7 @@ export default function PatientDossier() {
     const imgWidth = 210;
     const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
-    let position = 0;
-
-    pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
-
+    pdf.addImage(imgData, "PNG", 0, 0, imgWidth, imgHeight);
     pdf.save(`Dossier_${patient.prenom}_${patient.nom}.pdf`);
   };
 
@@ -54,9 +54,11 @@ export default function PatientDossier() {
   // CHARGEMENT COMPLET DU DOSSIER
   // -----------------------------
   useEffect(() => {
+    if (!realPatientId) return;
+
     const fetchPatient = async () => {
       try {
-        const res = await api.get(`/api/patients/${id}`);
+        const res = await api.get(`/api/patients/${realPatientId}`);
         const patientData = res.data;
 
         let medecinPrenom = null;
@@ -74,10 +76,14 @@ export default function PatientDossier() {
 
         setPatient({ ...patientData, medecinPrenom, medecinNom });
 
-        const suivisRes = await api.get(`/api/suivis/recentes?patientId=${id}`);
+        const suivisRes = await api.get(
+          `/api/suivis/recentes?patientId=${realPatientId}`
+        );
         setSuivis(suivisRes.data);
 
-        const rappelsRes = await api.get(`/api/rappels?patientId=${id}`);
+        const rappelsRes = await api.get(
+          `/api/rappels?patientId=${realPatientId}`
+        );
         setRappels(rappelsRes.data);
       } catch (err) {
         console.error("Erreur chargement dossier patient :", err);
@@ -85,7 +91,7 @@ export default function PatientDossier() {
     };
 
     fetchPatient();
-  }, [id]);
+  }, [realPatientId]);
 
   if (!patient) return <p>Chargement...</p>;
 
@@ -124,16 +130,13 @@ export default function PatientDossier() {
   return (
     <div className="patient-dossier container my-4">
 
-      {/* ---- BOUTON EXPORT ---- */}
       <div className="d-flex justify-content-end mb-3">
         <Button variant="success" onClick={exportPDF}>
           📄 Télécharger en PDF
         </Button>
       </div>
 
-      {/* ---- CONTENU À EXPORTER ---- */}
       <div ref={dossierRef}>
-
         <h2 className="mb-4">
           🩺 Dossier médical de {patient.prenom} {patient.nom}
         </h2>
@@ -171,7 +174,9 @@ export default function PatientDossier() {
             <p><strong>Traitement :</strong> {patient.traitement || "—"}</p>
             <p>
               <strong>Médecin référent :</strong>{" "}
-              {patient.medecinPrenom ? `Dr ${patient.medecinPrenom} ${patient.medecinNom}` : "—"}
+              {patient.medecinPrenom
+                ? `Dr ${patient.medecinPrenom} ${patient.medecinNom}`
+                : "—"}
             </p>
           </Card.Body>
         </Card>
@@ -189,7 +194,7 @@ export default function PatientDossier() {
                   <LineChart data={chartData}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="date" />
-                    <YAxis domain={["auto", "auto"]} />
+                    <YAxis />
                     <Tooltip />
                     <Line
                       type="monotone"
@@ -211,18 +216,17 @@ export default function PatientDossier() {
                       <th>Événements</th>
                     </tr>
                   </thead>
-
                   <tbody>
                     {suivis.map((s) => (
                       <tr key={s.id}>
                         <td>{s.dateSuivi.split("T")[0]}</td>
                         <td>{formatMoment(s.moment)}</td>
                         <td>{formatRepas(s.repas)}</td>
-
                         <td>
-                          <Badge bg={getBadgeColor(s.glycemie)}>{s.glycemie}</Badge>
+                          <Badge bg={getBadgeColor(s.glycemie)}>
+                            {s.glycemie}
+                          </Badge>
                         </td>
-
                         <td>{s.symptomes || "—"}</td>
                         <td>{s.evenements || "—"}</td>
                       </tr>
@@ -231,7 +235,6 @@ export default function PatientDossier() {
                 </Table>
               </>
             )}
-
           </Card.Body>
         </Card>
 

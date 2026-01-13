@@ -8,7 +8,7 @@ import {
   ChevronDown,
   ChevronUp
 } from "lucide-react";
-import api from "../services/api";
+import api from "../../services/api";
 
 function PatientsTable({ medecinId }) {
   const [patients, setPatients] = useState([]);
@@ -160,32 +160,35 @@ function PatientsTable({ medecinId }) {
       minWidth: "140px"
     },
     {
-      name: "Action",
-      cell: (r) => (
-        <div className="d-flex align-items-center gap-2">
-          <Button
-            size="sm"
-            variant="outline-success"
-            style={{ minWidth: "90px", whiteSpace: "nowrap" }}
-            onClick={() => (window.location.href = `/patient/${r.id}`)}
-          >
-            Accéder
-          </Button>
-          <Button
-            size="sm"
-            variant="outline-secondary"
-            onClick={() => toggleRow(r.id)}
-          >
-            {expandedRows[r.id] ? (
-              <ChevronUp size={16} />
-            ) : (
-              <ChevronDown size={16} />
-            )}
-          </Button>
-        </div>
-      ),
-      minWidth: "160px"
-    }
+  name: "Action",
+  cell: (row) => (
+    <div className="d-flex align-items-center gap-2">
+      {/* Bouton Accéder vers le dashboard patient (médecin) */}
+      <Button
+        size="sm"
+        variant="outline-success"
+        style={{ minWidth: "90px", whiteSpace: "nowrap" }}
+        onClick={() => {
+          // Redirection vers la route médecin + patientId
+          window.location.href = `/medecin/patient/${row.id}/dashboard`;
+        }}
+      >
+        Accéder
+      </Button>
+
+      {/* Bouton toggle pour expansion de ligne */}
+      <Button
+        size="sm"
+        variant="outline-secondary"
+        onClick={() => toggleRow(row.id)}
+      >
+        {expandedRows[row.id] ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+      </Button>
+    </div>
+  ),
+  minWidth: "160px",
+}
+
   ];
 
   /* ============================

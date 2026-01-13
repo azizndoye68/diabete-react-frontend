@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Card } from 'react-bootstrap';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import SidebarPatient from '../../components/SidebarPatient';
 import api from '../../services/api';
 import './MonSuivi.css';
@@ -8,30 +8,64 @@ import './MonSuivi.css';
 function MonSuivi() {
   const [patient, setPatient] = useState(null);
   const navigate = useNavigate();
+  const { patientId } = useParams(); // 🔑 Récupère patientId si médecin
 
   useEffect(() => {
     const fetchPatient = async () => {
       try {
-        const profileRes = await api.get('/api/auth/profile');
-        const utilisateurId = profileRes.data.id;
-        const patientRes = await api.get(`/api/patients/byUtilisateur/${utilisateurId}`);
-        setPatient(patientRes.data);
+        let patientData;
+
+        if (patientId) {
+          // 🔹 CAS MÉDECIN : récupérer le patient par patientId
+          const patientRes = await api.get(`/api/patients/${patientId}`);
+          patientData = patientRes.data;
+        } else {
+          // 🔹 CAS PATIENT : récupérer son propre profil
+          const profileRes = await api.get('/api/auth/profile');
+          const utilisateurId = profileRes.data.id;
+
+          const patientRes = await api.get(`/api/patients/byUtilisateur/${utilisateurId}`);
+          patientData = patientRes.data;
+        }
+
+        setPatient(patientData);
       } catch (err) {
-        console.error(err);
+        console.error('Erreur récupération patient :', err);
       }
     };
-    fetchPatient();
-  }, []);
 
-  const suiviItems = patient ? [
-    { title: 'Codes couleurs', icon: '/images/graph.png', path: '/codes-couleurs' },
-    { title: 'Traitement', icon: '/images/medical-kit.png', path: '/traitement' },
-    { title: 'Dossier médical', icon: '/images/folder.png', path: `/patient/${patient.id}/dossier` },
-  ] : [];
+    fetchPatient();
+  }, [patientId]);
+
+  // Définir les items du suivi
+const suiviItems = patient ? [
+  { 
+    title: 'Codes couleurs', 
+    icon: '/images/graph.png', 
+    path: patientId 
+      ? `/medecin/patient/${patientId}/codes-couleurs` // ✅ côté médecin
+      : `/codes-couleurs` // ✅ côté patient
+  },
+  { 
+    title: 'Traitement', 
+    icon: '/images/medical-kit.png', 
+    path: patientId 
+      ? `/medecin/patient/${patientId}/traitement`
+      : `/traitement`
+  },
+  { 
+    title: 'Dossier médical', 
+    icon: '/images/folder.png', 
+    path: patientId 
+      ? `/medecin/patient/${patientId}/dossier`
+      : `/patient/${patient.id}/dossier`
+  },
+] : [];
+
 
   return (
     <div className="mon-suivi-page">
-      <SidebarPatient patient={patient} />
+      <SidebarPatient patient={patient} isMedecin={!!patientId} /> {/* Passer le flag médecin */}
 
       <div className="main-content">
         <h2 className="mb-4">Mon suivi</h2>

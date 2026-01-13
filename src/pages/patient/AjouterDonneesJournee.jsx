@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
 import { Container, Form, Button, Card, Row, Col } from 'react-bootstrap';
 import SidebarPatient from '../../components/SidebarPatient';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { CheckCircleFill } from 'react-bootstrap-icons';
 import './AjouterDonneeJournee.css';
 
@@ -20,25 +20,33 @@ function AjouterDonneeJournee() {
   const [patient, setPatient] = useState(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { patientId } = useParams(); // 🔹 Pour le médecin
 
   const now = new Date();
   const dateString = now.toLocaleDateString('fr-FR');
   const timeString = now.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
 
+  // 🔹 Récupération du patient (côté patient ou médecin)
   useEffect(() => {
     const fetchPatient = async () => {
       try {
-        const profileRes = await api.get('/api/auth/profile');
-        const utilisateurId = profileRes.data.id;
-
-        const patientRes = await api.get(`/api/patients/byUtilisateur/${utilisateurId}`);
-        setPatient(patientRes.data);
+        if (patientId) {
+          // Médecin : on récupère le patient via l'ID passé en paramètre
+          const res = await api.get(`/api/patients/${patientId}`);
+          setPatient(res.data);
+        } else {
+          // Patient connecté
+          const profileRes = await api.get('/api/auth/profile');
+          const utilisateurId = profileRes.data.id;
+          const patientRes = await api.get(`/api/patients/byUtilisateur/${utilisateurId}`);
+          setPatient(patientRes.data);
+        }
       } catch (error) {
         console.error('Erreur lors de la récupération du patient', error);
       }
     };
     fetchPatient();
-  }, []);
+  }, [patientId]);
 
   const handleChange = (e) => {
     setDonnees({ ...donnees, [e.target.name]: e.target.value });
@@ -86,7 +94,18 @@ function AjouterDonneeJournee() {
         <Button variant="outline-success" onClick={() => setSuccess(false)}>
           ➕ Ajouter une autre mesure
         </Button>
-        <Button variant="success" onClick={() => navigate('/dashboard-patient')}>
+        <Button
+          variant="success"
+          onClick={() => {
+            if (patientId) {
+              // médecin → dashboard du patient spécifique
+              navigate(`/medecin/patient/${patientId}/dashboard`);
+            } else {
+              // patient → son propre dashboard
+              navigate('/dashboard-patient');
+            }
+          }}
+        >
           🏠 Retour au tableau de bord
         </Button>
       </div>
@@ -96,9 +115,9 @@ function AjouterDonneeJournee() {
   return (
     <Container fluid className="p-0">
       <Row className="g-0 vh-100">
-        {/* Colonne Sidebar */}
+        {/* Sidebar */}
         <Col xs={12} md={3} className="sidebar-col p-0">
-          <SidebarPatient patient={patient} />
+          <SidebarPatient patient={patient} isMedecin={!!patientId} />
         </Col>
 
         {/* Colonne principale */}
@@ -107,7 +126,9 @@ function AjouterDonneeJournee() {
             <div className="form-card-container">
               {!success ? (
                 <Card className="p-4 shadow-sm form-card">
-                  <h4 className="mb-3 text-success text-center">Ajouter les données de la journée</h4>
+                  <h4 className="mb-3 text-success text-center">
+                    Ajouter les données de {patient?.prenom || 'ce patient'}
+                  </h4>
                   <div className="text-center text-muted mb-3">
                     <strong>Date :</strong> {dateString} — <strong>Heure :</strong> {timeString}
                   </div>
@@ -124,7 +145,7 @@ function AjouterDonneeJournee() {
                         value={donnees.glycemie}
                         onChange={handleChange}
                         required
-                        placeholder="Entrez votre taux de glycémie"
+                        placeholder="Entrez le taux de glycémie"
                       />
                     </Form.Group>
 

@@ -5,24 +5,26 @@ import LoginPage from './components/LoginPage';
 import PatientRegister from './components/PatientRegister';
 import MedecinRegister from './components/MedecinRegister';
 import RegisterChoice from './components/RegisterChoice';
-import DashboardPatient from './pages/patient/DashboardPatient';
+import DashboardPatient from './components/DashboardPatient';
 import AjouterDonneesJournee from './pages/patient/AjouterDonneesJournee';
 import CarnetGlycemie from './pages/patient/CarnetGlycemie';
 import Statistiques from './components/Statistiques';
 import DashboardMedecin from './pages/medecin/DashboardMedecin';
 import DashboardAdmin from './pages/admin/DashboardAdmin';
-import PatientsTable from './components/PatientsTable';
+import PatientsTable from './pages/medecin/PatientsTable';
 import RendezVousCalendar from './pages/medecin/RendezVousTable';
 import PatientsList from './pages/admin/PatientsList';
 import MedecinsList from './pages/admin/MedecinsList';
 import MedecinsAttente from './pages/admin/MedecinsAttente';
 import EquipesMedecin from './pages/medecin/EquipesMedecin';
-import PatientDossier from './pages/patient/PatientDossier';
+import PatientDossier from './pages/medecin/PatientDossier';
 import MonSuivi from './pages/patient/MonSuivi';
 import CodeCouleur from './pages/patient/CodeCouleur';
 import EquipeSoignante from './pages/patient/EquipeSoignante';
 import EducationMedecin from './pages/medecin/EducationMedecin';
 import EducationPatient from './pages/patient/EducationPatient';
+import ConsultationsMedecin from './pages/medecin/ConsultationsMedecin';
+import TraitementMedecin from './pages/medecin/TraitementMedecin';
 
 function App() {
   return (
@@ -51,6 +53,25 @@ function App() {
         <Route path="/equipe-soignante" element={<EquipeSoignante />} />
         <Route path="/medecin/education" element={<EducationMedecin />} />
         <Route path="/patient/education" element={<EducationPatient />} />
+
+        {/* Routes pour le médecin avec patientId */}
+        <Route path="/medecin/patient/:patientId/dashboard" element={<DashboardPatient />} />
+        <Route path="/medecin/patient/:patientId/ajouter-donnees" element={<AjouterDonneesJournee />} />
+        <Route path="/medecin/patient/:patientId/carnet" element={<CarnetGlycemie />} />
+        <Route path="/medecin/patient/:patientId/statistiques" element={<Statistiques />} />
+        <Route path="/medecin/patient/:patientId/mon-suivi" element={<MonSuivi />} />
+        <Route path="/medecin/patient/:patientId/equipe-soignante" element={<EquipeSoignante />} />
+        <Route path="/medecin/patient/:patientId/education" element={<EducationPatient />} />
+        <Route path="/medecin/patient/:patientId/codes-couleurs" element={<CodeCouleur />} />
+        <Route path="/medecin/patient/:patientId/dossier" element={<PatientDossier />} />
+        <Route path="/medecin/patient/:patientId/statistiques" element={<Statistiques />} />
+        <Route path="/medecin/patient/:patientId/education" element={<EducationPatient />} />
+        <Route path="/medecin/patient/:patientId/consultations" element={<ConsultationsMedecin />} />
+        <Route path="/medecin/patient/:patientId/traitements" element={<TraitementMedecin />} />
+
+
+
+
         {/* Ajoute d'autres routes ici si nécessaire */}
       </Routes>
     </Router>
