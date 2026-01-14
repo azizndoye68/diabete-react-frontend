@@ -1,0 +1,86 @@
+.topbar-medecin {
+  background: #2f855a; /* violet style MyDiabby */
+  height: 60px;
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  color: white;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  position: fixed;
+  width: 100%;
+  top: 0;
+  z-index: 1000;
+}
+
+/* Logo */
+.topbar-medecin .logo-text {
+  font-size: 18px;
+  color: #ffffff;
+}
+
+.topbar-medecin .highlight {
+  color: #ffc107;
+}
+
+/* Navigation centrale */
+.topbar-nav {
+  display: flex;
+  gap: 25px;
+  align-items: center;
+}
+
+.topbar-link {
+  display: flex;
+  align-items: center;
+  color: #e6e6e6;
+  font-weight: 500;
+  transition: color 0.2s;
+  cursor: pointer;
+}
+
+.topbar-link .icon {
+  margin-right: 5px;
+  font-size: 16px;
+}
+
+.topbar-link:hover {
+  color: #ffffff;
+}
+
+.topbar-link.active {
+  color: #ffc107;
+}
+
+/* Profil */
+.profile-section {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.profile-section span {
+  font-weight: 500;
+}
+
+/* ===============================
+   RESPONSIVE MOBILE
+================================ */
+@media (max-width: 991px) {
+  .topbar-nav {
+    flex-direction: column;
+    gap: 15px;
+    margin-top: 15px;
+  }
+
+  .topbar-link {
+    justify-content: center;
+  }
+
+  .navbar-collapse {
+    background: #2f855a;
+    padding: 15px;
+    border-radius: 0 0 10px 10px;
+  }
+}
+

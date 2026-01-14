@@ -1,22 +1,70 @@
+/* ====== CONTAINER GLOBAL ====== */
 .dashboard-medecin-container {
-  display: flex;
-  background-color: #f8f9fa;
+  background-color: #f4f6f9;
   min-height: 100vh;
+  font-family: "Inter", "Segoe UI", sans-serif;
 }
 
+/* ====== CONTENU PRINCIPAL ====== */
 .dashboard-content {
-  flex-grow: 1;
-  overflow-y: auto;
+  background-color: #f4f6f9;
+  margin-top: 50px; /* laisse de l'espace pour le topbar */
+}
+
+/* ====== EN-TÊTE (Bonjour Dr...) ====== */
+.dashboard-content h3 {
+  font-size: 22px;
+  color: #2f855a;
+}
+
+.dashboard-content p {
+  margin-bottom: 4px;
+}
+
+/* ====== ONGLET STYLE MYDIABBY ====== */
+.nav-tabs {
+  border-bottom: 1px solid #e0e0e0;
 }
 
 .nav-tabs .nav-link {
-  color: #198754;
+  color: #6c757d;
   font-weight: 500;
+  padding: 12px 18px;
   border: none;
 }
 
+.nav-tabs .nav-link:hover {
+  color: #2f855a;
+}
+
 .nav-tabs .nav-link.active {
-  background-color: #198754;
-  color: #fff !important;
-  border-radius: 5px 5px 0 0;
+  color: #2f855a;
+  font-weight: 600;
+  border-bottom: 3px solid #2f855a;
+  background-color: transparent;
+}
+
+/* ====== ZONE DE CONTENU (TABLE / SECTIONS) ====== */
+.dashboard-content .row > .col {
+  background-color: #ffffff;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+/* ====== BOUTON PRINCIPAL ====== */
+.btn-success {
+  background-color: #2f855a;
+  border: none;
+}
+
+.btn-success:hover {
+  background-color: #276749;
+}
+
+/* ====== RENDEZ-VOUS ====== */
+.rendezvous-container {
+  background-color: #ffffff;
+  border-radius: 8px;
+  padding: 20px;
 }

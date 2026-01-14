@@ -99,6 +99,14 @@ function SidebarAdmin({ admin, onShowAide }) {
         <li
           className="nav-link text-white mb-2"
           style={{ cursor: 'pointer' }}
+          onClick={() => navigate('/medecin/education')}
+        >
+          <i className="bi bi-mortarboard-fill me-2"></i> Éducation
+        </li>
+
+        <li
+          className="nav-link text-white mb-2"
+          style={{ cursor: 'pointer' }}
           onClick={onShowAide}
         >
           <i className="bi bi-question-circle-fill me-2"></i> Aide

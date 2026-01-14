@@ -6,7 +6,8 @@ import {
   Mail,
   AlertTriangle,
   ChevronDown,
-  ChevronUp
+  ChevronUp,
+  Plus
 } from "lucide-react";
 import api from "../../services/api";
 
@@ -26,9 +27,7 @@ function PatientsTable({ medecinId }) {
     const fetchPatients = async () => {
       setLoading(true);
       try {
-        const res = await api.get(
-          `/api/patients/medecin/${medecinId}/visibles`
-        );
+        const res = await api.get(`/api/patients/medecin/${medecinId}/visibles`);
         const data = res.data || [];
 
         const enriched = await Promise.all(
@@ -39,20 +38,14 @@ function PatientsTable({ medecinId }) {
 
             // 🔹 Dernière glycémie
             try {
-              const mesureRes = await api.get(
-                `/api/suivis/last?patientId=${p.id}`
-              );
+              const mesureRes = await api.get(`/api/suivis/last?patientId=${p.id}`);
               derniereGlycemie = mesureRes.data?.glycemie ?? null;
-            } catch {
-              derniereGlycemie = null;
-            }
+            } catch {}
 
             // 🔹 Médecin référent
             if (p.medecinId) {
               try {
-                const medRes = await api.get(
-                  `/api/medecins/${p.medecinId}`
-                );
+                const medRes = await api.get(`/api/medecins/${p.medecinId}`);
                 medecinPrenom = medRes.data?.prenom ?? null;
                 medecinNom = medRes.data?.nom ?? null;
               } catch {}
@@ -113,16 +106,18 @@ function PatientsTable({ medecinId }) {
       name: "Prénom",
       selector: (r) => r.prenom,
       sortable: true,
-      minWidth: "120px"
+      minWidth: "120px",
+      wrap: true
     },
     {
       name: "Nom",
       selector: (r) => r.nom,
       sortable: true,
-      minWidth: "120px"
+      minWidth: "120px",
+      wrap: true
     },
     {
-      name: "Type diabète",
+      name: "Type de diabète",
       selector: (r) => r.typeDiabete,
       minWidth: "130px"
     },
@@ -137,17 +132,32 @@ function PatientsTable({ medecinId }) {
       minWidth: "110px"
     },
     {
-      name: "Dernière mesure",
-      cell: (r) =>
-        r.derniereGlycemie !== null ? (
-          <Badge bg={r.derniereGlycemie < 1 ? "warning" : "success"}>
-            {r.derniereGlycemie}
-          </Badge>
-        ) : (
-          <Badge bg="secondary">--</Badge>
-        ),
-      minWidth: "140px"
-    },
+  name: "Dernière mesure",
+  cell: (r) => {
+    if (r.derniereGlycemie === null) {
+      return <Badge bg="secondary">--</Badge>;
+    }
+
+    // 🔹 Définir la couleur selon la valeur
+    let couleur = "";
+    if (r.derniereGlycemie < 0.7) {
+      couleur = "danger"; // rouge clair
+    } else if (r.derniereGlycemie >= 0.7 && r.derniereGlycemie <= 1.2) {
+      couleur = "success"; // vert
+    } else if (r.derniereGlycemie > 1.2 && r.derniereGlycemie <= 1.4) {
+      couleur = "warning"; // jaune
+    } else if (r.derniereGlycemie > 1.4) {
+      couleur = "danger"; // rouge foncé
+    }
+
+    return (
+      <Badge bg={couleur} style={{ textTransform: "none" }}>
+        {r.derniereGlycemie} g/L
+      </Badge>
+    );
+  },
+  minWidth: "140px"
+},
     {
       name: "Notifications",
       cell: () => (
@@ -160,58 +170,99 @@ function PatientsTable({ medecinId }) {
       minWidth: "140px"
     },
     {
-  name: "Action",
-  cell: (row) => (
-    <div className="d-flex align-items-center gap-2">
-      {/* Bouton Accéder vers le dashboard patient (médecin) */}
-      <Button
-        size="sm"
-        variant="outline-success"
-        style={{ minWidth: "90px", whiteSpace: "nowrap" }}
-        onClick={() => {
-          // Redirection vers la route médecin + patientId
-          window.location.href = `/medecin/patient/${row.id}/dashboard`;
-        }}
-      >
-        Accéder
-      </Button>
+      name: "Action",
+      cell: (row) => (
+        <div className="d-flex align-items-center gap-2">
+          <Button
+            size="sm"
+            variant="outline-success"
+            style={{ minWidth: "90px", whiteSpace: "nowrap" }}
+            onClick={() => {
+              window.location.href = `/medecin/patient/${row.id}/dashboard`;
+            }}
+          >
+            Accéder
+          </Button>
 
-      {/* Bouton toggle pour expansion de ligne */}
-      <Button
-        size="sm"
-        variant="outline-secondary"
-        onClick={() => toggleRow(row.id)}
-      >
-        {expandedRows[row.id] ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-      </Button>
-    </div>
-  ),
-  minWidth: "160px",
-}
-
+          <Button
+            size="sm"
+            variant="outline-secondary"
+            onClick={() => toggleRow(row.id)}
+          >
+            {expandedRows[row.id] ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+          </Button>
+        </div>
+      ),
+      minWidth: "160px"
+    }
   ];
+
+  /* ============================
+     🔹 CUSTOM STYLES DATA TABLE
+  ============================= */
+  const customStyles = {
+    header: {
+      style: {
+        fontSize: "20px",
+        fontWeight: "600",
+        color: "#2f855a"
+      }
+    },
+    headRow: {
+      style: {
+        backgroundColor: "#e6f4ea",
+        fontSize: "14px",
+        fontWeight: "600",
+        color: "#2f855a",
+        minHeight: "50px"
+      }
+    },
+    rows: {
+      style: {
+        minHeight: "50px",
+        fontSize: "14px"
+      }
+    },
+    pagination: {
+      style: {
+        borderTop: "1px solid #dee2e6"
+      }
+    }
+  };
 
   /* ============================
      🔹 RENDER
   ============================= */
   return (
     <div className="p-3 bg-white rounded shadow-sm">
-      <div className="d-flex justify-content-between mb-3 flex-wrap">
-        <h5 className="mb-2">Patients suivis</h5>
+      {/* 🔹 Barre actions */}
+      <div className="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-3">
         <Form.Check
           type="switch"
           label="Afficher uniquement mes patients"
           checked={filterReferent}
           onChange={(e) => setFilterReferent(e.target.checked)}
         />
-      </div>
 
-      <Form.Control
-        className="mb-3"
-        placeholder="Rechercher un patient..."
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-      />
+        <div className="d-flex align-items-center gap-2">
+          <Form.Control
+            placeholder="Rechercher..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            style={{ width: "220px" }}
+          />
+
+          <Button
+            variant="success"
+            onClick={() => {
+              window.location.href = "/medecin/patient/nouveau";
+            }}
+          >
+            <Plus size={16} className="me-1" />
+            Nouveau patient
+          </Button>
+        </div>
+      </div>
 
       <DataTable
         columns={columns}
@@ -238,17 +289,15 @@ function PatientsTable({ medecinId }) {
               <strong>Région :</strong> {data.region ?? "--"}
             </p>
             <p>
-              <strong>Date d'inscription :</strong>{" "}
-              {data.dateEnregistrement ?? "--"}
+              <strong>Date d'inscription :</strong> {data.dateEnregistrement ?? "--"}
             </p>
             <p>
               <strong>Médecin référent :</strong>{" "}
-              {data.medecinPrenom
-                ? `${data.medecinPrenom} ${data.medecinNom}`
-                : "Non référencé"}
+              {data.medecinPrenom ? `${data.medecinPrenom} ${data.medecinNom}` : "Non référencé"}
             </p>
           </Card>
         )}
+        customStyles={customStyles}
       />
     </div>
   );

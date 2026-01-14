@@ -12,7 +12,7 @@ import Statistiques from './components/Statistiques';
 import DashboardMedecin from './pages/medecin/DashboardMedecin';
 import DashboardAdmin from './pages/admin/DashboardAdmin';
 import PatientsTable from './pages/medecin/PatientsTable';
-import RendezVousCalendar from './pages/medecin/RendezVousTable';
+import RendezVousTable from './pages/medecin/RendezVousTable';
 import PatientsList from './pages/admin/PatientsList';
 import MedecinsList from './pages/admin/MedecinsList';
 import MedecinsAttente from './pages/admin/MedecinsAttente';
@@ -42,7 +42,7 @@ function App() {
         <Route path="/carnet" element={<CarnetGlycemie />} />
         <Route path="/statistiques" element={<Statistiques />} />
         <Route path="/medecin/patients-table" element={<PatientsTable />} />
-        <Route path="/medecin/rendezvous" element={<RendezVousCalendar />} />  
+        <Route path="/medecin/rendezvous" element={<RendezVousTable />} />  
         <Route path="/admin/patients" element={<PatientsList />} />
         <Route path="/admin/medecins" element={<MedecinsList />} />
         <Route path="/admin/attente" element={<MedecinsAttente />} />

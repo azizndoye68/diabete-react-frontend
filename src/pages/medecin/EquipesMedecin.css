@@ -6,7 +6,7 @@
 .teams-page {
   flex: 1;
   padding: 2rem;
-  margin-left: 250px; /* selon ta sidebar */
+  padding-top: 80px; /* laisse de l'espace pour le topbar */
   background: #f6f8fa;
 }
 

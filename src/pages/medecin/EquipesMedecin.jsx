@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import SidebarMedecin from "../../components/SidebarMedecin";
+import SidebarMedecin from "../../components/TopbarMedecin";
 import TeamCard from "../../components/TeamCard";
 import AddMemberModal from "./AddMemberModal";
 import * as medecinService from "../../services/medecinService";
