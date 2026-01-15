@@ -1,14 +1,7 @@
 import React, { useEffect, useState, useMemo } from "react";
 import DataTable from "react-data-table-component";
-import { Button, Badge, Form, Card } from "react-bootstrap";
-import {
-  Bell,
-  Mail,
-  AlertTriangle,
-  ChevronDown,
-  ChevronUp,
-  Plus
-} from "lucide-react";
+import { Badge, Form, Card, Button } from "react-bootstrap";
+import { Bell, Mail, AlertTriangle, Plus } from "lucide-react";
 import api from "../../services/api";
 
 function PatientsTable({ medecinId }) {
@@ -16,11 +9,10 @@ function PatientsTable({ medecinId }) {
   const [search, setSearch] = useState("");
   const [filterReferent, setFilterReferent] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [expandedRows, setExpandedRows] = useState({});
 
   /* ============================
      🔹 CHARGEMENT DES PATIENTS
-  ============================= */
+  ============================ */
   useEffect(() => {
     if (!medecinId) return;
 
@@ -35,11 +27,20 @@ function PatientsTable({ medecinId }) {
             let derniereGlycemie = null;
             let medecinPrenom = null;
             let medecinNom = null;
+            let traitement = null;
+            let allergies = null;
 
             // 🔹 Dernière glycémie
             try {
               const mesureRes = await api.get(`/api/suivis/last?patientId=${p.id}`);
               derniereGlycemie = mesureRes.data?.glycemie ?? null;
+            } catch {}
+
+            // 🔹 Dossier médical
+            try {
+              const dossierRes = await api.get(`/api/dossiers/patient/${p.id}`);
+              traitement = dossierRes.data?.traitement ?? null;
+              allergies = dossierRes.data?.allergies ?? null;
             } catch {}
 
             // 🔹 Médecin référent
@@ -56,7 +57,9 @@ function PatientsTable({ medecinId }) {
               derniereGlycemie,
               medecinPrenom,
               medecinNom,
-              source: p.medecinId === medecinId ? "DIRECT" : "EQUIPE"
+              traitement,
+              allergies,
+              source: p.medecinId === medecinId ? "DIRECT" : "EQUIPE",
             };
           })
         );
@@ -75,7 +78,7 @@ function PatientsTable({ medecinId }) {
 
   /* ============================
      🔹 FILTRES
-  ============================= */
+  ============================ */
   const filteredPatients = useMemo(() => {
     let data = [...patients];
 
@@ -94,70 +97,49 @@ function PatientsTable({ medecinId }) {
     return data;
   }, [patients, search, filterReferent]);
 
-  const toggleRow = (id) => {
-    setExpandedRows((prev) => ({ ...prev, [id]: !prev[id] }));
-  };
-
   /* ============================
      🔹 COLONNES DU TABLEAU
-  ============================= */
+  ============================ */
   const columns = [
+    { name: "Prénom", selector: (r) => r.prenom, sortable: true, minWidth: "120px", wrap: true },
+    { name: "Nom", selector: (r) => r.nom, sortable: true, minWidth: "120px", wrap: true },
+    { name: "Type de diabète", selector: (r) => r.typeDiabete, minWidth: "130px" },
     {
-      name: "Prénom",
-      selector: (r) => r.prenom,
-      sortable: true,
-      minWidth: "120px",
-      wrap: true
-    },
-    {
-      name: "Nom",
-      selector: (r) => r.nom,
-      sortable: true,
-      minWidth: "120px",
-      wrap: true
-    },
-    {
-      name: "Type de diabète",
-      selector: (r) => r.typeDiabete,
-      minWidth: "130px"
+      name: "Allergies",
+      cell: (r) => <span>{r.allergies ?? "Aucune"}</span>,
+      minWidth: "120px"
     },
     {
       name: "Sous insuline",
-      cell: (r) =>
-        r.traitement?.toLowerCase().includes("insuline") ? (
-          <Badge bg="success">Oui</Badge>
-        ) : (
-          <Badge bg="secondary">Non</Badge>
-        ),
-      minWidth: "110px"
+      cell: (r) => {
+        const traitement = r.traitement?.toString().trim().toUpperCase();
+        return (
+          <Badge bg={traitement === "OUI" ? "success" : "secondary"}>
+            {traitement === "OUI" ? "Oui" : "Non"}
+          </Badge>
+        );
+      },
+      minWidth: "110px",
     },
     {
-  name: "Dernière mesure",
-  cell: (r) => {
-    if (r.derniereGlycemie === null) {
-      return <Badge bg="secondary">--</Badge>;
-    }
+      name: "Dernière mesure",
+      cell: (r) => {
+        if (r.derniereGlycemie === null) return <Badge bg="secondary">--</Badge>;
 
-    // 🔹 Définir la couleur selon la valeur
-    let couleur = "";
-    if (r.derniereGlycemie < 0.7) {
-      couleur = "danger"; // rouge clair
-    } else if (r.derniereGlycemie >= 0.7 && r.derniereGlycemie <= 1.2) {
-      couleur = "success"; // vert
-    } else if (r.derniereGlycemie > 1.2 && r.derniereGlycemie <= 1.4) {
-      couleur = "warning"; // jaune
-    } else if (r.derniereGlycemie > 1.4) {
-      couleur = "danger"; // rouge foncé
-    }
+        let couleur = "";
+        if (r.derniereGlycemie < 0.7) couleur = "danger";
+        else if (r.derniereGlycemie <= 1.2) couleur = "success";
+        else if (r.derniereGlycemie <= 1.4) couleur = "warning";
+        else couleur = "danger";
 
-    return (
-      <Badge bg={couleur} style={{ textTransform: "none" }}>
-        {r.derniereGlycemie} g/L
-      </Badge>
-    );
-  },
-  minWidth: "140px"
-},
+        return (
+          <Badge bg={couleur} style={{ textTransform: "none" }}>
+            {r.derniereGlycemie} g/L
+          </Badge>
+        );
+      },
+      minWidth: "140px",
+    },
     {
       name: "Notifications",
       cell: () => (
@@ -167,75 +149,34 @@ function PatientsTable({ medecinId }) {
           <Bell size={18} color="#dc3545" />
         </div>
       ),
-      minWidth: "140px"
+      minWidth: "140px",
     },
-    {
-      name: "Action",
-      cell: (row) => (
-        <div className="d-flex align-items-center gap-2">
-          <Button
-            size="sm"
-            variant="outline-success"
-            style={{ minWidth: "90px", whiteSpace: "nowrap" }}
-            onClick={() => {
-              window.location.href = `/medecin/patient/${row.id}/dashboard`;
-            }}
-          >
-            Accéder
-          </Button>
-
-          <Button
-            size="sm"
-            variant="outline-secondary"
-            onClick={() => toggleRow(row.id)}
-          >
-            {expandedRows[row.id] ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-          </Button>
-        </div>
-      ),
-      minWidth: "160px"
-    }
   ];
 
   /* ============================
-     🔹 CUSTOM STYLES DATA TABLE
-  ============================= */
+     🔹 STYLES DATA TABLE
+  ============================ */
   const customStyles = {
-    header: {
-      style: {
-        fontSize: "20px",
-        fontWeight: "600",
-        color: "#2f855a"
-      }
-    },
+    header: { style: { fontSize: "20px", fontWeight: "600", color: "#2f855a" } },
     headRow: {
       style: {
         backgroundColor: "#e6f4ea",
         fontSize: "14px",
         fontWeight: "600",
         color: "#2f855a",
-        minHeight: "50px"
-      }
-    },
-    rows: {
-      style: {
         minHeight: "50px",
-        fontSize: "14px"
-      }
+      },
     },
-    pagination: {
-      style: {
-        borderTop: "1px solid #dee2e6"
-      }
-    }
+    rows: { style: { minHeight: "50px", fontSize: "14px" } },
+    pagination: { style: { borderTop: "1px solid #dee2e6" } },
   };
 
   /* ============================
      🔹 RENDER
-  ============================= */
+  ============================ */
   return (
     <div className="p-3 bg-white rounded shadow-sm">
-      {/* 🔹 Barre actions */}
+      {/* Barre actions */}
       <div className="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-3">
         <Form.Check
           type="switch"
@@ -243,7 +184,6 @@ function PatientsTable({ medecinId }) {
           checked={filterReferent}
           onChange={(e) => setFilterReferent(e.target.checked)}
         />
-
         <div className="d-flex align-items-center gap-2">
           <Form.Control
             placeholder="Rechercher..."
@@ -251,12 +191,9 @@ function PatientsTable({ medecinId }) {
             onChange={(e) => setSearch(e.target.value)}
             style={{ width: "220px" }}
           />
-
           <Button
             variant="success"
-            onClick={() => {
-              window.location.href = "/medecin/patient/nouveau";
-            }}
+            onClick={() => (window.location.href = "/register/patient")}
           >
             <Plus size={16} className="me-1" />
             Nouveau patient
@@ -269,11 +206,17 @@ function PatientsTable({ medecinId }) {
         data={filteredPatients}
         progressPending={loading}
         pagination
+        paginationPerPage={5}
+        paginationRowsPerPageOptions={[5, 10, 15, 20]}
         highlightOnHover
+        pointerOnHover
         responsive
         striped
         expandableRows
         expandOnRowClicked={false}
+        onRowClicked={(row) =>
+          (window.location.href = `/medecin/patient/${row.id}/dashboard`)
+        }
         expandableRowsComponent={({ data }) => (
           <Card body className="mb-2">
             <p>

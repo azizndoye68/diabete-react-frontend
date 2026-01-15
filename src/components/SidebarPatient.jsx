@@ -28,7 +28,7 @@ function SidebarPatient({ onShowAide, patient, isMedecin = false }) {
         style={{ cursor: 'pointer' }}
       >
         <Image
-          src={require('../images/logo-diabete.png')}
+          src={require('../images/SuñuDiabète1.png')}
           alt="Logo santé"
           width="50"
           height="50"
@@ -36,9 +36,9 @@ function SidebarPatient({ onShowAide, patient, isMedecin = false }) {
         />
         <span
           className="fw-bold text-uppercase"
-          style={{ fontSize: '16px', color: '#ffffff' }}
+          style={{ fontSize: '16px', color: '#ffc107' }}
         >
-          Suivi<span style={{ color: '#ffc107' }}>Diabète</span> SN
+          SuñuDiabète
         </span>
       </div>
 
@@ -61,7 +61,7 @@ function SidebarPatient({ onShowAide, patient, isMedecin = false }) {
         )}
       </div>
 
-      {/* 🔙 RETOUR DASHBOARD MÉDECIN */}
+      {/* 🔙 RETOUR DASHBOARD MÉDECIN 
 {isMedecin && (
   <li
     className="nav-link text-white mb-3 fw-bold"
@@ -71,7 +71,7 @@ function SidebarPatient({ onShowAide, patient, isMedecin = false }) {
     <i className="bi bi-arrow-left-circle-fill me-2"></i>
     Retour médecin
   </li>
-)}
+)}*/}
 
 
       {/* Menu */}
@@ -139,6 +139,7 @@ function SidebarPatient({ onShowAide, patient, isMedecin = false }) {
           </li>
         )}
 
+        {!isMedecin && (
         <li
           className="nav-link text-white mb-1"
           onClick={() => {
@@ -151,6 +152,7 @@ function SidebarPatient({ onShowAide, patient, isMedecin = false }) {
         >
           <i className="bi bi-book-half me-2"></i> Éducation
         </li>
+        )}
 
         {/* ❌ Objets connectés → PAS pour médecin */}
         {!isMedecin && (

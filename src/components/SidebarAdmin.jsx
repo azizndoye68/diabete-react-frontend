@@ -27,7 +27,7 @@ function SidebarAdmin({ admin, onShowAide }) {
         style={{ cursor: 'pointer' }}
       >
         <Image
-          src={require('../images/logo-diabete.png')}
+          src={require('../images/SuñuDiabète1.png')}
           alt="Logo santé"
           width="50"
           height="50"

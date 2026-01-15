@@ -36,3 +36,40 @@
     transform: translateY(0px);
   }
 }
+
+/* src/components/HomePage.css */
+
+/* Hero image floating animation */
+.animated-image {
+    animation: float 4s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-15px); }
+}
+
+/* Types diabète cards */
+.diabete-card {
+    border: none;
+    transition: transform 0.3s, box-shadow 0.3s;
+    border-radius: 10px;
+    background-color: #ffffff;
+}
+
+.diabete-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 25px rgba(0,0,0,0.15);
+}
+
+.type-img {
+    height: 120px;
+    object-fit: contain;
+}
+
+/* Section spacing */
+.types-section {
+    background-color: #f8f9fa;
+    padding-top: 60px;
+    padding-bottom: 60px;
+}

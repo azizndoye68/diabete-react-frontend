@@ -36,13 +36,13 @@ function TopbarMedecin({ user }) {
         style={{ cursor: "pointer" }}
       >
         <Image
-          src={require("../images/logo-diabete.png")}
+          src={require("../images/SuñuDiabète1.png")}
           width={40}
           height={40}
           className="me-2"
         />
-        <span className="fw-bold text-uppercase logo-text">
-          Suivi<span className="highlight">Diabète</span> SN
+        <span className="fw-bold text-uppercase logo-text" style={{ color: '#ffc107', textTransform: 'none' }}>
+          SuñuDiabète
         </span>
       </Navbar.Brand>
 
