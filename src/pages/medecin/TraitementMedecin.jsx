@@ -45,7 +45,9 @@ function TraitementMedecin() {
 
         // Dossier médical
         try {
-          const resDossier = await api.get(`/api/dossiers/patient/${patientId}`);
+          const resDossier = await api.get(
+            `/api/dossiers/patient/${patientId}`
+          );
           setDossier(resDossier.data);
           setFormData({
             traitement: resDossier.data.traitement || "NON",
@@ -76,7 +78,10 @@ function TraitementMedecin() {
 
     try {
       if (dossier?.id) {
-        await api.put(`/api/dossiers/${dossier.id}`, { ...formData, patientId });
+        await api.put(`/api/dossiers/${dossier.id}`, {
+          ...formData,
+          patientId,
+        });
       } else {
         const res = await api.post("/api/dossiers", { ...formData, patientId });
         setDossier(res.data);
@@ -121,7 +126,8 @@ function TraitementMedecin() {
                 <div>
                   <strong>Dossier médical mis à jour</strong>
                   <div className="text-muted small">
-                    Les informations thérapeutiques ont été enregistrées avec succès.
+                    Les informations thérapeutiques ont été enregistrées avec
+                    succès.
                   </div>
                 </div>
               </Alert>

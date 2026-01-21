@@ -11,7 +11,7 @@ import {
   YAxis,
   Tooltip,
   CartesianGrid,
-  ResponsiveContainer
+  ResponsiveContainer,
 } from "recharts";
 
 import html2canvas from "html2canvas";
@@ -37,7 +37,7 @@ export default function PatientDossier() {
     const canvas = await html2canvas(element, {
       scale: 2,
       useCORS: true,
-      logging: false
+      logging: false,
     });
 
     const imgData = canvas.toDataURL("image/png");
@@ -129,7 +129,6 @@ export default function PatientDossier() {
   // -----------------------------
   return (
     <div className="patient-dossier container my-4">
-
       <div className="d-flex justify-content-end mb-3">
         <Button variant="success" onClick={exportPDF}>
           📄 Télécharger en PDF
@@ -143,24 +142,44 @@ export default function PatientDossier() {
 
         {/* Informations générales */}
         <Card className="mb-4 shadow-sm">
-          <Card.Header><strong>Informations personnelles</strong></Card.Header>
+          <Card.Header>
+            <strong>Informations personnelles</strong>
+          </Card.Header>
           <Card.Body>
             <div className="row">
               <div className="col-md-4">
-                <p><strong>Nom complet :</strong> {patient.prenom} {patient.nom}</p>
-                <p><strong>Date de naissance :</strong> {patient.dateNaissance}</p>
-                <p><strong>Sexe :</strong> {patient.sexe}</p>
+                <p>
+                  <strong>Nom complet :</strong> {patient.prenom} {patient.nom}
+                </p>
+                <p>
+                  <strong>Date de naissance :</strong> {patient.dateNaissance}
+                </p>
+                <p>
+                  <strong>Sexe :</strong> {patient.sexe}
+                </p>
               </div>
 
               <div className="col-md-4">
-                <p><strong>Téléphone :</strong> {patient.telephone || "—"}</p>
-                <p><strong>Adresse :</strong> {patient.adresse || "—"}</p>
-                <p><strong>Ville / Région :</strong> {patient.ville || "—"} / {patient.region || "—"}</p>
+                <p>
+                  <strong>Téléphone :</strong> {patient.telephone || "—"}
+                </p>
+                <p>
+                  <strong>Adresse :</strong> {patient.adresse || "—"}
+                </p>
+                <p>
+                  <strong>Ville / Région :</strong> {patient.ville || "—"} /{" "}
+                  {patient.region || "—"}
+                </p>
               </div>
 
               <div className="col-md-4">
-                <p><strong>Numéro de dossier :</strong> {patient.numeroDossier}</p>
-                <p><strong>Date d'inscription :</strong> {patient.dateEnregistrement || "—"}</p>
+                <p>
+                  <strong>Numéro de dossier :</strong> {patient.numeroDossier}
+                </p>
+                <p>
+                  <strong>Date d'inscription :</strong>{" "}
+                  {patient.dateEnregistrement || "—"}
+                </p>
               </div>
             </div>
           </Card.Body>
@@ -168,10 +187,16 @@ export default function PatientDossier() {
 
         {/* Informations médicales */}
         <Card className="mb-4 shadow-sm">
-          <Card.Header><strong>Informations médicales</strong></Card.Header>
+          <Card.Header>
+            <strong>Informations médicales</strong>
+          </Card.Header>
           <Card.Body>
-            <p><strong>Type de diabète :</strong> {patient.typeDiabete || "—"}</p>
-            <p><strong>Traitement :</strong> {patient.traitement || "—"}</p>
+            <p>
+              <strong>Type de diabète :</strong> {patient.typeDiabete || "—"}
+            </p>
+            <p>
+              <strong>Traitement :</strong> {patient.traitement || "—"}
+            </p>
             <p>
               <strong>Médecin référent :</strong>{" "}
               {patient.medecinPrenom
@@ -183,9 +208,10 @@ export default function PatientDossier() {
 
         {/* Suivi glycémique */}
         <Card className="mb-4 shadow-sm">
-          <Card.Header><strong>Suivi glycémique récent</strong></Card.Header>
+          <Card.Header>
+            <strong>Suivi glycémique récent</strong>
+          </Card.Header>
           <Card.Body>
-
             {suivis.length === 0 ? (
               <p>Aucune mesure enregistrée.</p>
             ) : (
@@ -240,7 +266,9 @@ export default function PatientDossier() {
 
         {/* Rappels */}
         <Card className="mb-4 shadow-sm">
-          <Card.Header><strong>Rappels & Rendez-vous</strong></Card.Header>
+          <Card.Header>
+            <strong>Rappels & Rendez-vous</strong>
+          </Card.Header>
           <Card.Body>
             {rappels.length === 0 ? (
               <p>Aucun rappel programmé.</p>
@@ -255,7 +283,6 @@ export default function PatientDossier() {
             )}
           </Card.Body>
         </Card>
-
       </div>
     </div>
   );
