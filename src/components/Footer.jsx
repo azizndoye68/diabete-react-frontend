@@ -1,6 +1,6 @@
 import React from "react";
 import { Facebook, Twitter, Linkedin, Instagram } from "lucide-react";
-import logo from "../images/SuñuDiabète1.png"; // 🔹 ajoute le logo de ta plateforme
+import logo from "../images/logo-diabete.png"; // 🔹 ajoute le logo de ta plateforme
 import "./Footer.css";
 
 function Footer() {

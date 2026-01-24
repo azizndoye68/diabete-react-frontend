@@ -1,34 +1,34 @@
 // src/components/SidebarPatient.jsx
-import React from 'react';
-import { Image } from 'react-bootstrap';
-import { useNavigate } from 'react-router-dom';
-import defaultAvatar from '../images/default-avatar.jpg';
-import 'bootstrap-icons/font/bootstrap-icons.css';
-import './SidebarPatient.css';
+import React from "react";
+import { Image } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
+import defaultAvatar from "../images/default-avatar.jpg";
+import "bootstrap-icons/font/bootstrap-icons.css";
+import "./SidebarPatient.css";
 
 function SidebarPatient({ onShowAide, patient, isMedecin = false }) {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    navigate('/login');
+    localStorage.removeItem("token");
+    navigate("/login");
   };
 
   return (
     <div
       className="sidebar bg-success text-white d-flex flex-column p-4"
-      style={{ position: 'fixed', height: '100vh', width: '250px' }}
+      style={{ position: "fixed", height: "100vh", width: "250px" }}
     >
       {/* Logo */}
       <div
         className="app-header d-flex align-items-center justify-content-center mb-3"
         onClick={() =>
-        navigate(isMedecin ? '/dashboard-medecin' : '/dashboard-patient')
+          navigate(isMedecin ? "/dashboard-medecin" : "/dashboard-patient")
         }
-        style={{ cursor: 'pointer' }}
+        style={{ cursor: "pointer" }}
       >
         <Image
-          src={require('../images/SuñuDiabète1.png')}
+          src={require("../images/logo-diabete.png")}
           alt="Logo santé"
           width="50"
           height="50"
@@ -36,17 +36,17 @@ function SidebarPatient({ onShowAide, patient, isMedecin = false }) {
         />
         <span
           className="fw-bold text-uppercase"
-          style={{ fontSize: '16px', color: '#ffc107' }}
+          style={{ fontSize: "16px", color: "#ffffff" }}
         >
-          SuñuDiabète
+          Suivi<span style={{ color: "#ffc107" }}>Diabète</span> SN
         </span>
       </div>
 
       {/* Profil */}
       <div
         className="sidebar-header d-flex align-items-center mb-4 mt-4"
-        style={{ cursor: 'pointer' }}
-        onClick={() => navigate('/profile')}
+        style={{ cursor: "pointer" }}
+        onClick={() => navigate("/profile")}
       >
         <Image src={defaultAvatar} roundedCircle width="50" height="50" />
         {patient && (
@@ -55,7 +55,7 @@ function SidebarPatient({ onShowAide, patient, isMedecin = false }) {
               {patient.prenom} {patient.nom}
             </div>
             <small className="text-light">
-              {isMedecin ? 'Patient (vue médecin)' : 'Patient'}
+              {isMedecin ? "Patient (vue médecin)" : "Patient"}
             </small>
           </div>
         )}
@@ -73,17 +73,15 @@ function SidebarPatient({ onShowAide, patient, isMedecin = false }) {
   </li>
 )}*/}
 
-
       {/* Menu */}
       <ul className="list-unstyled">
-
         <li
           className="nav-link text-white mb-1"
           onClick={() => {
             if (isMedecin && patient?.id) {
               navigate(`/medecin/patient/${patient.id}/dashboard`);
             } else {
-              navigate('/dashboard-patient');
+              navigate("/dashboard-patient");
             }
           }}
         >
@@ -96,7 +94,7 @@ function SidebarPatient({ onShowAide, patient, isMedecin = false }) {
             if (isMedecin && patient?.id) {
               navigate(`/medecin/patient/${patient.id}/carnet`);
             } else {
-              navigate('/carnet');
+              navigate("/carnet");
             }
           }}
         >
@@ -109,7 +107,7 @@ function SidebarPatient({ onShowAide, patient, isMedecin = false }) {
             if (isMedecin && patient?.id) {
               navigate(`/medecin/patient/${patient.id}/statistiques`);
             } else {
-              navigate('/statistiques');
+              navigate("/statistiques");
             }
           }}
         >
@@ -122,7 +120,7 @@ function SidebarPatient({ onShowAide, patient, isMedecin = false }) {
             if (isMedecin && patient?.id) {
               navigate(`/medecin/patient/${patient.id}/mon-suivi`);
             } else {
-              navigate('/mon-suivi');
+              navigate("/mon-suivi");
             }
           }}
         >
@@ -133,32 +131,32 @@ function SidebarPatient({ onShowAide, patient, isMedecin = false }) {
         {!isMedecin && (
           <li
             className="nav-link text-white mb-1"
-            onClick={() => navigate('/equipe-soignante')}
+            onClick={() => navigate("/patient/messagerie")}
           >
             <i className="bi bi-people-fill me-2"></i> Équipe soignante
           </li>
         )}
 
         {!isMedecin && (
-        <li
-          className="nav-link text-white mb-1"
-          onClick={() => {
-            if (isMedecin && patient?.id) {
-              navigate(`/medecin/patient/${patient.id}/education`);
-            } else {
-              navigate('/patient/education');
-            }
-          }}
-        >
-          <i className="bi bi-book-half me-2"></i> Éducation
-        </li>
+          <li
+            className="nav-link text-white mb-1"
+            onClick={() => {
+              if (isMedecin && patient?.id) {
+                navigate(`/medecin/patient/${patient.id}/education`);
+              } else {
+                navigate("/patient/education");
+              }
+            }}
+          >
+            <i className="bi bi-book-half me-2"></i> Éducation
+          </li>
         )}
 
         {/* ❌ Objets connectés → PAS pour médecin */}
         {!isMedecin && (
           <li
             className="nav-link text-white mb-1"
-            onClick={() => navigate('/objets')}
+            onClick={() => navigate("/objets")}
           >
             <i className="bi bi-smartwatch me-2"></i> Objets connectés
           </li>
@@ -171,14 +169,18 @@ function SidebarPatient({ onShowAide, patient, isMedecin = false }) {
 
             <li
               className="nav-link text-white mb-1"
-              onClick={() => navigate(`/medecin/patient/${patient.id}/traitements`)}
+              onClick={() =>
+                navigate(`/medecin/patient/${patient.id}/traitements`)
+              }
             >
               <i className="bi bi-capsule me-2"></i> Informations
             </li>
 
             <li
               className="nav-link text-white mb-1"
-              onClick={() => navigate(`/medecin/patient/${patient.id}/consultations`)}
+              onClick={() =>
+                navigate(`/medecin/patient/${patient.id}/consultations`)
+              }
             >
               <i className="bi bi-clipboard-pulse me-2"></i> Consultations
             </li>

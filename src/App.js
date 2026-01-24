@@ -25,6 +25,8 @@ import EducationMedecin from './pages/medecin/EducationMedecin';
 import EducationPatient from './pages/patient/EducationPatient';
 import ConsultationsMedecin from './pages/medecin/ConsultationsMedecin';
 import TraitementMedecin from './pages/medecin/TraitementMedecin';
+import ChatMedecin from './pages/medecin/ChatMedecin';
+import ChatPatient from './pages/patient/ChatPatient';
 
 function App() {
   return (
@@ -53,6 +55,11 @@ function App() {
         <Route path="/equipe-soignante" element={<EquipeSoignante />} />
         <Route path="/medecin/education" element={<EducationMedecin />} />
         <Route path="/patient/education" element={<EducationPatient />} />
+        <Route path="/medecin/consultations" element={<ConsultationsMedecin />} />
+        <Route path="/medecin/traitements" element={<TraitementMedecin />} />
+        <Route path="/medecin/messagerie" element={<ChatMedecin />} />
+        <Route path="/patient/messagerie" element={<ChatPatient />} />
+
 
         {/* Routes pour le médecin avec patientId */}
         <Route path="/medecin/patient/:patientId/dashboard" element={<DashboardPatient />} />

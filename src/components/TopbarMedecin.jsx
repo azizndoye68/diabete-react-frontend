@@ -6,7 +6,7 @@ import {
   FaEnvelope,
   FaUser,
   FaUsers,
-  FaCalendarAlt ,
+  FaCalendarAlt,
   FaSignOutAlt,
 } from "react-icons/fa";
 import defaultAvatar from "../images/default-avatar.jpg";
@@ -17,7 +17,7 @@ function TopbarMedecin({ user }) {
   const location = useLocation();
 
   const navItems = [
-    { path: "/dashboard-medecin", label: "Mes patients", icon: <FaUsers  /> },
+    { path: "/dashboard-medecin", label: "Mes patients", icon: <FaUsers /> },
     { path: "/medecin/messagerie", label: "Messagerie", icon: <FaEnvelope /> },
     { path: "/medecin/stats", label: "Statistiques", icon: <FaChartLine /> },
   ];
@@ -36,13 +36,16 @@ function TopbarMedecin({ user }) {
         style={{ cursor: "pointer" }}
       >
         <Image
-          src={require("../images/SuñuDiabète1.png")}
+          src={require("../images/logo-diabete.png")}
           width={40}
           height={40}
           className="me-2"
         />
-        <span className="fw-bold text-uppercase logo-text" style={{ color: '#ffc107', textTransform: 'none' }}>
-          SuñuDiabète
+        <span
+          className="fw-bold text-uppercase"
+          style={{ fontSize: "16px", color: "#ffffff" }}
+        >
+          Suivi<span style={{ color: "#ffc107" }}>Diabète</span> SN
         </span>
       </Navbar.Brand>
 
@@ -92,7 +95,7 @@ function TopbarMedecin({ user }) {
               <FaUsers className="me-2" /> Mes équipes
             </Dropdown.Item>
             <Dropdown.Item onClick={() => navigate("/medecin/rendezvous")}>
-              <FaCalendarAlt  className="me-2" /> Rendez-vous
+              <FaCalendarAlt className="me-2" /> Rendez-vous
             </Dropdown.Item>
             <Dropdown.Divider />
             <Dropdown.Item onClick={handleLogout}>
