@@ -1,16 +1,18 @@
 import React, { useEffect, useState, useMemo } from "react";
 import DataTable from "react-data-table-component";
-import { Badge, Form, Card, Button, Modal, ListGroup } from "react-bootstrap";
+import { Badge, Form, Card, Button, Modal, ListGroup, Row, Col } from "react-bootstrap";
 import { Bell, MessageSquare, AlertTriangle, Plus } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import api from "../../services/api";
+import "./PatientsTable.css";
 
-function PatientsTable({ medecinId }) {
+function PatientsTable({ medecinId, onStatsUpdate }) {
   const [patients, setPatients] = useState([]);
   const [search, setSearch] = useState("");
   const [filterReferent, setFilterReferent] = useState(false);
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
-  // Modal pour afficher les notifications
   const [showModal, setShowModal] = useState(false);
   const [modalData, setModalData] = useState({
     patientNom: "",
@@ -18,9 +20,6 @@ function PatientsTable({ medecinId }) {
     notifications: [],
   });
 
-  /* ============================
-     🔹 CHARGEMENT DES PATIENTS
-  ============================ */
   useEffect(() => {
     if (!medecinId) return;
 
@@ -38,26 +37,22 @@ function PatientsTable({ medecinId }) {
             let traitement = null;
             let allergies = null;
 
-            // Compteurs de notifications POUR L'ÉQUIPE MÉDICALE
             let countAlertes = 0;
             let countInactivite = 0;
             let countMessages = 0;
             let notifications = [];
 
-            // 🔹 Dernière glycémie
             try {
               const mesureRes = await api.get(`/api/suivis/last?patientId=${p.id}`);
               derniereGlycemie = mesureRes.data?.glycemie ?? null;
             } catch {}
 
-            // 🔹 Dossier médical
             try {
               const dossierRes = await api.get(`/api/dossiers/patient/${p.id}`);
               traitement = dossierRes.data?.traitement ?? null;
               allergies = dossierRes.data?.allergies ?? null;
             } catch {}
 
-            // 🔹 Médecin référent
             if (p.medecinId) {
               try {
                 const medRes = await api.get(`/api/medecins/${p.medecinId}`);
@@ -66,18 +61,14 @@ function PatientsTable({ medecinId }) {
               } catch {}
             }
 
-            // 🆕 Récupérer TOUTES les notifications MÉDICALES (pour toute l'équipe)
             try {
               const notifRes = await api.get(`/api/notification-history/patient/${p.id}`);
               const allNotifications = notifRes.data || [];
 
-              // ✅ FILTRER : Garder TOUTES les notifications médicales
-              // (Si le patient est visible par ce médecin, il fait partie de l'équipe)
               notifications = allNotifications
-                .filter((n) => n.medecinId !== null) // ✅ Toutes les notifs médicales
-                .sort((a, b) => new Date(b.dateEnvoi) - new Date(a.dateEnvoi)); // Plus récent en premier
+                .filter((n) => n.medecinId !== null)
+                .sort((a, b) => new Date(b.dateEnvoi) - new Date(a.dateEnvoi));
 
-              // ✅ Compter SEULEMENT les notifications NON LUES
               notifications
                 .filter((notif) => notif.statut !== "LU")
                 .forEach((notif) => {
@@ -111,6 +102,16 @@ function PatientsTable({ medecinId }) {
         );
 
         setPatients(enriched);
+
+        // Mettre à jour les stats
+        if (onStatsUpdate) {
+          const totalAlertes = enriched.reduce((sum, p) => sum + p.countAlertes, 0);
+          const totalInactifs = enriched.reduce((sum, p) => sum + p.countInactivite, 0);
+          onStatsUpdate({
+            alertesActives: totalAlertes,
+            inactifs: totalInactifs
+          });
+        }
       } catch (err) {
         console.error("Erreur chargement patients", err);
         setPatients([]);
@@ -120,11 +121,8 @@ function PatientsTable({ medecinId }) {
     };
 
     fetchPatients();
-  }, [medecinId]);
+  }, [medecinId, onStatsUpdate]);
 
-  /* ============================
-     🆕 MARQUER NOTIFICATIONS COMME LUES
-  ============================ */
   const markNotificationsAsRead = async (notifications) => {
     try {
       await Promise.all(
@@ -137,14 +135,10 @@ function PatientsTable({ medecinId }) {
     }
   };
 
-  /* ============================
-     🆕 OUVRIR MODAL NOTIFICATIONS
-  ============================ */
   const handleShowNotifications = async (patient, type) => {
     let filteredNotifications = [];
     let titre = "";
 
-    // ✅ Toutes les notifications médicales (pour toute l'équipe)
     const medecinNotifications = patient.notifications.filter(
       (n) => n.medecinId !== null
     );
@@ -162,15 +156,12 @@ function PatientsTable({ medecinId }) {
       );
       titre = "Patients inactifs";
     } else if (type === "message") {
-      // Pour futur chat-service
       filteredNotifications = [];
       titre = "Messages du patient";
     }
 
-    // ✅ Marquer comme lues
     await markNotificationsAsRead(filteredNotifications);
 
-    // ✅ Mettre à jour l'état local (réactivité UI immédiate)
     setPatients((prev) =>
       prev.map((p) =>
         p.id === patient.id
@@ -198,9 +189,6 @@ function PatientsTable({ medecinId }) {
     setShowModal(true);
   };
 
-  /* ============================
-     🔹 FILTRES
-  ============================ */
   const filteredPatients = useMemo(() => {
     let data = [...patients];
 
@@ -219,213 +207,212 @@ function PatientsTable({ medecinId }) {
     return data;
   }, [patients, search, filterReferent]);
 
-  /* ============================
-     🔹 COLONNES DU TABLEAU
-  ============================ */
   const columns = [
     {
       name: "Prénom",
       selector: (r) => r.prenom,
       sortable: true,
-      minWidth: "120px",
-      wrap: true,
+      minWidth: "130px",
+      cell: (r) => (
+        <div className="patient-name-cell">
+          <i className="bi bi-person-circle me-2 text-primary"></i>
+          <strong>{r.prenom}</strong>
+        </div>
+      ),
     },
     {
       name: "Nom",
       selector: (r) => r.nom,
       sortable: true,
-      minWidth: "120px",
-      wrap: true,
+      minWidth: "130px",
+      cell: (r) => <strong>{r.nom}</strong>,
     },
     {
       name: "Type de diabète",
       selector: (r) => r.typeDiabete,
-      minWidth: "130px",
+      minWidth: "140px",
+      cell: (r) => (
+        <Badge 
+          bg="info" 
+          className="badge-modern"
+          style={{ background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)' }}
+        >
+          {r.typeDiabete}
+        </Badge>
+      ),
     },
     {
       name: "Allergies",
-      cell: (r) => <span>{r.allergies ?? "Aucune"}</span>,
+      cell: (r) => (
+        <span className="text-muted small">
+          {r.allergies || "Aucune"}
+        </span>
+      ),
       minWidth: "120px",
     },
     {
       name: "Sous insuline",
       cell: (r) => {
         const traitement = r.traitement?.toString().trim().toUpperCase();
+        const isInsuline = traitement === "OUI";
         return (
-          <Badge bg={traitement === "OUI" ? "success" : "secondary"}>
-            {traitement === "OUI" ? "Oui" : "Non"}
-          </Badge>
-        );
-      },
-      minWidth: "110px",
-    },
-    {
-      name: "Dernière mesure",
-      cell: (r) => {
-        if (r.derniereGlycemie === null)
-          return <Badge bg="secondary">--</Badge>;
-
-        let couleur = "";
-        if (r.derniereGlycemie < 0.7) couleur = "danger";
-        else if (r.derniereGlycemie <= 1.2) couleur = "success";
-        else if (r.derniereGlycemie <= 1.4) couleur = "warning";
-        else couleur = "danger";
-
-        return (
-          <Badge bg={couleur} style={{ textTransform: "none" }}>
-            {r.derniereGlycemie} g/L
+          <Badge 
+            bg={isInsuline ? "success" : "secondary"}
+            className="badge-modern"
+            style={isInsuline ? { background: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)' } : {}}
+          >
+            <i className={`bi ${isInsuline ? 'bi-check-circle' : 'bi-x-circle'} me-1`}></i>
+            {isInsuline ? "Oui" : "Non"}
           </Badge>
         );
       },
       minWidth: "140px",
     },
     {
+      name: "Dernière mesure",
+      cell: (r) => {
+        if (r.derniereGlycemie === null)
+          return <Badge bg="secondary" className="badge-modern">--</Badge>;
+
+        let gradient = "";
+        let icon = "";
+        if (r.derniereGlycemie < 0.7) {
+          gradient = "linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%)";
+          icon = "arrow-down-circle-fill";
+        } else if (r.derniereGlycemie <= 1.2) {
+          gradient = "linear-gradient(135deg, #51cf66 0%, #37b24d 100%)";
+          icon = "check-circle-fill";
+        } else if (r.derniereGlycemie <= 1.4) {
+          gradient = "linear-gradient(135deg, #ffd43b 0%, #fab005 100%)";
+          icon = "exclamation-circle-fill";
+        } else {
+          gradient = "linear-gradient(135deg, #ff8787 0%, #ff6b6b 100%)";
+          icon = "arrow-up-circle-fill";
+        }
+
+        return (
+          <Badge 
+            className="badge-modern glycemie-badge"
+            style={{ background: gradient }}
+          >
+            <i className={`bi bi-${icon} me-1`}></i>
+            {r.derniereGlycemie} g/L
+          </Badge>
+        );
+      },
+      minWidth: "150px",
+    },
+    {
       name: "Notifications",
       cell: (r) => (
-        <div className="d-flex gap-3 align-items-center">
-          {/* 🔴 ALERTES CRITIQUES (Hypo/Hyper sévères) */}
+        <div className="notifications-cell">
           <div
+            className="notif-icon-wrapper"
             onClick={(e) => {
               e.stopPropagation();
               handleShowNotifications(r, "alerte");
             }}
-            style={{
-              cursor: "pointer",
-              position: "relative",
-            }}
             title="Alertes critiques"
           >
-            <AlertTriangle
-              size={22}
-              color="#dc3545"
-              style={{ opacity: r.countAlertes > 0 ? 1 : 0.3 }}
-            />
+            <AlertTriangle size={22} className={r.countAlertes > 0 ? "icon-active" : "icon-inactive"} />
             {r.countAlertes > 0 && (
-              <Badge
-                bg="danger"
-                pill
-                style={{
-                  position: "absolute",
-                  top: "-8px",
-                  right: "-8px",
-                  fontSize: "10px",
-                  minWidth: "18px",
-                  height: "18px",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
+              <Badge bg="danger" pill className="notif-badge">
                 {r.countAlertes}
               </Badge>
             )}
           </div>
 
-          {/* 🟡 INACTIVITÉ (Patients sans mesure depuis X jours) */}
           <div
+            className="notif-icon-wrapper"
             onClick={(e) => {
               e.stopPropagation();
               handleShowNotifications(r, "inactivite");
             }}
-            style={{
-              cursor: "pointer",
-              position: "relative",
-            }}
             title="Patients inactifs"
           >
-            <Bell
-              size={22}
-              color="#ffc107"
-              style={{ opacity: r.countInactivite > 0 ? 1 : 0.3 }}
-            />
+            <Bell size={22} className={r.countInactivite > 0 ? "icon-active icon-warning" : "icon-inactive"} />
             {r.countInactivite > 0 && (
-              <Badge
-                bg="warning"
-                pill
-                style={{
-                  position: "absolute",
-                  top: "-8px",
-                  right: "-8px",
-                  fontSize: "10px",
-                  minWidth: "18px",
-                  height: "18px",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  color: "#000",
-                }}
-              >
+              <Badge bg="warning" pill className="notif-badge notif-badge-warning">
                 {r.countInactivite}
               </Badge>
             )}
           </div>
 
-          {/* 🔵 MESSAGES (Chat avec le patient - futur chat-service) */}
           <div
+            className="notif-icon-wrapper"
             onClick={(e) => {
               e.stopPropagation();
               handleShowNotifications(r, "message");
             }}
-            style={{
-              cursor: "pointer",
-              position: "relative",
-            }}
             title="Messages du patient"
           >
-            <MessageSquare
-              size={22}
-              color="#0d6efd"
-              style={{ opacity: r.countMessages > 0 ? 1 : 0.3 }}
-            />
+            <MessageSquare size={22} className={r.countMessages > 0 ? "icon-active icon-primary" : "icon-inactive"} />
             {r.countMessages > 0 && (
-              <Badge
-                bg="primary"
-                pill
-                style={{
-                  position: "absolute",
-                  top: "-8px",
-                  right: "-8px",
-                  fontSize: "10px",
-                  minWidth: "18px",
-                  height: "18px",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
+              <Badge bg="primary" pill className="notif-badge notif-badge-primary">
                 {r.countMessages}
               </Badge>
             )}
           </div>
         </div>
       ),
-      minWidth: "160px",
+      minWidth: "180px",
     },
   ];
 
-  /* ============================
-     🔹 STYLES DATA TABLE
-  ============================ */
   const customStyles = {
-    header: {
-      style: { fontSize: "20px", fontWeight: "600", color: "#2f855a" },
+    table: {
+      style: {
+        backgroundColor: 'white',
+        borderRadius: '16px',
+      },
     },
     headRow: {
       style: {
-        backgroundColor: "#e6f4ea",
-        fontSize: "14px",
-        fontWeight: "600",
-        color: "#2f855a",
-        minHeight: "50px",
+        background: 'linear-gradient(135deg, #f8f9ff 0%, #ffffff 100%)',
+        borderBottom: '2px solid #e9ecef',
+        fontSize: '14px',
+        fontWeight: '700',
+        color: '#2d3748',
+        minHeight: '60px',
+        borderTopLeftRadius: '16px',
+        borderTopRightRadius: '16px',
       },
     },
-    rows: { style: { minHeight: "50px", fontSize: "14px" } },
-    pagination: { style: { borderTop: "1px solid #dee2e6" } },
+    headCells: {
+      style: {
+        paddingLeft: '20px',
+        paddingRight: '20px',
+      },
+    },
+    cells: {
+      style: {
+        paddingLeft: '20px',
+        paddingRight: '20px',
+      },
+    },
+    rows: {
+      style: {
+        minHeight: '65px',
+        fontSize: '14px',
+        '&:hover': {
+          backgroundColor: '#f8f9ff',
+          cursor: 'pointer',
+          transform: 'scale(1.005)',
+          boxShadow: '0 2px 8px rgba(102, 126, 234, 0.1)',
+        },
+        transition: 'all 0.2s ease',
+      },
+    },
+    pagination: {
+      style: {
+        borderTop: '2px solid #e9ecef',
+        minHeight: '60px',
+        borderBottomLeftRadius: '16px',
+        borderBottomRightRadius: '16px',
+      },
+    },
   };
 
-  /* ============================
-     🔹 FORMATER LA DATE
-  ============================ */
   const formatDate = (dateString) => {
     if (!dateString) return "--";
     const date = new Date(dateString);
@@ -438,138 +425,185 @@ function PatientsTable({ medecinId }) {
     });
   };
 
-  /* ============================
-     🔹 BADGE TYPE ALERTE
-  ============================ */
   const getBadgeType = (typeAlerte) => {
     switch (typeAlerte) {
       case "HYPOGLYCEMIE_SEVERE":
       case "HYPERGLYCEMIE_SEVERE":
-        return "danger";
+        return { bg: "danger", gradient: "linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%)" };
       case "INACTIVITE_PATIENT":
-        return "warning";
+        return { bg: "warning", gradient: "linear-gradient(135deg, #ffd43b 0%, #fab005 100%)" };
       default:
-        return "secondary";
+        return { bg: "secondary", gradient: "linear-gradient(135deg, #868e96 0%, #495057 100%)" };
     }
   };
 
-  /* ============================
-     🔹 RENDER
-  ============================ */
   return (
     <>
-      <div className="p-3 bg-white rounded shadow-sm">
-        {/* Barre actions */}
-        <div className="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-3">
-          <Form.Check
-            type="switch"
-            label="Afficher uniquement mes patients"
-            checked={filterReferent}
-            onChange={(e) => setFilterReferent(e.target.checked)}
-          />
-          <div className="d-flex align-items-center gap-2">
-            <Form.Control
-              placeholder="Rechercher..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              style={{ width: "220px" }}
-            />
-            <Button
-              variant="success"
-              onClick={() => (window.location.href = "/register/patient")}
-            >
-              <Plus size={16} className="me-1" />
-              Nouveau patient
-            </Button>
+      <Card className="patients-table-card">
+        <Card.Body className="p-4">
+          {/* Barre d'actions */}
+          <div className="table-actions-bar">
+            <div className="d-flex align-items-center gap-3 flex-wrap">
+              <Form.Check
+                type="switch"
+                label="Afficher uniquement mes patients"
+                checked={filterReferent}
+                onChange={(e) => setFilterReferent(e.target.checked)}
+                className="filter-switch"
+              />
+              <Badge bg="light" text="dark" className="count-badge">
+                <i className="bi bi-people-fill me-2"></i>
+                {filteredPatients.length} patient{filteredPatients.length > 1 ? 's' : ''}
+              </Badge>
+            </div>
+            <div className="d-flex align-items-center gap-2 flex-wrap">
+              <Form.Control
+                placeholder="Rechercher un patient..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="search-input"
+              />
+              <Button
+                variant="primary"
+                className="btn-add-patient"
+                onClick={() => navigate("/register/patient")}
+              >
+                <Plus size={18} className="me-2" />
+                Nouveau patient
+              </Button>
+            </div>
           </div>
-        </div>
 
-        <DataTable
-          columns={columns}
-          data={filteredPatients}
-          progressPending={loading}
-          pagination
-          paginationPerPage={5}
-          paginationRowsPerPageOptions={[5, 10, 15, 20]}
-          highlightOnHover
-          pointerOnHover
-          responsive
-          striped
-          expandableRows
-          expandOnRowClicked={false}
-          onRowClicked={(row) =>
-            (window.location.href = `/medecin/patient/${row.id}/dashboard`)
-          }
-          expandableRowsComponent={({ data }) => (
-            <Card body className="mb-2">
-              <p>
-                <strong>Téléphone :</strong> {data.telephone ?? "--"}
-              </p>
-              <p>
-                <strong>Adresse :</strong> {data.adresse ?? "--"}
-              </p>
-              <p>
-                <strong>Ville :</strong> {data.ville ?? "--"}
-              </p>
-              <p>
-                <strong>Région :</strong> {data.region ?? "--"}
-              </p>
-              <p>
-                <strong>Date d'inscription :</strong>{" "}
-                {data.dateEnregistrement ?? "--"}
-              </p>
-              <p>
-                <strong>Médecin référent :</strong>{" "}
-                {data.medecinPrenom
-                  ? `${data.medecinPrenom} ${data.medecinNom}`
-                  : "Non référencé"}
-              </p>
-            </Card>
-          )}
-          customStyles={customStyles}
-        />
-      </div>
+          {/* Table */}
+          <DataTable
+            columns={columns}
+            data={filteredPatients}
+            progressPending={loading}
+            pagination
+            paginationPerPage={10}
+            paginationRowsPerPageOptions={[5, 10, 15, 20, 30]}
+            highlightOnHover
+            pointerOnHover
+            responsive
+            striped
+            expandableRows
+            expandOnRowClicked={false}
+            onRowClicked={(row) => navigate(`/medecin/patient/${row.id}/dashboard`)}
+            expandableRowsComponent={({ data }) => (
+              <Card className="expanded-row-card">
+                <Card.Body className="p-4">
+                  <Row>
+                    <Col md={6}>
+                      <div className="info-item">
+                        <i className="bi bi-telephone-fill me-2 text-primary"></i>
+                        <strong>Téléphone :</strong> {data.telephone || "--"}
+                      </div>
+                      <div className="info-item">
+                        <i className="bi bi-house-fill me-2 text-primary"></i>
+                        <strong>Adresse :</strong> {data.adresse || "--"}
+                      </div>
+                      <div className="info-item">
+                        <i className="bi bi-geo-alt-fill me-2 text-primary"></i>
+                        <strong>Ville :</strong> {data.ville || "--"}
+                      </div>
+                    </Col>
+                    <Col md={6}>
+                      <div className="info-item">
+                        <i className="bi bi-map-fill me-2 text-primary"></i>
+                        <strong>Région :</strong> {data.region || "--"}
+                      </div>
+                      <div className="info-item">
+                        <i className="bi bi-calendar-check-fill me-2 text-primary"></i>
+                        <strong>Date d'inscription :</strong> {data.dateEnregistrement || "--"}
+                      </div>
+                      <div className="info-item">
+                        <i className="bi bi-person-badge-fill me-2 text-primary"></i>
+                        <strong>Médecin référent :</strong>{" "}
+                        {data.medecinPrenom
+                          ? `Dr. ${data.medecinPrenom} ${data.medecinNom}`
+                          : "Non référencé"}
+                      </div>
+                    </Col>
+                  </Row>
+                </Card.Body>
+              </Card>
+            )}
+            customStyles={customStyles}
+            noDataComponent={
+              <div className="no-data-state p-5">
+                <i className="bi bi-inbox" style={{ fontSize: '4rem', color: '#e9ecef' }}></i>
+                <p className="text-muted mt-3 mb-0">Aucun patient trouvé</p>
+              </div>
+            }
+          />
+        </Card.Body>
+      </Card>
 
-      {/* MODAL POUR AFFICHER LES NOTIFICATIONS */}
-      <Modal show={showModal} onHide={() => setShowModal(false)} size="lg" centered>
-        <Modal.Header closeButton>
-          <Modal.Title>
+      {/* Modal notifications */}
+      <Modal 
+        show={showModal} 
+        onHide={() => setShowModal(false)} 
+        size="lg" 
+        centered
+        className="notifications-modal"
+      >
+        <Modal.Header 
+          closeButton 
+          className="modal-header-custom"
+          style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}
+        >
+          <Modal.Title className="text-white">
+            <i className="bi bi-bell-fill me-2"></i>
             {modalData.type} - {modalData.patientNom}
           </Modal.Title>
         </Modal.Header>
-        <Modal.Body style={{ maxHeight: "500px", overflowY: "auto" }}>
+        <Modal.Body className="modal-body-custom">
           {modalData.notifications.length === 0 ? (
-            <p className="text-muted text-center">Aucune notification</p>
+            <div className="no-notifications-state">
+              <i className="bi bi-check-circle" style={{ fontSize: '4rem', color: '#51cf66' }}></i>
+              <p className="text-muted mt-3 mb-0">Aucune notification</p>
+            </div>
           ) : (
             <ListGroup variant="flush">
-              {modalData.notifications.map((notif, idx) => (
-                <ListGroup.Item key={idx} className="border-0 py-3">
-                  <div className="d-flex justify-content-between align-items-start mb-2">
-                    <Badge bg={getBadgeType(notif.typeAlerte)}>
-                      {notif.typeAlerte?.replace(/_/g, " ")}
-                    </Badge>
-                    <small className="text-muted">
-                      {formatDate(notif.dateEnvoi)}
-                    </small>
-                  </div>
-                  <p className="mb-2" style={{ whiteSpace: "pre-wrap" }}>
-                    {notif.message}
-                  </p>
-                  <div className="d-flex gap-2">
-                    <Badge bg="light" text="dark">
-                      {notif.canal}
-                    </Badge>
-                    <Badge bg={notif.statut === "ENVOYE" ? "success" : "danger"}>
-                      {notif.statut}
-                    </Badge>
-                  </div>
-                </ListGroup.Item>
-              ))}
+              {modalData.notifications.map((notif, idx) => {
+                const badgeConfig = getBadgeType(notif.typeAlerte);
+                return (
+                  <ListGroup.Item key={idx} className="notification-item">
+                    <div className="d-flex justify-content-between align-items-start mb-2">
+                      <Badge 
+                        className="badge-modern"
+                        style={{ background: badgeConfig.gradient }}
+                      >
+                        {notif.typeAlerte?.replace(/_/g, " ")}
+                      </Badge>
+                      <small className="text-muted">
+                        <i className="bi bi-clock me-1"></i>
+                        {formatDate(notif.dateEnvoi)}
+                      </small>
+                    </div>
+                    <p className="mb-2 notification-message">{notif.message}</p>
+                    <div className="d-flex gap-2">
+                      <Badge bg="light" text="dark">
+                        <i className="bi bi-envelope me-1"></i>
+                        {notif.canal}
+                      </Badge>
+                      <Badge bg={notif.statut === "ENVOYE" ? "success" : "danger"}>
+                        {notif.statut}
+                      </Badge>
+                    </div>
+                  </ListGroup.Item>
+                );
+              })}
             </ListGroup>
           )}
         </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowModal(false)}>
+        <Modal.Footer className="modal-footer-custom">
+          <Button 
+            variant="primary" 
+            onClick={() => setShowModal(false)}
+            className="btn-close-modal"
+          >
+            <i className="bi bi-x-circle me-2"></i>
             Fermer
           </Button>
         </Modal.Footer>

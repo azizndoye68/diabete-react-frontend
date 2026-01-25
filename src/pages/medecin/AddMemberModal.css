@@ -1,0 +1,395 @@
+/* ==================== */
+/* MODAL PERSONNALISÉE */
+/* ==================== */
+.add-member-modal .modal-content {
+  border: none;
+  border-radius: 20px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+}
+
+/* ==================== */
+/* EN-TÊTE MODAL */
+/* ==================== */
+.modal-header-custom {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 1.75rem 2rem;
+  border: none;
+  position: relative;
+  overflow: hidden;
+}
+
+.modal-header-custom::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -10%;
+  width: 200px;
+  height: 200px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+}
+
+.modal-header-custom .btn-close {
+  filter: brightness(0) invert(1);
+  opacity: 0.8;
+  position: relative;
+  z-index: 2;
+}
+
+.modal-header-custom .btn-close:hover {
+  opacity: 1;
+}
+
+.modal-header-content {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  position: relative;
+  z-index: 1;
+}
+
+.modal-icon {
+  width: 60px;
+  height: 60px;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  flex-shrink: 0;
+}
+
+.modal-title-custom {
+  font-size: 1.5rem;
+  font-weight: 800;
+  margin: 0;
+  color: white;
+}
+
+.modal-subtitle {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.95rem;
+  margin-top: 0.25rem;
+}
+
+/* ==================== */
+/* CORPS MODAL */
+/* ==================== */
+.modal-body-custom {
+  padding: 2rem;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+/* Scrollbar personnalisée */
+.modal-body-custom::-webkit-scrollbar {
+  width: 8px;
+}
+
+.modal-body-custom::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.modal-body-custom::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 10px;
+}
+
+/* ==================== */
+/* SECTION RECHERCHE */
+/* ==================== */
+.search-section {
+  margin-bottom: 1.5rem;
+}
+
+.search-input-group {
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+}
+
+.search-icon {
+  background: white;
+  border: 2px solid #e0e0e0;
+  border-right: none;
+  color: #667eea;
+  font-size: 1.1rem;
+}
+
+.search-input {
+  border: 2px solid #e0e0e0;
+  border-left: none;
+  padding: 0.75rem 1rem;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+}
+
+.search-input:focus {
+  border-color: #667eea;
+  box-shadow: none;
+}
+
+.search-input:focus + .search-icon {
+  border-color: #667eea;
+}
+
+.clear-search {
+  background: white;
+  border: 2px solid #e0e0e0;
+  border-left: none;
+  color: #6c757d;
+  padding: 0 1rem;
+  transition: all 0.3s ease;
+}
+
+.clear-search:hover {
+  color: #dc3545;
+  background: white;
+}
+
+/* ==================== */
+/* ÉTATS */
+/* ==================== */
+.loading-state,
+.empty-state {
+  text-align: center;
+  padding: 3rem 1rem;
+}
+
+.loading-state p {
+  margin-top: 1rem;
+  color: #6c757d;
+  font-size: 0.95rem;
+}
+
+.empty-icon {
+  font-size: 5rem;
+  color: #e9ecef;
+  margin-bottom: 1.5rem;
+}
+
+.empty-icon i {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.empty-state h5 {
+  color: #2c3e50;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+/* ==================== */
+/* GRILLE DES MÉDECINS */
+/* ==================== */
+.medecins-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+.medecin-card {
+  border: 2px solid #e0e0e0 !important;
+  border-radius: 16px;
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.medecin-card:hover {
+  border-color: #667eea !important;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.15);
+}
+
+.medecin-card .card-body {
+  padding: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.medecin-avatar {
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 2.5rem;
+  flex-shrink: 0;
+}
+
+.medecin-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.medecin-name {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #2c3e50;
+  margin-bottom: 0.5rem;
+}
+
+.specialite-badge {
+  font-size: 0.8rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: 8px;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  display: inline-flex;
+  align-items: center;
+}
+
+.medecin-contact {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-size: 0.85rem;
+  color: #6c757d;
+}
+
+.medecin-contact span {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.medecin-contact i {
+  color: #667eea;
+  width: 16px;
+}
+
+.btn-add-medecin {
+  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+  border: none;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.btn-add-medecin:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+  background: linear-gradient(135deg, #20c997 0%, #28a745 100%);
+}
+
+.btn-add-medecin:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* ==================== */
+/* PIED DE MODAL */
+/* ==================== */
+.modal-footer-custom {
+  background: #f8f9fa;
+  padding: 1.25rem 2rem;
+  border: none;
+}
+
+.btn-cancel {
+  background: white;
+  border: 2px solid #e0e0e0;
+  color: #495057;
+  padding: 0.75rem 1.5rem;
+  border-radius: 12px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-cancel:hover {
+  background: #f8f9fa;
+  border-color: #667eea;
+  color: #667eea;
+  transform: translateY(-2px);
+}
+
+/* ==================== */
+/* RESPONSIVE */
+/* ==================== */
+@media (max-width: 768px) {
+  .modal-header-custom {
+    padding: 1.5rem;
+  }
+
+  .modal-header-content {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .modal-icon {
+    width: 50px;
+    height: 50px;
+    font-size: 1.75rem;
+  }
+
+  .modal-title-custom {
+    font-size: 1.25rem;
+  }
+
+  .modal-body-custom {
+    padding: 1.5rem;
+    max-height: 50vh;
+  }
+
+  .medecin-card .card-body {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .medecin-info {
+    width: 100%;
+  }
+
+  .medecin-contact {
+    align-items: center;
+  }
+
+  .btn-add-medecin {
+    width: 100%;
+  }
+}
+
+@media (max-width: 576px) {
+  .modal-header-custom {
+    padding: 1.25rem;
+  }
+
+  .modal-body-custom {
+    padding: 1.25rem;
+  }
+
+  .modal-footer-custom {
+    padding: 1rem 1.25rem;
+  }
+
+  .medecin-avatar {
+    width: 50px;
+    height: 50px;
+    font-size: 2rem;
+  }
+
+  .medecin-name {
+    font-size: 1rem;
+  }
+
+  .empty-icon {
+    font-size: 4rem;
+  }
+}

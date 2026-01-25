@@ -385,3 +385,212 @@
     justify-content: flex-start;
   }
 }
+
+/* ==================== */
+/* ONGLETS PERSONNALISÉS */
+/* ==================== */
+.tabs-card-carnet {
+  border: none !important;
+  border-radius: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  background: white;
+}
+
+.tabs-header-carnet {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  padding: 1.5rem;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.custom-tabs-carnet {
+  display: flex;
+  gap: 1rem;
+  border: none !important;
+  background: transparent;
+  flex-wrap: wrap;
+}
+
+.custom-tabs-carnet .nav-item {
+  flex: 1;
+  min-width: 200px;
+}
+
+.tab-link-carnet {
+  display: flex !important;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.25rem 1.5rem !important;
+  border: 2px solid #e0e0e0 !important;
+  border-radius: 16px !important;
+  background: white !important;
+  color: #495057 !important;
+  transition: all 0.3s ease !important;
+  text-decoration: none;
+  height: 100%;
+}
+
+.tab-link-carnet:hover {
+  border-color: #667eea !important;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.15);
+}
+
+.tab-link-carnet.active {
+  border-color: #667eea !important;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%) !important;
+  box-shadow: 0 4px 20px rgba(102, 126, 234, 0.2);
+}
+
+.tab-icon-carnet {
+  width: 50px;
+  height: 50px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.tab-text-carnet {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.tab-title-carnet {
+  font-weight: 700;
+  font-size: 1rem;
+  color: #2c3e50;
+}
+
+.tab-text-carnet small {
+  color: #6c757d;
+  font-size: 0.85rem;
+}
+
+.tabs-content-carnet {
+  min-height: 400px;
+}
+
+/* ==================== */
+/* JOURNAL DE BORD */
+/* ==================== */
+.journal-card {
+  border-left: 5px solid transparent !important;
+  background: linear-gradient(to right, rgba(79, 172, 254, 0.05), white) !important;
+}
+
+.journal-card::before {
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%) !important;
+}
+
+.journal-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  background: #f8f9fa;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+}
+
+.journal-item:hover {
+  background: #e9ecef;
+  transform: translateX(3px);
+}
+
+.journal-item i {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+  margin-top: 0.25rem;
+}
+
+.journal-item small {
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-size: 0.75rem;
+}
+
+.journal-item p {
+  font-size: 0.95rem;
+  color: #495057;
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+/* ==================== */
+/* RESPONSIVE */
+/* ==================== */
+@media (max-width: 992px) {
+  .tabs-header-carnet {
+    padding: 1rem;
+  }
+
+  .custom-tabs-carnet {
+    flex-direction: column;
+  }
+
+  .custom-tabs-carnet .nav-item {
+    min-width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .tab-link-carnet {
+    padding: 1rem !important;
+  }
+
+  .tab-icon-carnet {
+    width: 45px;
+    height: 45px;
+    font-size: 1.3rem;
+  }
+
+  .tab-title-carnet {
+    font-size: 0.95rem;
+  }
+
+  .tab-text-carnet small {
+    font-size: 0.8rem;
+  }
+
+  .journal-item {
+    padding: 0.5rem;
+  }
+
+  .journal-item i {
+    font-size: 1.3rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .mesure-card .row {
+    gap: 1rem;
+  }
+
+  .mesure-card .col-md-3 {
+    width: 100%;
+    text-align: left !important;
+  }
+
+  .mesure-value {
+    justify-content: flex-start;
+  }
+
+  .tabs-content-carnet {
+    padding: 1.5rem !important;
+  }
+
+  .journal-item {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .journal-item i {
+    font-size: 1.2rem;
+  }
+}

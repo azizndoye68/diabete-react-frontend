@@ -1,7 +1,7 @@
 // src/pages/patient/EducationPatient.jsx
 import React, { useEffect, useState } from "react";
-import { Card, Row, Col, Button ,Spinner } from "react-bootstrap";
-import { useParams, useNavigate } from "react-router-dom";
+import { Card, Row, Col, Button, Spinner } from "react-bootstrap";
+import { useParams } from "react-router-dom";
 import SidebarPatient from "../../components/SidebarPatient";
 import AideModal from "../../components/AideModal";
 import { getContenus } from "../../services/patientService";
@@ -10,7 +10,6 @@ import "./EducationPatient.css";
 
 export default function EducationPatient() {
   const { patientId } = useParams();
-  const navigate = useNavigate();
 
   const [contenus, setContenus] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -52,7 +51,9 @@ export default function EducationPatient() {
         } else {
           const profileRes = await api.get("/api/auth/profile");
           const userData = profileRes.data;
-          const patientRes = await api.get(`/api/patients/byUtilisateur/${userData.id}`);
+          const patientRes = await api.get(
+            `/api/patients/byUtilisateur/${userData.id}`,
+          );
           patientData = patientRes.data;
         }
 
@@ -85,39 +86,40 @@ export default function EducationPatient() {
       VIDEO: {
         icon: "bi-play-circle-fill",
         gradient: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-        color: "#667eea"
+        color: "#667eea",
       },
       PDF: {
         icon: "bi-file-pdf-fill",
         gradient: "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)",
-        color: "#f5576c"
+        color: "#f5576c",
       },
       ARTICLE: {
         icon: "bi-newspaper",
         gradient: "linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)",
-        color: "#4facfe"
-      }
+        color: "#4facfe",
+      },
     };
     return configs[type] || configs.ARTICLE;
   };
 
   // Filtrer les contenus par type
-  const filteredContenus = selectedType === "ALL" 
-    ? contenus 
-    : contenus.filter(c => c.type === selectedType);
+  const filteredContenus =
+    selectedType === "ALL"
+      ? contenus
+      : contenus.filter((c) => c.type === selectedType);
 
   // Compter les contenus par type
   const countByType = {
     ALL: contenus.length,
-    VIDEO: contenus.filter(c => c.type === "VIDEO").length,
-    PDF: contenus.filter(c => c.type === "PDF").length,
-    ARTICLE: contenus.filter(c => c.type === "ARTICLE").length
+    VIDEO: contenus.filter((c) => c.type === "VIDEO").length,
+    PDF: contenus.filter((c) => c.type === "PDF").length,
+    ARTICLE: contenus.filter((c) => c.type === "ARTICLE").length,
   };
 
   return (
     <div className="education-wrapper">
-      <SidebarPatient 
-        patient={patient} 
+      <SidebarPatient
+        patient={patient}
         isMedecin={!!patientId}
         onShowAide={() => setShowAide(true)}
       />
@@ -138,23 +140,12 @@ export default function EducationPatient() {
               </div>
               <div className="header-time">
                 <div className="time-display">
-                  {currentTime.toLocaleTimeString('fr-FR', {
-                    hour: '2-digit',
-                    minute: '2-digit',
+                  {currentTime.toLocaleTimeString("fr-FR", {
+                    hour: "2-digit",
+                    minute: "2-digit",
                   })}
                 </div>
               </div>
-            </div>
-
-            <div className="header-actions">
-              <Button
-                variant="light"
-                className="action-header-btn"
-                onClick={() => navigate(patientId ? `/medecin/patient/${patientId}` : '/dashboard-patient')}
-              >
-                <i className="bi bi-arrow-left me-2"></i>
-                Retour
-              </Button>
             </div>
           </div>
         </div>
@@ -167,7 +158,13 @@ export default function EducationPatient() {
               <Card className="stat-card-mini">
                 <Card.Body className="p-3">
                   <div className="d-flex align-items-center">
-                    <div className="mini-icon" style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
+                    <div
+                      className="mini-icon"
+                      style={{
+                        background:
+                          "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                      }}
+                    >
                       <i className="bi bi-collection-fill"></i>
                     </div>
                     <div className="ms-3">
@@ -182,7 +179,13 @@ export default function EducationPatient() {
               <Card className="stat-card-mini">
                 <Card.Body className="p-3">
                   <div className="d-flex align-items-center">
-                    <div className="mini-icon" style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
+                    <div
+                      className="mini-icon"
+                      style={{
+                        background:
+                          "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                      }}
+                    >
                       <i className="bi bi-play-circle-fill"></i>
                     </div>
                     <div className="ms-3">
@@ -197,7 +200,13 @@ export default function EducationPatient() {
               <Card className="stat-card-mini">
                 <Card.Body className="p-3">
                   <div className="d-flex align-items-center">
-                    <div className="mini-icon" style={{ background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)' }}>
+                    <div
+                      className="mini-icon"
+                      style={{
+                        background:
+                          "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)",
+                      }}
+                    >
                       <i className="bi bi-file-pdf-fill"></i>
                     </div>
                     <div className="ms-3">
@@ -212,7 +221,13 @@ export default function EducationPatient() {
               <Card className="stat-card-mini">
                 <Card.Body className="p-3">
                   <div className="d-flex align-items-center">
-                    <div className="mini-icon" style={{ background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)' }}>
+                    <div
+                      className="mini-icon"
+                      style={{
+                        background:
+                          "linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)",
+                      }}
+                    >
                       <i className="bi bi-newspaper"></i>
                     </div>
                     <div className="ms-3">
@@ -235,7 +250,9 @@ export default function EducationPatient() {
                 </div>
                 <div className="filter-buttons">
                   <Button
-                    variant={selectedType === "ALL" ? "primary" : "outline-secondary"}
+                    variant={
+                      selectedType === "ALL" ? "primary" : "outline-secondary"
+                    }
                     size="sm"
                     className="filter-btn me-2"
                     onClick={() => setSelectedType("ALL")}
@@ -244,7 +261,9 @@ export default function EducationPatient() {
                     Tous ({countByType.ALL})
                   </Button>
                   <Button
-                    variant={selectedType === "VIDEO" ? "primary" : "outline-secondary"}
+                    variant={
+                      selectedType === "VIDEO" ? "primary" : "outline-secondary"
+                    }
                     size="sm"
                     className="filter-btn me-2"
                     onClick={() => setSelectedType("VIDEO")}
@@ -253,7 +272,9 @@ export default function EducationPatient() {
                     Vidéos ({countByType.VIDEO})
                   </Button>
                   <Button
-                    variant={selectedType === "PDF" ? "primary" : "outline-secondary"}
+                    variant={
+                      selectedType === "PDF" ? "primary" : "outline-secondary"
+                    }
                     size="sm"
                     className="filter-btn me-2"
                     onClick={() => setSelectedType("PDF")}
@@ -262,7 +283,11 @@ export default function EducationPatient() {
                     PDF ({countByType.PDF})
                   </Button>
                   <Button
-                    variant={selectedType === "ARTICLE" ? "primary" : "outline-secondary"}
+                    variant={
+                      selectedType === "ARTICLE"
+                        ? "primary"
+                        : "outline-secondary"
+                    }
                     size="sm"
                     className="filter-btn"
                     onClick={() => setSelectedType("ARTICLE")}
@@ -279,8 +304,14 @@ export default function EducationPatient() {
           {loading ? (
             <Card className="loading-card">
               <Card.Body className="text-center p-5">
-                <Spinner animation="border" variant="primary" className="mb-3" />
-                <p className="text-muted">Chargement des contenus éducatifs...</p>
+                <Spinner
+                  animation="border"
+                  variant="primary"
+                  className="mb-3"
+                />
+                <p className="text-muted">
+                  Chargement des contenus éducatifs...
+                </p>
               </Card.Body>
             </Card>
           ) : filteredContenus.length === 0 ? (
@@ -291,10 +322,9 @@ export default function EducationPatient() {
                 </div>
                 <h4 className="mb-3">Aucun contenu disponible</h4>
                 <p className="text-muted mb-0">
-                  {selectedType === "ALL" 
+                  {selectedType === "ALL"
                     ? "Aucun contenu éducatif n'est disponible pour le moment"
-                    : `Aucun contenu de type ${selectedType.toLowerCase()} n'est disponible`
-                  }
+                    : `Aucun contenu de type ${selectedType.toLowerCase()} n'est disponible`}
                 </p>
               </Card.Body>
             </Card>
@@ -307,8 +337,8 @@ export default function EducationPatient() {
                     <Card className="content-card-modern h-100">
                       {/* Thumbnail */}
                       <div className="card-thumbnail-wrapper">
-                        <img 
-                          src={getThumbnail(c)} 
+                        <img
+                          src={getThumbnail(c)}
                           alt={c.titre}
                           className="card-thumbnail-image"
                         />
@@ -317,7 +347,7 @@ export default function EducationPatient() {
                             <i className="bi bi-play-circle-fill"></i>
                           </div>
                         )}
-                        <div 
+                        <div
                           className="type-badge-overlay"
                           style={{ background: typeConfig.gradient }}
                         >
@@ -328,16 +358,19 @@ export default function EducationPatient() {
 
                       <Card.Body className="p-4">
                         <h5 className="content-title mb-3">{c.titre}</h5>
-                        
+
                         <div className="content-meta mb-3">
                           <div className="meta-item">
                             <i className="bi bi-calendar-event me-2"></i>
                             <small className="text-muted">
-                              {new Date(c.datePublication).toLocaleDateString("fr-FR", {
-                                day: 'numeric',
-                                month: 'long',
-                                year: 'numeric'
-                              })}
+                              {new Date(c.datePublication).toLocaleDateString(
+                                "fr-FR",
+                                {
+                                  day: "numeric",
+                                  month: "long",
+                                  year: "numeric",
+                                },
+                              )}
                             </small>
                           </div>
                         </div>
