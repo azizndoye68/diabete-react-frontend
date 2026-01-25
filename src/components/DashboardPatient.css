@@ -1,30 +1,403 @@
-/* === Structure principale === */
-.dashboard-container {
-  height: 100vh;
-  overflow-y: auto;
-  padding-top: 30px !important;
+/* src/pages/DashboardPatient.css */
+
+/* Wrapper principal */
+.dashboard-wrapper {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f5f7fa 0%, #e8eef5 100%);
   position: relative;
 }
 
-/* === Icône de notification === */
-.notification-icon {
-  position: absolute;
-  top: 15px;
-  right: 30px;
-  font-size: 1.7rem;
-  cursor: pointer;
-  color: #198754; /* vert bootstrap */
+/* Contenu principal du dashboard */
+.dashboard-main-content {
+  margin-left: 280px;
+  min-height: 100vh;
+  padding: 0;
 }
 
-/* === Cartes Dashboard === */
-.dashboard-card {
-  height: 100%;
-  min-height: 260px; /* Ajuste la hauteur ICI */
+/* En-tête moderne avec gradient */
+.dashboard-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 2rem 3rem;
+  box-shadow: 0 4px 20px rgba(102, 126, 234, 0.15);
+  position: relative;
+  overflow: hidden;
+}
+
+.dashboard-header::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -10%;
+  width: 400px;
+  height: 400px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+}
+
+.header-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.welcome-section {
+  display: flex;
+  align-items: center;
+  gap: 3rem;
+}
+
+.greeting-text h1 {
+  color: white;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.greeting-text p {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 1rem;
+}
+
+.time-display {
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  padding: 1rem 2rem;
+  border-radius: 16px;
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.header-actions {
+  display: flex;
+  gap: 1rem;
+}
+
+.notification-btn {
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  border: none;
+  width: 50px;
+  height: 50px;
+  border-radius: 12px;
+  color: white;
+  font-size: 1.3rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.notification-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+}
+
+.notification-badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background: #dc3545;
+  color: white;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  font-weight: bold;
+  border: 2px solid #667eea;
+}
+
+/* Zone de contenu */
+.dashboard-content {
+  padding: 2rem 3rem;
+  max-width: 1800px;
+}
+
+/* Cartes statistiques */
+.stat-card {
+  border: none !important;
+  border-radius: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+  background: white;
+  overflow: hidden;
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+}
+
+.stat-card-primary {
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9ff 100%);
+  border-left: 5px solid #667eea !important;
+}
+
+/* Icônes de statistiques */
+.stat-icon {
+  font-size: 2.5rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Valeur de glycémie */
+.glycemie-value {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.value-number {
+  font-size: 4rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1;
+}
+
+.value-unit {
+  font-size: 1.5rem;
+  color: #6c757d;
+  font-weight: 600;
+}
+
+/* Détails de la glycémie */
+.glycemie-details {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  gap: 0.75rem;
 }
 
-.dashboard-card .card-body {
-  flex-grow: 1;
+.detail-item {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem;
+  background: rgba(102, 126, 234, 0.05);
+  border-radius: 12px;
+  color: #495057;
+  font-size: 0.95rem;
+}
+
+.detail-item i {
+  color: #667eea;
+  font-size: 1.1rem;
+}
+
+/* Mini cartes */
+.stat-card-mini {
+  border: none !important;
+  border-radius: 16px;
+  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+  background: white;
+}
+
+.stat-card-mini:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+}
+
+.mini-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  color: white;
+  flex-shrink: 0;
+}
+
+.mini-icon.bg-purple {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.mini-icon.bg-info {
+  background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+}
+
+.mini-icon.bg-warning {
+  background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%);
+}
+
+/* Conteneur de graphique */
+.chart-container {
+  min-height: 300px;
+  padding: 1rem 0;
+}
+
+/* État vide */
+.no-data-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1rem;
+  text-align: center;
+}
+
+.no-data-state i {
+  opacity: 0.3;
+}
+
+/* Boutons d'action */
+.btn-action {
+  border-radius: 12px;
+  padding: 0.75rem 1.5rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  border: none;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.btn-action:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+  background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+}
+
+/* Cartes d'action rapide */
+.action-card {
+  border: none !important;
+  border-radius: 16px;
+  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+  cursor: pointer;
+  background: white;
+}
+
+.action-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+}
+
+.action-icon {
+  width: 70px;
+  height: 70px;
+  border-radius: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  color: white;
+  margin: 0 auto;
+}
+
+.action-icon.bg-purple {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.action-icon.bg-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.action-icon.bg-info {
+  background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+}
+
+/* Badges personnalisés */
+.badge {
+  padding: 0.5rem 1rem;
+  font-weight: 600;
+  border-radius: 8px;
+  font-size: 0.85rem;
+}
+
+/* Progress bar personnalisée */
+.progress {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* Forcer la suppression de toutes les bordures vertes Bootstrap */
+.card {
+  border: 2px solid #667eea !important;
+}
+
+.card.stat-card-primary {
+  border-left: 5px solid #667eea !important;
+}
+
+/* Forcer le bouton violet */
+.btn-primary,
+.btn-action {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  border: none !important;
+  color: white !important;
+}
+
+.btn-primary:hover,
+.btn-action:hover {
+  background: linear-gradient(135deg, #764ba2 0%, #667eea 100%) !important;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+  .dashboard-main-content {
+    margin-left: 0;
+  }
+
+  .dashboard-header {
+    padding: 1.5rem;
+  }
+
+  .header-content {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .welcome-section {
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
+  }
+
+  .time-display {
+    font-size: 1.5rem;
+    padding: 0.75rem 1.5rem;
+  }
+
+  .dashboard-content {
+    padding: 1.5rem;
+  }
+
+  .value-number {
+    font-size: 3rem;
+  }
+
+  .value-unit {
+    font-size: 1.2rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .greeting-text h1 {
+    font-size: 1.5rem;
+  }
+
+  .value-number {
+    font-size: 2.5rem;
+  }
+
+  .stat-card-mini .mini-icon {
+    width: 40px;
+    height: 40px;
+    font-size: 1.2rem;
+  }
+
+  .action-icon {
+    width: 60px;
+    height: 60px;
+    font-size: 1.5rem;
+  }
 }

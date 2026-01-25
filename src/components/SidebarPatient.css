@@ -1,64 +1,246 @@
-/* Sidebar fixe à gauche */
-.sidebar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 250px; /* largeur fixe */
-  height: 100vh;
-  background-color: #198754; /* vert bootstrap success */
-  color: white;
-  display: flex;
-  flex-direction: column;
-  padding: 1.5rem;
-  box-sizing: border-box; /* inclut padding dans la largeur */
-  overflow-y: auto;
+/* src/components/SidebarPatient.css */
+
+/* Sidebar avec dégradé moderne */
+.sidebar-patient {
+  background: linear-gradient(180deg, #198754 0%, #157347 100%);
+  box-shadow: 4px 0 20px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
 }
 
-/* Conteneur principal à droite, prend tout l'espace restant */
-.content {
-  margin-left: 250px; /* espace égal à la sidebar */
-  padding: 2rem;
-  background-color: #f8f9fa;
-  height: 100vh;
-  overflow-y: auto;
+/* En-tête de l'app */
+.app-header-patient {
+  transition: transform 0.3s ease;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-/* Menu de navigation vertical */
-.sidebar ul {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  justify-content: space-between;
-  padding-left: 0;
-  margin: 0;
-  list-style: none;
+.app-header-patient:hover {
+  transform: translateY(-2px);
 }
 
-.sidebar ul li {
-  padding: 10px;
-  cursor: pointer;
-  transition: background 0.3s, color 0.3s;
-  border-radius: 5px;
+.logo-container-patient {
+  background: rgba(255, 255, 255, 0.15);
+  padding: 8px;
+  border-radius: 12px;
   display: flex;
   align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.app-header-patient:hover .logo-container-patient {
+  background: rgba(255, 255, 255, 0.25);
+  transform: rotate(5deg);
+}
+
+.logo-image-patient {
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+.app-title-patient {
+  font-size: 15px;
+  letter-spacing: 0.5px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Carte de profil */
+.profile-card-patient {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+}
+
+.profile-card-patient:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.avatar-wrapper-patient {
+  position: relative;
+}
+
+.avatar-image-patient {
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+}
+
+.profile-card-patient:hover .avatar-image-patient {
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: scale(1.05);
+}
+
+.status-dot-patient {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  width: 14px;
+  height: 14px;
+  background: #28a745;
+  border: 3px solid #198754;
+  border-radius: 50%;
+  box-shadow: 0 0 8px rgba(40, 167, 69, 0.6);
+  animation: pulse-patient 2s infinite;
+}
+
+@keyframes pulse-patient {
+  0%, 100% {
+    box-shadow: 0 0 8px rgba(40, 167, 69, 0.6);
+  }
+  50% {
+    box-shadow: 0 0 16px rgba(40, 167, 69, 0.8);
+  }
+}
+
+.profile-name-patient {
+  font-size: 16px;
+  margin-bottom: 2px;
+}
+
+.profile-role-patient {
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 13px;
   font-weight: 500;
 }
 
-.sidebar ul li i {
-  margin-right: 10px;
-  font-size: 1.2rem;
+/* Menu Navigation */
+.menu-list-patient {
+  padding: 0;
 }
 
-.sidebar ul li:hover {
-  background-color: rgba(255, 255, 255, 0.2);
+.menu-item-patient {
+  display: flex;
+  align-items: center;
+  padding: 14px 16px;
+  margin-bottom: 6px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 500;
+  font-size: 15px;
+  position: relative;
+  overflow: hidden;
+}
+
+.menu-item-patient::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 4px;
+  background: #ffc107;
+  transform: scaleY(0);
+  transition: transform 0.3s ease;
+}
+
+.menu-item-patient:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+  transform: translateX(5px);
+}
+
+.menu-item-patient:hover::before {
+  transform: scaleY(1);
+}
+
+.menu-item-patient:active {
+  transform: translateX(3px) scale(0.98);
+}
+
+.menu-icon-patient {
+  font-size: 20px;
+  margin-right: 14px;
+  min-width: 24px;
+  transition: all 0.3s ease;
+}
+
+.menu-item-patient:hover .menu-icon-patient {
+  transform: scale(1.1);
+}
+
+.menu-divider-patient {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.15);
+  margin: 16px 0;
+}
+
+/* Footer */
+.sidebar-footer-patient {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.logout-item-patient {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.logout-item-patient:hover {
+  background: rgba(220, 53, 69, 0.2);
   color: #ffc107;
 }
 
-.app-header {
-  background-color: #157347;
-  padding: 15px;
-  font-size: 18px;
-  letter-spacing: 1px;
-  border-radius: 6px;
-  margin-bottom: 20px;
+.logout-item-patient:hover .menu-icon-patient {
+  color: #ffc107;
+}
+
+/* Scrollbar personnalisée */
+.sidebar-patient nav::-webkit-scrollbar {
+  width: 6px;
+}
+
+.sidebar-patient nav::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+}
+
+.sidebar-patient nav::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+}
+
+.sidebar-patient nav::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* Animation d'entrée */
+@keyframes slideInLeft {
+  from {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.sidebar-patient {
+  animation: slideInLeft 0.4s ease-out;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .sidebar-patient {
+    width: 100% !important;
+    position: fixed !important;
+    z-index: 1050;
+  }
+
+  .app-title-patient {
+    font-size: 14px;
+  }
+
+  .menu-item-patient {
+    padding: 12px 14px;
+    font-size: 14px;
+  }
+
+  .menu-icon-patient {
+    font-size: 18px;
+    margin-right: 12px;
+  }
 }

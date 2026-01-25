@@ -1,14 +1,23 @@
 import React, { useEffect, useState } from 'react';
-import { Card } from 'react-bootstrap';
+import { Card, Row, Col } from 'react-bootstrap';
 import { useNavigate, useParams } from 'react-router-dom';
 import SidebarPatient from '../../components/SidebarPatient';
+import AideModal from '../../components/AideModal';
 import api from '../../services/api';
 import './MonSuivi.css';
 
 function MonSuivi() {
   const [patient, setPatient] = useState(null);
+  const [showAide, setShowAide] = useState(false);
+  const [currentTime, setCurrentTime] = useState(new Date());
   const navigate = useNavigate();
-  const { patientId } = useParams(); // 🔑 Récupère patientId si médecin
+  const { patientId } = useParams();
+
+  // Horloge en temps réel
+  useEffect(() => {
+    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
+    return () => clearInterval(timer);
+  }, []);
 
   useEffect(() => {
     const fetchPatient = async () => {
@@ -16,14 +25,11 @@ function MonSuivi() {
         let patientData;
 
         if (patientId) {
-          // 🔹 CAS MÉDECIN : récupérer le patient par patientId
           const patientRes = await api.get(`/api/patients/${patientId}`);
           patientData = patientRes.data;
         } else {
-          // 🔹 CAS PATIENT : récupérer son propre profil
           const profileRes = await api.get('/api/auth/profile');
           const utilisateurId = profileRes.data.id;
-
           const patientRes = await api.get(`/api/patients/byUtilisateur/${utilisateurId}`);
           patientData = patientRes.data;
         }
@@ -37,58 +43,197 @@ function MonSuivi() {
     fetchPatient();
   }, [patientId]);
 
-  // Définir les items du suivi
-const suiviItems = patient ? [
-  { 
-    title: 'Codes couleurs', 
-    icon: '/images/graph.png', 
-    path: patientId 
-      ? `/medecin/patient/${patientId}/codes-couleurs` // ✅ côté médecin
-      : `/codes-couleurs` // ✅ côté patient
-  },
-  { 
-    title: 'Traitement', 
-    icon: '/images/medical-kit.png', 
-    path: patientId 
-      ? `/medecin/patient/${patientId}/traitement`
-      : `/traitement`
-  },
-  { 
-    title: 'Dossier médical', 
-    icon: '/images/folder.png', 
-    path: patientId 
-      ? `/medecin/patient/${patientId}/dossier`
-      : `/patient/${patient.id}/dossier`
-  },
-] : [];
-
+  // Définir les items du suivi avec icônes Bootstrap
+  const suiviItems = patient ? [
+    { 
+      title: 'Codes couleurs', 
+      icon: 'bi-palette-fill',
+      gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+      description: 'Comprendre et interpréter les indicateurs',
+      path: patientId 
+        ? `/medecin/patient/${patientId}/codes-couleurs`
+        : `/codes-couleurs`
+    },
+    { 
+      title: 'Traitement', 
+      icon: 'bi-capsule-pill',
+      gradient: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+      description: 'Gérer votre médication quotidienne',
+      path: patientId 
+        ? `/medecin/patient/${patientId}/traitement`
+        : `/traitement`
+    },
+    { 
+      title: 'Dossier médical', 
+      icon: 'bi-folder2-open',
+      gradient: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+      description: 'Accéder à votre historique de santé',
+      path: patientId 
+        ? `/medecin/patient/${patientId}/dossier`
+        : `/patient/${patient.id}/dossier`
+    },
+    { 
+      title: 'Carnet de glycémie', 
+      icon: 'bi-journal-medical',
+      gradient: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
+      description: 'Consulter vos mesures de glycémie',
+      path: patientId 
+        ? `/medecin/patient/${patientId}/carnet`
+        : `/carnet`
+    },
+    { 
+      title: 'Statistiques', 
+      icon: 'bi-graph-up-arrow',
+      gradient: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
+      description: 'Analyser vos données en détail',
+      path: patientId 
+        ? `/medecin/patient/${patientId}/statistiques`
+        : `/statistiques`
+    },
+    { 
+      title: 'Rendez-vous', 
+      icon: 'bi-calendar-check',
+      gradient: 'linear-gradient(135deg, #30cfd0 0%, #330867 100%)',
+      description: 'Gérer vos consultations médicales',
+      path: patientId 
+        ? `/medecin/patient/${patientId}/rendez-vous`
+        : `/rendez-vous`
+    },
+  ] : [];
 
   return (
-    <div className="mon-suivi-page">
-      <SidebarPatient patient={patient} isMedecin={!!patientId} /> {/* Passer le flag médecin */}
+    <div className="mon-suivi-wrapper">
+      <SidebarPatient 
+        patient={patient} 
+        isMedecin={!!patientId}
+        onShowAide={() => setShowAide(true)}
+      />
 
-      <div className="main-content">
-        <h2 className="mb-4">Mon suivi</h2>
-
-        <div className="cards-wrapper">
-          {suiviItems.map((item, idx) => (
-            <Card
-              key={idx}
-              className="suivi-card"
-              onClick={() => navigate(item.path)}
-            >
-              <Card.Body>
-                <div className="icon-wrapper">
-                  <div className="circle-icon">
-                    <img src={item.icon} alt={item.title} className="suivi-icon" />
-                  </div>
+      <div className="mon-suivi-main-content">
+        {/* En-tête moderne */}
+        <div className="mon-suivi-header">
+          <div className="header-content">
+            <div className="welcome-section">
+              <div className="greeting-text">
+                <h1 className="display-6 fw-bold mb-0">
+                  <i className="bi bi-activity me-3"></i>
+                  Mon Suivi Médical
+                </h1>
+                <p className="text-muted mb-0">
+                  {patient 
+                    ? `Espace de suivi de ${patient.prenom} ${patient.nom}` 
+                    : 'Chargement...'}
+                </p>
+              </div>
+              <div className="header-time">
+                <div className="time-display">
+                  {currentTime.toLocaleTimeString('fr-FR', {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                  })}
                 </div>
-                <Card.Title className="suivi-title">{item.title}</Card.Title>
-              </Card.Body>
-            </Card>
-          ))}
+              </div>
+            </div>
+
+            <div className="header-actions">
+              <button
+                className="notification-btn"
+                onClick={() => navigate('/notifications')}
+                title="Notifications"
+              >
+                <i className="bi bi-bell-fill"></i>
+                <span className="notification-badge">3</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Contenu principal */}
+        <div className="mon-suivi-content">
+          {/* Section d'introduction */}
+          <Card className="intro-card mb-4">
+            <Card.Body className="p-4">
+              <Row className="align-items-center">
+                <Col md={8}>
+                  <h5 className="mb-2">
+                    <i className="bi bi-info-circle-fill text-primary me-2"></i>
+                    Accédez rapidement à vos outils de suivi
+                  </h5>
+                  <p className="text-muted mb-0">
+                    Gérez votre santé avec nos différents modules de suivi. Chaque section vous aide 
+                    à mieux comprendre et contrôler votre diabète.
+                  </p>
+                </Col>
+                <Col md={4} className="text-end">
+                  <div className="stats-mini">
+                    <div className="stat-item">
+                      <i className="bi bi-check-circle-fill text-success"></i>
+                      <span className="ms-2"><strong>{suiviItems.length}</strong> outils disponibles</span>
+                    </div>
+                  </div>
+                </Col>
+              </Row>
+            </Card.Body>
+          </Card>
+
+          {/* Grille des cartes de suivi */}
+          <Row className="g-4">
+            {suiviItems.map((item, idx) => (
+              <Col md={6} lg={4} key={idx}>
+                <Card
+                  className="suivi-card-modern"
+                  onClick={() => navigate(item.path)}
+                >
+                  <Card.Body className="p-4">
+                    <div className="suivi-icon-container" style={{ background: item.gradient }}>
+                      <i className={`bi ${item.icon}`}></i>
+                    </div>
+                    <h5 className="suivi-card-title mt-3 mb-2">{item.title}</h5>
+                    <p className="suivi-card-description text-muted mb-3">
+                      {item.description}
+                    </p>
+                    <div className="suivi-card-footer">
+                      <span className="access-link">
+                        Accéder
+                        <i className="bi bi-arrow-right ms-2"></i>
+                      </span>
+                    </div>
+                  </Card.Body>
+                  <div className="card-hover-effect" style={{ background: item.gradient }}></div>
+                </Card>
+              </Col>
+            ))}
+          </Row>
+
+          {/* Section d'aide rapide */}
+          <Card className="help-card mt-4">
+            <Card.Body className="p-4">
+              <Row className="align-items-center">
+                <Col md={9}>
+                  <h5 className="mb-2">
+                    <i className="bi bi-question-circle-fill me-2" style={{ color: '#667eea' }}></i>
+                    Besoin d'aide ?
+                  </h5>
+                  <p className="text-muted mb-0">
+                    Consultez notre guide d'utilisation ou contactez votre équipe médicale pour toute question.
+                  </p>
+                </Col>
+                <Col md={3} className="text-end">
+                  <button 
+                    className="btn btn-outline-primary btn-help"
+                    onClick={() => setShowAide(true)}
+                  >
+                    <i className="bi bi-book me-2"></i>
+                    Guide d'aide
+                  </button>
+                </Col>
+              </Row>
+            </Card.Body>
+          </Card>
         </div>
       </div>
+
+      <AideModal show={showAide} onHide={() => setShowAide(false)} />
     </div>
   );
 }

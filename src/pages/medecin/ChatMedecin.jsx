@@ -298,17 +298,38 @@ function ChatMedecin() {
 
   const getConversationTitle = (conv) => {
     if (conv.type === "PATIENT_EQUIPE") {
+      // Pour les conversations patient, afficher le nom du patient
       return conv.patientName || "Patient";
     } else {
+      // Pour les conversations médecin-médecin, afficher le nom de l'autre médecin
       return conv.otherMedecinName || "Médecin";
     }
   };
 
   const getConversationSubtitle = (conv) => {
-    if (conv.type === "PATIENT_EQUIPE") {
-      return `${conv.participants?.length || 0} médecins dans l'équipe`;
+    // Afficher le dernier message avec le nom de l'expéditeur
+    if (!conv.lastMessage) {
+      if (conv.type === "PATIENT_EQUIPE") {
+        return "Aucun message";
+      } else {
+        return "Conversation privée";
+      }
+    }
+
+    const senderName = conv.lastMessage.senderName;
+    const content = conv.lastMessage.content || "";
+    
+    // Tronquer le message s'il est trop long
+    const maxLength = 30;
+    const truncatedContent = content.length > maxLength 
+      ? content.substring(0, maxLength) + "..." 
+      : content;
+    
+    // Si on a un nom d'expéditeur, afficher "Nom: message", sinon juste le message
+    if (senderName) {
+      return `${senderName}: ${truncatedContent}`;
     } else {
-      return "Conversation privée";
+      return truncatedContent;
     }
   };
 
@@ -341,7 +362,7 @@ function ChatMedecin() {
   };
 
   const isMyMessage = (message) => {
-    return message.senderId === medecin?.id;
+    return message.senderId === medecin?.id && message.senderType === "MEDECIN";
   };
 
   const loadUsers = async () => {
@@ -465,8 +486,8 @@ function ChatMedecin() {
                                 {conv.lastMessageAt && formatMessageTime(conv.lastMessageAt)}
                               </small>
                             </div>
-                            <small className="text-muted text-truncate d-block">
-                              {conv.lastMessage?.content || getConversationSubtitle(conv)}
+                            <small className="text-muted text-truncate d-block" style={{ maxWidth: "200px" }}>
+                              {getConversationSubtitle(conv)}
                             </small>
                           </div>
                         </div>
@@ -494,7 +515,9 @@ function ChatMedecin() {
                       </div>
                       <div>
                         <h5 className="mb-0">{getConversationTitle(selectedConversation)}</h5>
-                        <small className="text-muted">{getConversationSubtitle(selectedConversation)}</small>
+                        <small className="text-muted">
+                          {selectedConversation.type === "PATIENT_EQUIPE" ? "Patient" : "Conversation privée"}
+                        </small>
                       </div>
                     </div>
                   </div>
@@ -511,11 +534,10 @@ function ChatMedecin() {
                           className={`message mb-3 ${isMyMessage(message) ? "message-sent" : "message-received"}`}
                         >
                           <div className="message-bubble">
-                            {!isMyMessage(message) && (
-                              <div className="message-sender text-primary fw-bold mb-1" style={{ fontSize: "0.85rem" }}>
-                                {message.senderName}
-                              </div>
-                            )}
+                            {/* Toujours afficher le nom de l'expéditeur */}
+                            <div className={`message-sender fw-bold mb-1 ${isMyMessage(message) ? "text-white" : "text-primary"}`} style={{ fontSize: "0.85rem" }}>
+                              {message.senderName}
+                            </div>
 
                             {message.messageType === "TEXT" ? (
                               <div className="message-text">{message.content}</div>

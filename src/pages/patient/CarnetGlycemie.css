@@ -1,7 +1,387 @@
-.card {
-  border-left: 5px solid #4caf50;
+/* CarnetGlycemie.css */
+
+/* Wrapper principal */
+.carnet-wrapper {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f5f7fa 0%, #e8eef5 100%);
+  position: relative;
 }
 
-.card .badge {
+/* Contenu principal */
+.carnet-main-content {
+  margin-left: 280px;
+  min-height: 100vh;
+  padding: 0;
+}
+
+/* En-tête avec le même style que Dashboard */
+.carnet-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 2rem 3rem;
+  box-shadow: 0 4px 20px rgba(102, 126, 234, 0.15);
+  position: relative;
+  overflow: hidden;
+}
+
+.carnet-header::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -10%;
+  width: 400px;
+  height: 400px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+}
+
+.header-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.welcome-section {
+  display: flex;
+  align-items: center;
+  gap: 3rem;
+  flex-wrap: wrap;
+}
+
+.greeting-text h1 {
+  color: white;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.greeting-text p {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 1rem;
+}
+
+.time-display {
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  padding: 1rem 2rem;
+  border-radius: 16px;
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.header-actions {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.action-header-btn {
+  background: rgba(255, 255, 255, 0.2) !important;
+  backdrop-filter: blur(10px);
+  border: none !important;
+  color: white !important;
+  padding: 0.75rem 1.5rem;
+  border-radius: 12px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.action-header-btn:hover {
+  background: rgba(255, 255, 255, 0.3) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* Contenu principal */
+.carnet-content {
+  padding: 2rem 3rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* État vide */
+.empty-state-card {
+  border: none !important;
+  border-radius: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  background: white;
+  margin-top: 2rem;
+}
+
+.empty-icon {
+  font-size: 5rem;
+  color: #e9ecef;
+}
+
+.empty-icon i {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Timeline container */
+.timeline-container {
+  position: relative;
+}
+
+/* Groupe de date */
+.date-group {
+  margin-bottom: 3rem;
+}
+
+.date-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  gap: 1rem;
+}
+
+.date-badge {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 1.1rem;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+}
+
+.date-line {
+  flex: 1;
+  height: 2px;
+  background: linear-gradient(to right, rgba(102, 126, 234, 0.3), transparent);
+}
+
+/* Liste des mesures */
+.mesures-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Carte de mesure */
+.mesure-card {
+  border: none !important;
+  border-radius: 16px;
+  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+  background: white;
+  overflow: hidden;
+  position: relative;
+}
+
+.mesure-card::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 5px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.mesure-card.status-low::before {
+  background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
+}
+
+.mesure-card.status-normal::before {
+  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+}
+
+.mesure-card.status-high::before {
+  background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+}
+
+.mesure-card:hover {
+  transform: translateX(5px);
+  box-shadow: 0 4px 25px rgba(0, 0, 0, 0.12);
+}
+
+.mesure-card .card-body {
+  padding: 1.5rem;
+  padding-left: 2rem;
+}
+
+/* Temps de la mesure */
+.mesure-time {
+  display: flex;
+  align-items: center;
+  font-size: 1.1rem;
+  color: #495057;
+}
+
+.mesure-time i {
+  color: #667eea;
+  font-size: 1.3rem;
+}
+
+/* Repas */
+.mesure-repas {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.mesure-repas i {
+  font-size: 1.8rem;
+}
+
+.repas-label {
+  font-weight: 600;
+  color: #495057;
+  font-size: 0.95rem;
+}
+
+/* Valeur de glycémie */
+.mesure-value {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+.mesure-value .value-number {
+  font-size: 2.5rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1;
+}
+
+.mesure-value .value-unit {
+  font-size: 1.2rem;
+  color: #6c757d;
+  font-weight: 600;
+}
+
+/* Badge de statut */
+.status-badge {
+  padding: 0.6rem 1.2rem;
+  font-weight: 600;
+  border-radius: 10px;
   font-size: 0.9rem;
+  display: inline-flex;
+  align-items: center;
+}
+
+.status-badge i {
+  font-size: 0.6rem;
+}
+
+/* Bouton d'action */
+.btn-action {
+  border-radius: 12px;
+  padding: 0.75rem 2rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  border: none;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.btn-action:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+  background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+  .carnet-main-content {
+    margin-left: 0;
+  }
+
+  .carnet-header {
+    padding: 1.5rem;
+  }
+
+  .header-content {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .welcome-section {
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
+  }
+
+  .time-display {
+    font-size: 1.5rem;
+    padding: 0.75rem 1.5rem;
+  }
+
+  .header-actions {
+    width: 100%;
+  }
+
+  .action-header-btn {
+    flex: 1;
+  }
+
+  .carnet-content {
+    padding: 1.5rem;
+  }
+
+  .date-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .date-line {
+    width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .greeting-text h1 {
+    font-size: 1.5rem;
+  }
+
+  .mesure-card .card-body {
+    padding: 1rem;
+    padding-left: 1.5rem;
+  }
+
+  .mesure-value .value-number {
+    font-size: 2rem;
+  }
+
+  .mesure-value .value-unit {
+    font-size: 1rem;
+  }
+
+  .mesure-repas i {
+    font-size: 1.5rem;
+  }
+
+  .status-badge {
+    padding: 0.5rem 1rem;
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .mesure-card .row {
+    gap: 1rem;
+  }
+
+  .mesure-card .col-md-3 {
+    width: 100%;
+    text-align: left !important;
+  }
+
+  .mesure-value {
+    justify-content: flex-start;
+  }
 }
