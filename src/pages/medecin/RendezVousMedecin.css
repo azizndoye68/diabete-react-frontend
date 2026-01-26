@@ -1,9 +1,9 @@
-/* src/pages/ConsultationsMedecin.css */
+/* src/pages/RendezVousMedecin.css */
 
 /* ==================== */
 /* LOADING */
 /* ==================== */
-.consultation-loading {
+.rdv-loading {
   min-height: 100vh;
   display: flex;
   align-items: center;
@@ -30,17 +30,17 @@
 /* ==================== */
 /* LAYOUT PRINCIPAL */
 /* ==================== */
-.consultation-row {
+.rdv-row {
   min-height: 100vh;
 }
 
-.consultations-medecin-page {
+.rdv-medecin-page {
   background: linear-gradient(135deg, #f5f7fa 0%, #e8eef5 100%);
   min-height: 100vh;
   padding: 2rem;
 }
 
-.consultation-container {
+.rdv-container {
   max-width: 1400px;
   margin: 0 auto;
 }
@@ -48,7 +48,7 @@
 /* ==================== */
 /* EN-TÊTE */
 /* ==================== */
-.consultation-header {
+.rdv-header {
   background: white;
   padding: 2rem;
   border-radius: 16px;
@@ -123,9 +123,57 @@
 }
 
 /* ==================== */
+/* ALERT SUCCÈS */
+/* ==================== */
+.success-alert-rdv {
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+  border-left: 4px solid #28a745;
+  margin-bottom: 2rem;
+  padding: 1.25rem;
+  animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.alert-content {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.alert-icon {
+  font-size: 1.75rem;
+  color: #28a745;
+  flex-shrink: 0;
+}
+
+.alert-text strong {
+  display: block;
+  color: #155724;
+  font-size: 1.1rem;
+  margin-bottom: 0.25rem;
+}
+
+.alert-text .text-muted {
+  color: #155724 !important;
+  opacity: 0.8;
+}
+
+/* ==================== */
 /* CARTE FORMULAIRE */
 /* ==================== */
-.consultation-form-card {
+.rdv-form-card {
   border: none;
   border-radius: 16px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
@@ -201,7 +249,8 @@
   box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.15);
 }
 
-.form-actions {
+.form-actions,
+.modal-actions {
   display: flex;
   gap: 1rem;
   margin-top: 2.5rem;
@@ -250,84 +299,6 @@
 }
 
 /* ==================== */
-/* CARTE SUCCÈS */
-/* ==================== */
-.success-card-consultation {
-  border: none;
-  border-radius: 16px;
-  box-shadow: 0 4px 20px rgba(40, 167, 69, 0.15);
-  background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
-  margin-bottom: 2rem;
-}
-
-.success-icon-wrapper {
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  background: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0 auto 1.5rem;
-  box-shadow: 0 4px 12px rgba(40, 167, 69, 0.2);
-}
-
-.success-icon-wrapper i {
-  font-size: 3.5rem;
-  color: #28a745;
-}
-
-.success-title {
-  font-weight: 700;
-  color: #155724;
-  margin-bottom: 1rem;
-}
-
-.success-text {
-  color: #155724;
-  font-size: 1.05rem;
-  margin-bottom: 2rem;
-}
-
-.success-actions {
-  display: flex;
-  gap: 1rem;
-  justify-content: center;
-  flex-wrap: wrap;
-}
-
-.btn-success-action {
-  padding: 0.875rem 2rem;
-  border-radius: 10px;
-  font-weight: 600;
-  transition: all 0.3s ease;
-  border: none;
-}
-
-.btn-success-action.primary {
-  background: #28a745;
-  color: white;
-}
-
-.btn-success-action.primary:hover {
-  background: #218838;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
-}
-
-.btn-success-action.secondary {
-  background: white;
-  color: #28a745;
-  border: 2px solid #28a745;
-}
-
-.btn-success-action.secondary:hover {
-  background: #28a745;
-  color: white;
-  transform: translateY(-2px);
-}
-
-/* ==================== */
 /* CARTE HISTORIQUE */
 /* ==================== */
 .history-card {
@@ -364,15 +335,15 @@
 /* ==================== */
 /* TABLE */
 /* ==================== */
-.consultation-table {
+.rdv-table {
   margin: 0;
 }
 
-.consultation-table thead {
+.rdv-table thead {
   background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
 }
 
-.consultation-table thead th {
+.rdv-table thead th {
   border: none;
   color: #2c3e50;
   font-weight: 700;
@@ -382,16 +353,16 @@
   letter-spacing: 0.5px;
 }
 
-.consultation-table tbody tr {
+.rdv-table tbody tr {
   transition: all 0.3s ease;
   border-bottom: 1px solid #f1f3f5;
 }
 
-.consultation-table tbody tr:hover {
+.rdv-table tbody tr:hover {
   background: rgba(102, 126, 234, 0.05);
 }
 
-.consultation-table tbody td {
+.rdv-table tbody td {
   padding: 1.25rem 1rem;
   vertical-align: middle;
   color: #495057;
@@ -403,37 +374,56 @@
   color: #2c3e50;
 }
 
-.motif-badge {
-  display: inline-block;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  padding: 0.4rem 0.9rem;
-  border-radius: 8px;
-  font-weight: 600;
-  font-size: 0.85rem;
-}
-
-.diagnostic-cell,
-.prescription-cell {
-  max-width: 300px;
+.motif-cell {
+  max-width: 400px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.btn-ordonnance {
-  background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+.statut-badge {
+  font-size: 0.85rem;
+  padding: 0.4rem 0.9rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+.btn-edit {
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
   border: none;
   color: white;
   font-weight: 600;
-  padding: 0.5rem 1rem;
+  padding: 0.5rem 0.75rem;
   border-radius: 8px;
   transition: all 0.3s ease;
 }
 
-.btn-ordonnance:hover {
+.btn-edit:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(67, 233, 123, 0.3);
+  box-shadow: 0 4px 12px rgba(79, 172, 254, 0.3);
+}
+
+.btn-delete {
+  background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+  border: none;
+  color: white;
+  font-weight: 600;
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.btn-delete:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(250, 112, 154, 0.3);
 }
 
 .empty-state {
@@ -442,209 +432,23 @@
 }
 
 /* ==================== */
-/* MODAL ORDONNANCE */
+/* MODAL */
 /* ==================== */
-.ordonnance-modal .modal-content {
-  border: none;
-  border-radius: 16px;
-  overflow: hidden;
+.modal-header {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-bottom: 2px solid #e9ecef;
 }
 
-.ordonnance-container {
-  background: white;
-  padding: 3rem;
-}
-
-.ordonnance-header-print {
-  display: flex;
-  align-items: center;
-  gap: 2rem;
-  margin-bottom: 2rem;
-}
-
-.ordonnance-logo {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-size: 2.5rem;
-  flex-shrink: 0;
-}
-
-.ordonnance-medecin-info h4 {
-  margin: 0 0 0.5rem 0;
+.modal-title {
   color: #2c3e50;
   font-weight: 700;
-}
-
-.ordonnance-medecin-info p {
-  margin: 0.25rem 0;
-  color: #6c757d;
-  font-size: 0.95rem;
-}
-
-.ordonnance-divider {
-  height: 2px;
-  background: linear-gradient(90deg, #667eea 0%, transparent 100%);
-  margin: 2rem 0;
-}
-
-.ordonnance-patient-info {
-  background: #f8f9fa;
-  padding: 1.5rem;
-  border-radius: 12px;
-  margin-bottom: 2rem;
-}
-
-.ordonnance-patient-info h5 {
-  font-weight: 700;
-  color: #2c3e50;
-  margin-bottom: 1rem;
-  font-size: 1.1rem;
-}
-
-.ordonnance-patient-info p {
-  margin: 0.5rem 0;
-  color: #495057;
-}
-
-.ordonnance-content {
-  margin: 2rem 0;
-}
-
-.ordonnance-section {
-  margin-bottom: 2rem;
-}
-
-.ordonnance-section h6 {
-  font-weight: 700;
-  color: #2c3e50;
-  margin-bottom: 1rem;
-  font-size: 1.1rem;
   display: flex;
   align-items: center;
 }
 
-.ordonnance-text {
-  color: #495057;
-  line-height: 1.8;
-  white-space: pre-wrap;
-}
-
-.prescription-box {
-  background: #fff9e6;
-  border-left: 4px solid #ffc107;
-  padding: 1.5rem;
-  border-radius: 8px;
-  color: #495057;
-  line-height: 1.8;
-  white-space: pre-wrap;
-  font-family: 'Courier New', monospace;
-}
-
-.ordonnance-footer {
-  margin-top: 3rem;
-  padding-top: 2rem;
-  border-top: 2px solid #e9ecef;
-}
-
-.signature-section {
-  text-align: right;
-}
-
-.signature-section p {
-  margin: 0.5rem 0;
-  color: #6c757d;
-}
-
-.signature-line {
-  margin-top: 3rem;
-  padding-top: 1rem;
-  border-top: 1px solid #2c3e50;
-  display: inline-block;
-  min-width: 250px;
-}
-
-.ordonnance-actions {
-  display: flex;
-  gap: 1rem;
-  padding: 1.5rem;
-  background: #f8f9fa;
-  justify-content: center;
-  flex-wrap: wrap;
-}
-
-.btn-print {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border: none;
-  color: white;
-  padding: 0.875rem 2rem;
-  border-radius: 10px;
-  font-weight: 600;
-  transition: all 0.3s ease;
-}
-
-.btn-print:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
-}
-
-/* ==================== */
-/* IMPRESSION */
-/* ==================== */
-@media print {
-  .no-print,
-  .consultation-header,
-  .consultation-form-card,
-  .success-card-consultation,
-  .history-card,
-  .sidebar-col,
-  .modal-backdrop {
-    display: none !important;
-  }
-
-  .ordonnance-modal {
-    position: static !important;
-    padding: 0 !important;
-  }
-
-  .ordonnance-modal .modal-dialog {
-    max-width: 100% !important;
-    margin: 0 !important;
-  }
-
-  .ordonnance-modal .modal-content {
-    box-shadow: none !important;
-    border: none !important;
-  }
-
-  .ordonnance-modal .modal-body {
-    padding: 0 !important;
-  }
-
-  .ordonnance-container {
-    padding: 2rem;
-    page-break-after: avoid;
-    page-break-inside: avoid;
-  }
-
-  body {
-    background: white !important;
-  }
-
-  * {
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
-  }
-
-  @page {
-    size: A4;
-    margin: 1cm;
-  }
+.modal-actions {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
 }
 
 /* ==================== */
@@ -657,11 +461,11 @@
 }
 
 @media (max-width: 992px) {
-  .consultations-medecin-page {
+  .rdv-medecin-page {
     padding: 1.5rem;
   }
 
-  .consultation-header {
+  .rdv-header {
     padding: 1.5rem;
   }
 
@@ -677,11 +481,11 @@
 }
 
 @media (max-width: 768px) {
-  .consultations-medecin-page {
+  .rdv-medecin-page {
     padding: 1rem;
   }
 
-  .consultation-header {
+  .rdv-header {
     flex-direction: column;
     align-items: flex-start;
     padding: 1.25rem;
@@ -705,7 +509,8 @@
     align-items: flex-start;
   }
 
-  .form-actions {
+  .form-actions,
+  .modal-actions {
     flex-direction: column;
   }
 
@@ -715,45 +520,51 @@
     min-width: auto;
   }
 
-  .consultation-table {
+  .rdv-table {
     font-size: 0.85rem;
   }
 
-  .consultation-table thead th {
+  .rdv-table thead th {
     padding: 0.75rem 0.5rem;
     font-size: 0.8rem;
   }
 
-  .consultation-table tbody td {
+  .rdv-table tbody td {
     padding: 1rem 0.5rem;
   }
 
-  .diagnostic-cell,
-  .prescription-cell {
-    max-width: 150px;
+  .motif-cell {
+    max-width: 200px;
   }
 
-  .ordonnance-container {
-    padding: 1.5rem;
-  }
-
-  .ordonnance-header-print {
+  .action-buttons {
     flex-direction: column;
-    align-items: flex-start;
+  }
+
+  .btn-edit,
+  .btn-delete {
+    width: 100%;
   }
 }
 
 @media (max-width: 576px) {
-  .success-actions {
-    flex-direction: column;
-  }
-
-  .btn-success-action {
-    width: 100%;
-  }
-
-  .history-header {
+  .header-content {
     flex-direction: column;
     align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .section-icon {
+    width: 45px;
+    height: 45px;
+    font-size: 1.35rem;
+  }
+
+  .section-title {
+    font-size: 1.25rem;
+  }
+
+  .motif-cell {
+    max-width: 150px;
   }
 }

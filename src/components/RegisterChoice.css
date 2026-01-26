@@ -1,6 +1,105 @@
 /* src/components/RegisterChoice.css */
 
 /* ==================== */
+/* TOP BAR */
+/* ==================== */
+.top-bar {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 0.75rem 0;
+  font-size: 0.9rem;
+}
+
+.top-bar-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.top-bar-left {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.top-bar-divider {
+  opacity: 0.5;
+}
+
+/* ==================== */
+/* NAVBAR */
+/* ==================== */
+.navbar-custom {
+  background: white;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  padding: 1rem 0;
+}
+
+.logo-container {
+  margin-right: 0.75rem;
+}
+
+.brand-text {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #2c3e50;
+}
+
+.brand-text .highlight {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.nav-link-help {
+  color: #5a6c7d !important;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: color 0.3s ease;
+}
+
+.nav-link-help:hover {
+  color: #667eea !important;
+}
+
+.btn-inscription,
+.btn-connexion {
+  padding: 0.6rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+  border: none;
+}
+
+.btn-inscription {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.btn-inscription:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.btn-connexion {
+  background: transparent;
+  color: #667eea;
+  border: 2px solid #667eea;
+}
+
+.btn-connexion:hover {
+  background: #667eea;
+  color: white;
+}
+
+/* ==================== */
 /* PAGE PRINCIPALE */
 /* ==================== */
 .register-choice-page {
@@ -31,6 +130,13 @@
   font-size: 1rem;
   letter-spacing: 2px;
   margin-bottom: 1rem;
+}
+
+.gradient-text {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .choice-title {
@@ -78,8 +184,11 @@
   transition: all 0.4s ease;
   overflow: hidden;
   height: 100%;
+  min-height: 600px;
   background: white;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
 }
 
 .choice-card:hover {
@@ -111,6 +220,8 @@
   align-items: center;
   position: relative;
   overflow: hidden;
+  min-height: 200px;
+  flex-shrink: 0;
 }
 
 .card-header-custom::before {
@@ -155,6 +266,9 @@
 /* Corps de carte */
 .card-body-custom {
   padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
 }
 
 .card-title-custom {
@@ -163,6 +277,12 @@
   color: #2c3e50;
   margin-bottom: 1rem;
   text-align: center;
+  line-height: 1.4;
+  min-height: 84px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 }
 
 .card-description {
@@ -170,6 +290,12 @@
   text-align: center;
   margin-bottom: 1.5rem;
   line-height: 1.7;
+  min-height: 102px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 0.95rem;
 }
 
 /* Features list */
@@ -177,20 +303,30 @@
   list-style: none;
   padding: 0;
   margin: 0 0 2rem 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 180px;
 }
 
 .card-features li {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 0.75rem;
   padding: 0.75rem 0;
   color: #5a6c7d;
   font-size: 0.95rem;
+  line-height: 1.5;
+  min-height: 60px;
 }
 
 .card-features i {
   color: #667eea;
   font-size: 1.1rem;
+  flex-shrink: 0;
+  margin-top: 0.2rem;
+  width: 20px;
+  text-align: center;
 }
 
 .medecin-card .card-features i {
@@ -209,10 +345,14 @@
   border-radius: 12px;
   font-weight: 700;
   transition: all 0.3s ease;
+  min-height: 56px;
+  flex-shrink: 0;
+  font-size: 1rem;
 }
 
 .medecin-card .card-action {
   background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%);
+  color: #2c3e50;
 }
 
 .choice-card:hover .card-action {
@@ -287,6 +427,19 @@
 /* RESPONSIVE */
 /* ==================== */
 @media (max-width: 992px) {
+  .top-bar {
+    font-size: 0.85rem;
+  }
+
+  .top-bar-content {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .top-bar-left {
+    justify-content: center;
+  }
+
   .choice-content {
     padding: 3rem 1.5rem;
   }
@@ -306,6 +459,23 @@
 }
 
 @media (max-width: 768px) {
+  .top-bar {
+    font-size: 0.8rem;
+    padding: 0.5rem 0;
+  }
+
+  .brand-text {
+    font-size: 1.25rem;
+  }
+
+  .btn-inscription,
+  .btn-connexion {
+    padding: 0.5rem 1.25rem;
+    font-size: 0.85rem;
+    width: 100%;
+    margin-top: 0.5rem;
+  }
+
   .choice-content {
     padding: 2rem 1rem;
   }
@@ -326,6 +496,7 @@
 
   .card-title-custom {
     font-size: 1.25rem;
+    min-height: auto;
   }
 
   .card-header-custom {
@@ -352,6 +523,10 @@
 }
 
 @media (max-width: 480px) {
+  .top-bar-left {
+    gap: 0.75rem;
+  }
+
   .choice-badge {
     font-size: 0.9rem;
   }
@@ -364,7 +539,32 @@
     font-size: 0.9rem;
   }
 
+  .choice-card {
+    min-height: 520px;
+  }
+
+  .card-title-custom {
+    min-height: 65px;
+    font-size: 1.15rem;
+  }
+
+  .card-description {
+    min-height: 85px;
+    font-size: 0.9rem;
+  }
+
+  .card-features {
+    min-height: 150px;
+  }
+
   .card-features li {
     font-size: 0.9rem;
+    min-height: 50px;
+  }
+
+  .card-action {
+    padding: 0.875rem;
+    font-size: 0.9rem;
+    min-height: 50px;
   }
 }

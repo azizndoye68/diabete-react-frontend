@@ -12,11 +12,9 @@ import Statistiques from './components/Statistiques';
 import DashboardMedecin from './pages/medecin/DashboardMedecin';
 import DashboardAdmin from './pages/admin/DashboardAdmin';
 import PatientsTable from './pages/medecin/PatientsTable';
-import RendezVousTable from './pages/medecin/RendezVousTable';
 import PatientsList from './pages/admin/PatientsList';
 import MedecinsList from './pages/admin/MedecinsList';
 import MedecinsAttente from './pages/admin/MedecinsAttente';
-import EquipesMedecin from './pages/medecin/EquipesMedecin';
 import PatientDossier from './pages/medecin/PatientDossier';
 import MonSuivi from './pages/patient/MonSuivi';
 import CodeCouleur from './pages/patient/CodeCouleur';
@@ -27,6 +25,10 @@ import ConsultationsMedecin from './pages/medecin/ConsultationsMedecin';
 import TraitementMedecin from './pages/medecin/TraitementMedecin';
 import ChatMedecin from './pages/medecin/ChatMedecin';
 import ChatPatient from './pages/patient/ChatPatient';
+import StatistiquesMedecin from './pages/medecin/StatistiquesMedecin';
+import RendezVousMedecin from './pages/medecin/RendezVousMedecin';
+import ListeRendezVousMedecin from './pages/medecin/ListeRendezVousMedecin';
+import EquipesMedicales from './pages/medecin/EquipesMedicales';
 
 function App() {
   return (
@@ -44,11 +46,9 @@ function App() {
         <Route path="/carnet" element={<CarnetGlycemie />} />
         <Route path="/statistiques" element={<Statistiques />} />
         <Route path="/medecin/patients-table" element={<PatientsTable />} />
-        <Route path="/medecin/rendezvous" element={<RendezVousTable />} />  
         <Route path="/admin/patients" element={<PatientsList />} />
         <Route path="/admin/medecins" element={<MedecinsList />} />
         <Route path="/admin/attente" element={<MedecinsAttente />} />
-        <Route path="/medecin/equipes" element={<EquipesMedecin />} />
         <Route path="/patient/:id/dossier" element={<PatientDossier />} />
         <Route path="/mon-suivi" element={<MonSuivi />} />
         <Route path="/codes-couleurs" element={<CodeCouleur />} />
@@ -59,6 +59,9 @@ function App() {
         <Route path="/medecin/traitements" element={<TraitementMedecin />} />
         <Route path="/medecin/messagerie" element={<ChatMedecin />} />
         <Route path="/patient/messagerie" element={<ChatPatient />} />
+        <Route path="/medecin/statistiques" element={<StatistiquesMedecin />} />
+        <Route path="/medecin/liste-rendezvous" element={<ListeRendezVousMedecin />} />
+        <Route path="/medecin/equipes-medicales" element={<EquipesMedicales />} />
 
 
         {/* Routes pour le médecin avec patientId */}
@@ -75,6 +78,7 @@ function App() {
         <Route path="/medecin/patient/:patientId/education" element={<EducationPatient />} />
         <Route path="/medecin/patient/:patientId/consultations" element={<ConsultationsMedecin />} />
         <Route path="/medecin/patient/:patientId/traitements" element={<TraitementMedecin />} />
+        <Route path="/medecin/patient/:patientId/rendez-vous" element={<RendezVousMedecin />} />
 
 
 

@@ -21,7 +21,7 @@ function TopbarMedecin({ user }) {
   const navItems = [
     { path: "/dashboard-medecin", label: "Mes patients", icon: <FaUsers /> },
     { path: "/medecin/messagerie", label: "Messagerie", icon: <FaEnvelope />, badge: 3 },
-    { path: "/medecin/stats", label: "Statistiques", icon: <FaChartLine /> },
+    { path: "/medecin/statistiques", label: "Statistiques", icon: <FaChartLine /> },
   ];
 
   const handleLogout = () => {
@@ -140,7 +140,7 @@ function TopbarMedecin({ user }) {
                 </Dropdown.Item>
 
                 <Dropdown.Item 
-                  onClick={() => navigate("/medecin/equipes")}
+                  onClick={() => navigate("/medecin/equipes-medicales")}
                   className="profile-menu-item"
                 >
                   <FaUsers className="menu-icon" />
@@ -148,7 +148,7 @@ function TopbarMedecin({ user }) {
                 </Dropdown.Item>
 
                 <Dropdown.Item 
-                  onClick={() => navigate("/medecin/rendezvous")}
+                  onClick={() => navigate("/medecin/liste-rendezvous")}
                   className="profile-menu-item"
                 >
                   <FaCalendarAlt className="menu-icon" />

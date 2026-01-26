@@ -9,9 +9,9 @@ import {
   Button,
   Spinner,
   Alert,
+  Badge,
 } from "react-bootstrap";
 import { useParams, useNavigate } from "react-router-dom";
-import { CheckCircleFill } from "react-bootstrap-icons";
 import api from "../../services/api";
 import SidebarPatient from "../../components/SidebarPatient";
 import "./TraitementMedecin.css";
@@ -27,7 +27,7 @@ function TraitementMedecin() {
   const [success, setSuccess] = useState(false);
 
   const [formData, setFormData] = useState({
-    traitement: "NON", // Sous insuline par défaut
+    traitement: "NON",
     antecedents: "",
     allergies: "",
     notesMedicales: "",
@@ -91,7 +91,7 @@ function TraitementMedecin() {
       setTimeout(() => setSuccess(false), 3500);
     } catch (error) {
       console.error(error);
-      alert("Erreur lors de l’enregistrement du dossier ❌");
+      alert("Erreur lors de l'enregistrement du dossier ❌");
     } finally {
       setSaving(false);
     }
@@ -99,120 +99,272 @@ function TraitementMedecin() {
 
   if (loading) {
     return (
-      <div className="d-flex justify-content-center align-items-center vh-100">
-        <Spinner animation="border" variant="success" />
+      <div className="traitement-loading">
+        <div className="loading-content">
+          <Spinner animation="border" variant="primary" className="loading-spinner" />
+          <p className="loading-text">Chargement du dossier médical...</p>
+        </div>
       </div>
     );
   }
 
   return (
     <Container fluid className="p-0">
-      <Row className="g-0 vh-100">
+      <Row className="g-0 traitement-row">
         {/* Sidebar */}
         <Col xs={12} md={3} className="sidebar-col p-0">
           <SidebarPatient patient={patient} isMedecin />
         </Col>
 
         {/* Contenu principal */}
-        <Col xs={12} md={9} className="main-col p-4 traitement-medecin-page">
+        <Col xs={12} md={9} className="main-col traitement-medecin-page">
           <div className="traitement-container">
-            <h3 className="mb-4">
-              💊 Traitement — {patient?.prenom} {patient?.nom}
-            </h3>
+            {/* En-tête */}
+            <div className="traitement-header">
+              <div className="header-content">
+                <div className="header-icon">
+                  <i className="bi bi-prescription2"></i>
+                </div>
+                <div className="header-info">
+                  <h2 className="header-title">Dossier Médical & Traitement</h2>
+                  <p className="header-subtitle">
+                    <i className="bi bi-person-badge me-2"></i>
+                    {patient?.prenom} {patient?.nom}
+                    {patient?.typeDiabete && (
+                      <Badge bg="info" className="ms-2 type-badge">
+                        {patient.typeDiabete}
+                      </Badge>
+                    )}
+                  </p>
+                </div>
+              </div>
+              <Button
+                variant="outline-secondary"
+                className="btn-retour"
+                onClick={() => navigate(`/medecin/patient/${patientId}/dashboard`)}
+              >
+                <i className="bi bi-arrow-left me-2"></i>
+                Retour
+              </Button>
+            </div>
 
+            {/* Alert succès */}
             {success && (
               <Alert variant="success" className="success-alert">
-                <CheckCircleFill size={22} />
-                <div>
-                  <strong>Dossier médical mis à jour</strong>
-                  <div className="text-muted small">
-                    Les informations thérapeutiques ont été enregistrées avec
-                    succès.
+                <div className="alert-content">
+                  <i className="bi bi-check-circle-fill alert-icon"></i>
+                  <div className="alert-text">
+                    <strong>Dossier médical mis à jour</strong>
+                    <div className="text-muted small">
+                      Les informations thérapeutiques ont été enregistrées avec succès.
+                    </div>
                   </div>
                 </div>
               </Alert>
             )}
 
-            <Card className="shadow-sm traitement-form-card">
-              <Card.Body>
-                <h5 className="text-success mb-3">
-                  {dossier
-                    ? "Modifier le traitement du patient"
-                    : "Créer le dossier médical"}
-                </h5>
+            {/* Formulaire principal */}
+            <Card className="traitement-form-card">
+              <Card.Body className="card-body-custom">
+                <div className="form-section-header">
+                  <div className="section-icon">
+                    <i className="bi bi-file-medical"></i>
+                  </div>
+                  <div>
+                    <h5 className="section-title">
+                      {dossier ? "Modification du traitement" : "Création du dossier médical"}
+                    </h5>
+                    <p className="section-subtitle">
+                      Renseignez les informations thérapeutiques du patient
+                    </p>
+                  </div>
+                </div>
 
                 <Form onSubmit={handleSubmit}>
                   {/* Sous insuline */}
-                  <Form.Group className="mb-3">
-                    <Form.Label>Sous insuline</Form.Label>
-                    <Form.Select
-                      name="traitement"
-                      value={formData.traitement}
-                      onChange={handleChange}
-                      required
-                    >
-                      <option value="NON">Non</option>
-                      <option value="OUI">Oui</option>
-                    </Form.Select>
-                  </Form.Group>
+                  <div className="form-group-custom">
+                    <Form.Label className="form-label-custom">
+                      <i className="bi bi-capsule me-2"></i>
+                      Traitement par insuline
+                      <span className="text-danger ms-1">*</span>
+                    </Form.Label>
+                    <div className="radio-group">
+                      <div 
+                        className={`radio-option ${formData.traitement === "OUI" ? "active" : ""}`}
+                        onClick={() => setFormData({ ...formData, traitement: "OUI" })}
+                      >
+                        <Form.Check
+                          type="radio"
+                          id="traitement-oui"
+                          name="traitement"
+                          value="OUI"
+                          checked={formData.traitement === "OUI"}
+                          onChange={handleChange}
+                          label={
+                            <div className="radio-label">
+                              <i className="bi bi-check-circle"></i>
+                              <span>Oui, sous insuline</span>
+                            </div>
+                          }
+                        />
+                      </div>
+                      <div 
+                        className={`radio-option ${formData.traitement === "NON" ? "active" : ""}`}
+                        onClick={() => setFormData({ ...formData, traitement: "NON" })}
+                      >
+                        <Form.Check
+                          type="radio"
+                          id="traitement-non"
+                          name="traitement"
+                          value="NON"
+                          checked={formData.traitement === "NON"}
+                          onChange={handleChange}
+                          label={
+                            <div className="radio-label">
+                              <i className="bi bi-x-circle"></i>
+                              <span>Non, pas d'insuline</span>
+                            </div>
+                          }
+                        />
+                      </div>
+                    </div>
+                  </div>
 
                   {/* Antécédents */}
-                  <Form.Group className="mb-3">
-                    <Form.Label>Antécédents médicaux</Form.Label>
+                  <div className="form-group-custom">
+                    <Form.Label className="form-label-custom">
+                      <i className="bi bi-clock-history me-2"></i>
+                      Antécédents médicaux
+                    </Form.Label>
                     <Form.Control
                       as="textarea"
-                      rows={2}
+                      rows={3}
                       name="antecedents"
                       value={formData.antecedents}
                       onChange={handleChange}
+                      className="form-control-custom"
+                      placeholder="Historique médical, maladies chroniques, chirurgies antérieures..."
                     />
-                  </Form.Group>
+                    <small className="form-text-muted">
+                      <i className="bi bi-info-circle me-1"></i>
+                      Indiquez les antécédents médicaux pertinents
+                    </small>
+                  </div>
 
                   {/* Allergies */}
-                  <Form.Group className="mb-3">
-                    <Form.Label>Allergies</Form.Label>
+                  <div className="form-group-custom">
+                    <Form.Label className="form-label-custom">
+                      <i className="bi bi-exclamation-triangle me-2"></i>
+                      Allergies connues
+                    </Form.Label>
                     <Form.Control
                       as="textarea"
-                      rows={2}
+                      rows={3}
                       name="allergies"
                       value={formData.allergies}
                       onChange={handleChange}
+                      className="form-control-custom"
+                      placeholder="Allergies médicamenteuses, alimentaires ou autres..."
                     />
-                  </Form.Group>
+                    <small className="form-text-muted">
+                      <i className="bi bi-info-circle me-1"></i>
+                      Listez toutes les allergies identifiées
+                    </small>
+                  </div>
 
-                  {/* Notes */}
-                  <Form.Group className="mb-4">
-                    <Form.Label>Notes médicales</Form.Label>
+                  {/* Notes médicales */}
+                  <div className="form-group-custom">
+                    <Form.Label className="form-label-custom">
+                      <i className="bi bi-journal-medical me-2"></i>
+                      Notes médicales complémentaires
+                    </Form.Label>
                     <Form.Control
                       as="textarea"
-                      rows={4}
+                      rows={5}
                       name="notesMedicales"
                       value={formData.notesMedicales}
                       onChange={handleChange}
+                      className="form-control-custom"
+                      placeholder="Observations, recommandations, plan de traitement..."
                     />
-                  </Form.Group>
+                    <small className="form-text-muted">
+                      <i className="bi bi-info-circle me-1"></i>
+                      Ajoutez vos observations et recommandations pour le suivi
+                    </small>
+                  </div>
 
-                  <div className="d-flex gap-3">
-                    <Button type="submit" variant="success" disabled={saving}>
-                      {saving
-                        ? "Enregistrement..."
-                        : dossier
-                        ? "Mettre à jour le traitement"
-                        : "Enregistrer le dossier"}
+                  {/* Boutons d'action */}
+                  <div className="form-actions">
+                    <Button 
+                      type="submit" 
+                      className="btn-save"
+                      disabled={saving}
+                    >
+                      {saving ? (
+                        <>
+                          <Spinner
+                            as="span"
+                            animation="border"
+                            size="sm"
+                            role="status"
+                            className="me-2"
+                          />
+                          Enregistrement en cours...
+                        </>
+                      ) : (
+                        <>
+                          <i className="bi bi-check-lg me-2"></i>
+                          {dossier ? "Mettre à jour le traitement" : "Enregistrer le dossier"}
+                        </>
+                      )}
                     </Button>
 
                     <Button
                       variant="outline-secondary"
-                      onClick={() =>
-                        navigate(`/medecin/patient/${patientId}/dashboard`)
-                      }
+                      className="btn-cancel"
+                      onClick={() => navigate(`/medecin/patient/${patientId}/dashboard`)}
+                      disabled={saving}
                     >
-                      🏠 Retour au dossier patient
+                      <i className="bi bi-x-lg me-2"></i>
+                      Annuler
                     </Button>
                   </div>
                 </Form>
               </Card.Body>
             </Card>
+
+            {/* Info card */}
+            <div className="info-cards-row">
+              <div className="info-card">
+                <div className="info-card-icon" style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
+                  <i className="bi bi-shield-check"></i>
+                </div>
+                <div className="info-card-content">
+                  <h6>Données sécurisées</h6>
+                  <p>Les informations médicales sont cryptées et confidentielles</p>
+                </div>
+              </div>
+
+              <div className="info-card">
+                <div className="info-card-icon" style={{ background: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)' }}>
+                  <i className="bi bi-clock-history"></i>
+                </div>
+                <div className="info-card-content">
+                  <h6>Historique complet</h6>
+                  <p>Toutes les modifications sont enregistrées et traçables</p>
+                </div>
+              </div>
+
+              <div className="info-card">
+                <div className="info-card-icon" style={{ background: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)' }}>
+                  <i className="bi bi-bell"></i>
+                </div>
+                <div className="info-card-content">
+                  <h6>Notifications</h6>
+                  <p>Le patient sera informé des mises à jour importantes</p>
+                </div>
+              </div>
+            </div>
           </div>
         </Col>
       </Row>
