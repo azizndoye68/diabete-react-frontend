@@ -2,8 +2,8 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import HomePage from './components/HomePage';
 import LoginPage from './components/LoginPage';
-import PatientRegister from './components/PatientRegister';
-import MedecinRegister from './components/MedecinRegister';
+import RegisterPatientForm from './components/RegisterPatientForm';
+import RegisterMedecinForm from './components/RegisterMedecinForm';
 import RegisterChoice from './components/RegisterChoice';
 import DashboardPatient from './components/DashboardPatient';
 import AjouterDonneesJournee from './pages/patient/AjouterDonneesJournee';
@@ -29,6 +29,7 @@ import StatistiquesMedecin from './pages/medecin/StatistiquesMedecin';
 import RendezVousMedecin from './pages/medecin/RendezVousMedecin';
 import ListeRendezVousMedecin from './pages/medecin/ListeRendezVousMedecin';
 import EquipesMedicales from './pages/medecin/EquipesMedicales';
+import RattachementMedecin from './pages/patient/RattachementMedecin';
 
 function App() {
   return (
@@ -36,8 +37,8 @@ function App() {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<LoginPage />} />
-        <Route path="/register/patient" element={<PatientRegister />} />
-        <Route path="/register/medecin" element={<MedecinRegister />} />
+        <Route path="/register/patient" element={<RegisterPatientForm />} />
+        <Route path="/register/medecin" element={<RegisterMedecinForm />} />
         <Route path="/register/choice" element={<RegisterChoice />} />
         <Route path="/dashboard-patient" element={<DashboardPatient />} />
         <Route path="/dashboard-medecin" element={<DashboardMedecin />} />
@@ -62,6 +63,7 @@ function App() {
         <Route path="/medecin/statistiques" element={<StatistiquesMedecin />} />
         <Route path="/medecin/liste-rendezvous" element={<ListeRendezVousMedecin />} />
         <Route path="/medecin/equipes-medicales" element={<EquipesMedicales />} />
+        <Route path="/patient/rattachement-medecin" element={<RattachementMedecin />} />
 
 
         {/* Routes pour le médecin avec patientId */}

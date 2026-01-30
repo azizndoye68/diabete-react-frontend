@@ -13,15 +13,107 @@ function LoginForm() {
     password: ''
   });
 
+  const [errors, setErrors] = useState({
+    email: '',
+    password: ''
+  });
+
+  const [touched, setTouched] = useState({
+    email: false,
+    password: false
+  });
+
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
 
+  // Validation de l'email
+  const validateEmail = (email) => {
+    if (!email || email.trim() === '') {
+      return "L'email est obligatoire";
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return "Format email invalide";
+    }
+    return '';
+  };
+
+  // Validation du mot de passe
+  const validatePassword = (password) => {
+    if (!password || password.trim() === '') {
+      return "Le mot de passe est obligatoire";
+    }
+    if (password.length < 5) {
+      return "Le mot de passe doit contenir au moins 5 caractères";
+    }
+    return '';
+  };
+
+  // Validation du formulaire complet
+  const validateForm = () => {
+    const emailError = validateEmail(credentials.email);
+    const passwordError = validatePassword(credentials.password);
+
+    setErrors({
+      email: emailError,
+      password: passwordError
+    });
+
+    return !emailError && !passwordError;
+  };
+
   const handleChange = (e) => {
-    setCredentials({ ...credentials, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    
+    // Mettre à jour les credentials
+    const newCredentials = { ...credentials, [name]: value };
+    setCredentials(newCredentials);
+
+    // Marquer le champ comme touché
+    setTouched(prev => ({ ...prev, [name]: true }));
+
+    // Validation en temps réel avec la nouvelle valeur
+    if (name === 'email') {
+      const emailError = validateEmail(value);
+      setErrors(prev => ({ ...prev, email: emailError }));
+    } else if (name === 'password') {
+      const passwordError = validatePassword(value);
+      setErrors(prev => ({ ...prev, password: passwordError }));
+    }
+
+    // Nettoyer le message d'erreur général
+    if (message) {
+      setMessage('');
+    }
+  };
+
+  const handleBlur = (e) => {
+    const { name } = e.target;
+    setTouched(prev => ({ ...prev, [name]: true }));
+    
+    // Re-valider au blur
+    if (name === 'email') {
+      setErrors(prev => ({ ...prev, email: validateEmail(credentials.email) }));
+    } else if (name === 'password') {
+      setErrors(prev => ({ ...prev, password: validatePassword(credentials.password) }));
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // Marquer tous les champs comme touchés
+    setTouched({
+      email: true,
+      password: true
+    });
+
+    // Valider le formulaire
+    if (!validateForm()) {
+      setMessage('Veuillez corriger les erreurs dans le formulaire');
+      return;
+    }
+
     setLoading(true);
     setMessage('');
 
@@ -50,11 +142,78 @@ function LoginForm() {
       }, 1000);
 
     } catch (error) {
-      console.error('Erreur de connexion', error);
-      setMessage('Email ou mot de passe incorrect ❌');
+      console.error('Erreur de connexion complète:', error);
+      
+      // Gérer les différents types d'erreurs
+      if (error.response) {
+        const { status, data } = error.response;
+        const errorMessage = data?.error || data?.message || '';
+        const isAuthError = errorMessage.toLowerCase().includes('incorrect') ||
+                           errorMessage.toLowerCase().includes('invalide') ||
+                           errorMessage.toLowerCase().includes('erronées') ||
+                           errorMessage.toLowerCase().includes('identifications') ||
+                           errorMessage.toLowerCase().includes('password') ||
+                           errorMessage.toLowerCase().includes('mot de passe') ||
+                           errorMessage.toLowerCase().includes('credentials');
+        
+        if (status === 401 || status === 403 || (status === 500 && isAuthError)) {
+          // Erreur d'authentification : email ou mot de passe incorrect
+          setErrors({
+            email: 'Identifiants incorrects',
+            password: 'Identifiants incorrects'
+          });
+          setMessage(errorMessage || 'Email ou mot de passe incorrect ❌');
+        } else if (status === 400) {
+          // Erreurs de validation du backend
+          if (data.errors && Array.isArray(data.errors)) {
+            const backendErrors = {};
+            data.errors.forEach(err => {
+              if (err.field === 'email') backendErrors.email = err.message;
+              if (err.field === 'password') backendErrors.password = err.message;
+            });
+            setErrors(prevErrors => ({ ...prevErrors, ...backendErrors }));
+            setMessage('Veuillez corriger les erreurs dans le formulaire ❌');
+          } else {
+            setMessage(errorMessage || 'Données de connexion invalides ❌');
+          }
+        } else if (status === 404) {
+          setErrors({
+            email: 'Aucun compte associé à cet email',
+            password: ''
+          });
+          setMessage('Aucun compte trouvé avec cet email ❌');
+        } else if (status === 500) {
+          setMessage('Erreur serveur. Veuillez réessayer plus tard ❌');
+        } else {
+          setMessage((errorMessage || 'Une erreur est survenue. Veuillez réessayer') + ' ❌');
+        }
+      } else if (error.request) {
+        setMessage('Impossible de se connecter au serveur. Vérifiez votre connexion internet ❌');
+      } else {
+        setMessage('Une erreur inattendue est survenue ❌');
+      }
+      
       setLoading(false);
     }
   };
+
+  // Calculer si le formulaire est valide pour activer/désactiver le bouton
+  const isFormValid = !!(
+    credentials.email && 
+    credentials.password && 
+    !validateEmail(credentials.email) && 
+    !validatePassword(credentials.password)
+  );
+
+  // Debug - À supprimer après test
+  console.log('Debug Login:', {
+    email: credentials.email,
+    password: credentials.password,
+    emailError: validateEmail(credentials.email),
+    passwordError: validatePassword(credentials.password),
+    isFormValid,
+    loading
+  });
 
   return (
     <div className="login-page">
@@ -178,16 +337,23 @@ function LoginForm() {
 
                 {message && (
                   <Alert 
-                    variant={message.includes('Erreur') || message.includes('incorrect') ? 'danger' : 'success'}
+                    variant={message.includes('réussie') ? 'success' : 'danger'}
                     className="login-alert"
+                    dismissible
+                    onClose={() => setMessage('')}
                   >
-                    {message}
+                    <div className="d-flex align-items-center">
+                      <i className={`bi ${message.includes('réussie') ? 'bi-check-circle-fill' : 'bi-exclamation-triangle-fill'} me-2`}></i>
+                      {message}
+                    </div>
                   </Alert>
                 )}
 
-                <Form onSubmit={handleSubmit} className="login-form">
+                <Form onSubmit={handleSubmit} className="login-form" noValidate>
                   <Form.Group className="mb-4">
-                    <Form.Label className="form-label-custom">Adresse email</Form.Label>
+                    <Form.Label className="form-label-custom">
+                      Adresse email <span className="text-danger">*</span>
+                    </Form.Label>
                     <div className="input-with-icon">
                       <FaEmailIcon className="input-icon" />
                       <Form.Control
@@ -196,14 +362,29 @@ function LoginForm() {
                         placeholder="votre@email.com"
                         value={credentials.email}
                         onChange={handleChange}
-                        className="form-control-custom"
+                        onBlur={handleBlur}
+                        className={`form-control-custom ${errors.email && touched.email ? 'is-invalid' : ''} ${!errors.email && touched.email && credentials.email ? 'is-valid' : ''}`}
                         required
                       />
+                      {errors.email && touched.email && (
+                        <div className="invalid-feedback d-block">
+                          <i className="bi bi-exclamation-circle me-1"></i>
+                          {errors.email}
+                        </div>
+                      )}
+                      {!errors.email && touched.email && credentials.email && (
+                        <div className="valid-feedback d-block">
+                          <i className="bi bi-check-circle me-1"></i>
+                          Email valide
+                        </div>
+                      )}
                     </div>
                   </Form.Group>
 
                   <Form.Group className="mb-4">
-                    <Form.Label className="form-label-custom">Mot de passe</Form.Label>
+                    <Form.Label className="form-label-custom">
+                      Mot de passe <span className="text-danger">*</span>
+                    </Form.Label>
                     <div className="input-with-icon">
                       <FaLock className="input-icon" />
                       <Form.Control
@@ -212,9 +393,22 @@ function LoginForm() {
                         placeholder="••••••••"
                         value={credentials.password}
                         onChange={handleChange}
-                        className="form-control-custom"
+                        onBlur={handleBlur}
+                        className={`form-control-custom ${errors.password && touched.password ? 'is-invalid' : ''} ${!errors.password && touched.password && credentials.password ? 'is-valid' : ''}`}
                         required
                       />
+                      {errors.password && touched.password && (
+                        <div className="invalid-feedback d-block">
+                          <i className="bi bi-exclamation-circle me-1"></i>
+                          {errors.password}
+                        </div>
+                      )}
+                      {!errors.password && touched.password && credentials.password && (
+                        <div className="valid-feedback d-block">
+                          <i className="bi bi-check-circle me-1"></i>
+                          Mot de passe valide
+                        </div>
+                      )}
                     </div>
                   </Form.Group>
 
@@ -233,12 +427,12 @@ function LoginForm() {
                   <Button 
                     type="submit" 
                     className="btn-login"
-                    disabled={loading}
+                    disabled={loading || !isFormValid}
                   >
                     {loading ? (
                       <>
                         <span className="spinner-border spinner-border-sm me-2"></span>
-                        Connexion...
+                        Connexion en cours...
                       </>
                     ) : (
                       <>

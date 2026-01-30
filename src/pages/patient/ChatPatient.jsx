@@ -1,10 +1,12 @@
-// src/pages/ChatPatient.jsx
+// src/pages/ChatPatient.jsx - VERSION MISE À JOUR
 import React, { useState, useEffect, useRef } from 'react';
-import { Container, Row, Col, Form, Button, Card, Alert } from 'react-bootstrap';
+import { Container, Row, Col, Form, Button, Card } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
 import api from '../../services/api';
 import './ChatPatient.css';
 
 function ChatPatient() {
+  const navigate = useNavigate();
   const [patient, setPatient] = useState(null);
   const [conversation, setConversation] = useState(null);
   const [messages, setMessages] = useState([]);
@@ -23,22 +25,33 @@ function ChatPatient() {
   useEffect(() => {
     const fetchPatient = async () => {
       try {
+        setLoading(true);
         const profileRes = await api.get('/api/auth/profile');
         const userData = profileRes.data;
 
         const patientRes = await api.get(`/api/patients/byUtilisateur/${userData.id}`);
-        setPatient(patientRes.data);
+        const patientData = patientRes.data;
+        setPatient(patientData);
+
+        // ✅ REDIRECTION : Si pas de médecin, aller vers la page de rattachement
+        if (!patientData.medecinId) {
+          navigate('/patient/rattachement-medecin', { replace: true });
+          return;
+        }
+        
+        setLoading(false);
       } catch (error) {
         console.error('❌ Erreur profil patient:', error);
+        setLoading(false);
       }
     };
 
     fetchPatient();
-  }, []);
+  }, [navigate]);
 
   // Charger conversation et connecter WebSocket
   useEffect(() => {
-    if (patient) {
+    if (patient && patient.medecinId) {
       loadConversation();
       connectWebSocket();
     }
@@ -104,7 +117,6 @@ function ChatPatient() {
       setLoading(true);
       console.log('🔍 Chargement conversation pour patient:', patient.id);
 
-      // Créer ou récupérer la conversation
       const response = await api.post(`/api/conversations/patient/${patient.id}`);
       setConversation(response.data);
       console.log('✅ Conversation chargée:', response.data);
@@ -266,26 +278,9 @@ function ChatPatient() {
     );
   }
 
+  // ✅ Cette condition ne devrait plus jamais s'afficher car on redirige avant
   if (!patient?.medecinId) {
-    return (
-      <div className="chat-patient-container">
-        <Container className="h-100 d-flex align-items-center justify-content-center">
-          <Alert variant="warning" className="text-center" style={{ maxWidth: '500px' }}>
-            <Alert.Heading>
-              <i className="bi bi-exclamation-triangle"></i> Aucun médecin référent
-            </Alert.Heading>
-            <p>
-              Vous n'avez pas encore de médecin référent. 
-              Veuillez contacter l'administration pour être rattaché à un médecin.
-            </p>
-            <hr />
-            <p className="mb-0">
-              <small>Une fois rattaché, vous pourrez communiquer avec votre équipe médicale.</small>
-            </p>
-          </Alert>
-        </Container>
-      </div>
-    );
+    return null;
   }
 
   return (
