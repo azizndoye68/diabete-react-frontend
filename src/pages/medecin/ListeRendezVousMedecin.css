@@ -6,7 +6,7 @@
 }
 
 .liste-rdv-main-content {
-  padding-top: 80px;
+  padding-top: 0px;
 }
 
 .liste-rdv-main-content .container-fluid {
@@ -53,7 +53,7 @@
 }
 
 .liste-rdv-title i {
-  color: #667eea;
+  color: #38ef7d;
 }
 
 .liste-rdv-subtitle {
@@ -137,7 +137,7 @@
 }
 
 .filter-label i {
-  color: #667eea;
+  color: #38ef7d;
 }
 
 .filter-input {
@@ -149,8 +149,8 @@
 }
 
 .filter-input:focus {
-  border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  border-color: #38ef7d;
+  box-shadow: 0 0 0 3px rgba(56, 239, 125, 0.1);
 }
 
 /* ===== TABLE CARD ===== */
@@ -181,7 +181,7 @@
 }
 
 .table-title i {
-  color: #667eea;
+  color: #38ef7d;
 }
 
 /* ===== TABLE ===== */
@@ -190,7 +190,7 @@
 }
 
 .rdv-table thead {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #38ef7d 0%, #11998e 100%);
 }
 
 .rdv-table thead th {
@@ -215,8 +215,8 @@
 }
 
 .rdv-table tbody tr.rdv-today {
-  background: linear-gradient(90deg, rgba(102, 126, 234, 0.05) 0%, transparent 100%);
-  border-left: 4px solid #667eea;
+  background: linear-gradient(90deg, rgba(56, 239, 125, 0.05) 0%, transparent 100%);
+  border-left: 4px solid #38ef7d;
 }
 
 .rdv-table tbody td {
@@ -241,7 +241,7 @@
 }
 
 .date-info i {
-  color: #667eea;
+  color: #38ef7d;
 }
 
 .time-info {
@@ -266,7 +266,7 @@
   width: 45px;
   height: 45px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #38ef7d 0%, #11998e 100%);
   color: white;
   display: flex;
   align-items: center;
@@ -342,13 +342,13 @@
 }
 
 .btn-view {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #38ef7d 0%, #11998e 100%);
   color: white;
 }
 
 .btn-view:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 4px 12px rgba(56, 239, 125, 0.4);
   color: white;
 }
 

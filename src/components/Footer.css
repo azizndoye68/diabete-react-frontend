@@ -35,7 +35,7 @@
 }
 
 .logo-container-footer {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #38ef7d 0%, #11998e 100%);
   padding: 10px;
   border-radius: 12px;
   margin-right: 12px;
@@ -103,9 +103,9 @@
 }
 
 .social-btn:hover {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #38ef7d 0%, #11998e 100%);
   transform: translateY(-3px);
-  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 4px 15px rgba(17, 153, 142, 0.4);
 }
 
 /* ==================== */
@@ -127,7 +127,7 @@
   bottom: 0;
   width: 40px;
   height: 3px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #38ef7d 0%, #11998e 100%);
   border-radius: 2px;
 }
 
@@ -162,7 +162,7 @@
   left: 0;
   opacity: 0;
   transition: all 0.3s ease;
-  color: #ffc107;
+  color: #38ef7d;
 }
 
 .footer-link:hover {
@@ -172,7 +172,6 @@
 
 .footer-link:hover::before {
   opacity: 1;
-  left: 0;
 }
 
 /* ==================== */
@@ -194,7 +193,7 @@
 }
 
 .contact-item svg {
-  color: #667eea;
+  color: #38ef7d;
   flex-shrink: 0;
 }
 
@@ -202,7 +201,7 @@
   background: rgba(255, 255, 255, 0.05);
   padding: 1rem;
   border-radius: 12px;
-  border-left: 3px solid #667eea;
+  border-left: 3px solid #11998e;
 }
 
 .hours-title {
@@ -257,7 +256,7 @@
 }
 
 .legal-link:hover {
-  color: #ffc107;
+  color: #38ef7d;
 }
 
 .separator {

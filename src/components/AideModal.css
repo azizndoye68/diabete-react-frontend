@@ -54,12 +54,12 @@
 }
 
 .aide-modal-body::-webkit-scrollbar-thumb {
-  background: #667eea;
+  background: #38ef7d;
   border-radius: 10px;
 }
 
 .aide-modal-body::-webkit-scrollbar-thumb:hover {
-  background: #764ba2;
+  background: #11998e;
 }
 
 /* Carte de ressource d'aide */
@@ -132,7 +132,7 @@
 }
 
 .faq-item:hover {
-  border-color: #667eea;
+  border-color: #11998e;
   box-shadow: 0 2px 12px rgba(102, 126, 234, 0.1);
 }
 
@@ -261,4 +261,76 @@
   .resource-link {
     font-size: 0.85rem;
   }
+}
+
+.aide-modal .modal-lg {
+  max-width: 520px !important;
+}
+
+.aide-modal-header {
+  padding: 1rem 1.5rem;
+}
+
+.aide-modal-body {
+  max-height: 55vh;
+  padding: 1.25rem !important;
+}
+
+.aide-modal-footer {
+  padding: 0.75rem 1.5rem;
+}
+
+.resource-icon {
+  width: 40px;
+  height: 40px;
+}
+
+.resource-icon i {
+  font-size: 1.2rem;
+}
+
+.help-resource-card .card-body {
+  padding: 0.75rem !important;
+}
+
+.faq-item {
+  padding: 0.75rem;
+}
+
+.faq-question {
+  font-size: 0.88rem;
+  margin-bottom: 0.3rem;
+}
+
+.faq-answer {
+  font-size: 0.82rem;
+}
+
+.info-card .card-body,
+.tip-card .card-body {
+  padding: 0.75rem !important;
+}
+
+.info-card p,
+.tip-card p {
+  font-size: 0.82rem;
+}
+
+h5.fw-bold {
+  font-size: 0.95rem;
+  margin-bottom: 0.6rem !important;
+}
+
+h6.fw-bold {
+  font-size: 0.88rem;
+}
+
+.resource-info,
+.resource-link {
+  font-size: 0.82rem;
+}
+
+p.text-muted.small {
+  font-size: 0.82rem !important;
+  margin-bottom: 0.3rem !important;
 }

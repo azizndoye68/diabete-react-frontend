@@ -1,6 +1,6 @@
-// src/pages/ChatMedecin.jsx
+// src/pages/medecin/ChatMedecin.jsx
 import React, { useState, useEffect, useRef } from "react";
-import { Container, Row, Col, Form, Button, ListGroup } from "react-bootstrap";
+import { Container, Row, Col } from "react-bootstrap";
 import TopbarMedecin from "../../components/TopbarMedecin";
 import api from "../../services/api";
 import "./ChatMedecin.css";
@@ -26,113 +26,58 @@ function ChatMedecin() {
   const fileInputRef = useRef(null);
   const typingTimeoutRef = useRef(null);
 
-  // Charger le profil médecin
   useEffect(() => {
     const fetchMedecin = async () => {
       try {
         const profileRes = await api.get("/api/auth/profile");
-        const userData = profileRes.data;
-
-        const medRes = await api.get(
-          `/api/medecins/byUtilisateur/${userData.id}`,
-        );
+        const medRes = await api.get(`/api/medecins/byUtilisateur/${profileRes.data.id}`);
         setMedecin(medRes.data);
       } catch (error) {
         console.error("❌ Erreur profil médecin:", error);
       }
     };
-
     fetchMedecin();
   }, []);
 
-  // Charger conversations et connecter WebSocket
   useEffect(() => {
     if (medecin) {
       loadConversations();
       loadUsers();
       connectWebSocket();
     }
-
-    return () => {
-      if (stompClientRef.current) {
-        stompClientRef.current.disconnect();
-      }
-    };
+    return () => { if (stompClientRef.current) stompClientRef.current.disconnect(); };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [medecin]);
 
-  // Auto-scroll messages
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
-
-  // Charger messages quand conversation change
-  useEffect(() => {
-    if (selectedConversation) {
-      loadMessages(selectedConversation.id);
-    }
-  }, [selectedConversation]);
+  useEffect(() => { messagesEndRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages]);
+  useEffect(() => { if (selectedConversation) loadMessages(selectedConversation.id); }, [selectedConversation]);
 
   const connectWebSocket = () => {
     if (!medecin) return;
-
     const initWebSocket = () => {
-      if (!window.SockJS || !window.Stomp) {
-        setTimeout(initWebSocket, 100);
-        return;
-      }
-
+      if (!window.SockJS || !window.Stomp) { setTimeout(initWebSocket, 100); return; }
       const socket = new WebSocket("ws://localhost:8080/ws");
       const client = window.Stomp.over(socket);
-
       client.debug = () => {};
-
-      client.connect(
-        {},
-        () => {
-          console.log("✅ WebSocket connecté");
-          setIsConnected(true);
-
-          // S'abonner aux messages du médecin
-          client.subscribe(
-            `/topic/medecin/${medecin.id}/messages`,
-            (message) => {
-              const newMessage = JSON.parse(message.body);
-              console.log("📩 Nouveau message reçu:", newMessage);
-              handleNewMessage(newMessage);
-            },
-          );
-
-          stompClientRef.current = client;
-        },
-        (error) => {
-          console.error("❌ Erreur WebSocket:", error);
-          setIsConnected(false);
-          setTimeout(connectWebSocket, 3000);
-        },
-      );
+      client.connect({}, () => {
+        setIsConnected(true);
+        client.subscribe(`/topic/medecin/${medecin.id}/messages`, (message) => {
+          handleNewMessage(JSON.parse(message.body));
+        });
+        stompClientRef.current = client;
+      }, () => { setIsConnected(false); setTimeout(connectWebSocket, 3000); });
     };
-
     initWebSocket();
   };
 
   const loadConversations = async () => {
     if (!medecin) return;
-
     try {
       setLoading(true);
-      console.log("🔍 Chargement conversations pour médecin ID:", medecin.id);
-      
-      // Charger TOUTES les conversations (patient et médecin)
       const response = await api.get(`/api/conversations/medecin/${medecin.id}`);
-      
-      console.log("✅ Conversations reçues:", response.data);
-      console.log("📊 Types de conversations:", response.data.map(c => ({ id: c.id, type: c.type })));
-      
       setConversations(response.data);
     } catch (error) {
       console.error("❌ Erreur chargement conversations:", error);
-      console.error("Détails:", error.response?.data);
     } finally {
       setLoading(false);
     }
@@ -140,9 +85,7 @@ function ChatMedecin() {
 
   const loadMessages = async (conversationId) => {
     try {
-      const response = await api.get(
-        `/api/messages/conversation/${conversationId}?page=0&size=100`,
-      );
+      const response = await api.get(`/api/messages/conversation/${conversationId}?page=0&size=100`);
       setMessages(response.data.content.reverse());
     } catch (error) {
       console.error("❌ Erreur chargement messages:", error);
@@ -150,45 +93,25 @@ function ChatMedecin() {
   };
 
   const handleNewMessage = (newMessage) => {
-    console.log("🔄 Traitement nouveau message:", newMessage);
-    
-    // Ajouter le message à la liste si c'est la conversation active
     if (selectedConversation && newMessage.conversationId === selectedConversation.id) {
       setMessages((prev) => {
-        // Éviter les doublons
-        const exists = prev.some(msg => msg.id === newMessage.id);
-        if (exists) return prev;
+        if (prev.some((msg) => msg.id === newMessage.id)) return prev;
         return [...prev, newMessage];
       });
     }
-
-    // Mettre à jour la liste des conversations
     setConversations((prev) =>
       prev.map((conv) =>
         conv.id === newMessage.conversationId
-          ? {
-              ...conv,
-              lastMessage: newMessage,
-              lastMessageAt: newMessage.createdAt,
-            }
-          : conv,
-      ),
+          ? { ...conv, lastMessage: newMessage, lastMessageAt: newMessage.createdAt }
+          : conv
+      )
     );
   };
 
   const sendMessage = async () => {
-    if (!selectedConversation || !stompClientRef.current) {
-      console.log("❌ Impossible d'envoyer - pas de conversation ou WebSocket");
-      return;
-    }
-
+    if (!selectedConversation || !stompClientRef.current) return;
     try {
-      // Envoyer les fichiers d'abord si présents
-      if (selectedFiles.length > 0) {
-        await sendFiles();
-      }
-
-      // Envoyer le message texte si présent
+      if (selectedFiles.length > 0) await sendFiles();
       if (messageInput.trim()) {
         const message = {
           conversationId: selectedConversation.id,
@@ -197,23 +120,10 @@ function ChatMedecin() {
           content: messageInput,
           messageType: "TEXT",
         };
-
-        console.log("📤 Envoi message:", message);
-        
         stompClientRef.current.send("/app/chat.send", {}, JSON.stringify(message));
-
-        // Message optimiste
-        const optimisticMessage = {
-          ...message,
-          id: Date.now(),
-          senderName: `Dr. ${medecin.prenom} ${medecin.nom}`,
-          createdAt: new Date().toISOString(),
-        };
-        
-        setMessages((prev) => [...prev, optimisticMessage]);
+        setMessages((prev) => [...prev, { ...message, id: Date.now(), senderName: `Dr. ${medecin.prenom} ${medecin.nom}`, createdAt: new Date().toISOString() }]);
         setMessageInput("");
       }
-
       stopTyping();
     } catch (error) {
       console.error("❌ Erreur envoi message:", error);
@@ -222,54 +132,26 @@ function ChatMedecin() {
 
   const handleTyping = () => {
     if (!selectedConversation || !stompClientRef.current) return;
-
-    const indicator = {
-      conversationId: selectedConversation.id,
-      userId: medecin.id,
-      userName: `Dr. ${medecin.prenom}`,
-      typing: true,
-    };
-    stompClientRef.current.send(
-      "/app/chat.typing",
-      {},
-      JSON.stringify(indicator),
-    );
-
+    stompClientRef.current.send("/app/chat.typing", {}, JSON.stringify({ conversationId: selectedConversation.id, userId: medecin.id, userName: `Dr. ${medecin.prenom}`, typing: true }));
     clearTimeout(typingTimeoutRef.current);
     typingTimeoutRef.current = setTimeout(stopTyping, 2000);
   };
 
   const stopTyping = () => {
     if (!selectedConversation || !stompClientRef.current) return;
-
-    const indicator = {
-      conversationId: selectedConversation.id,
-      userId: medecin.id,
-      userName: `Dr. ${medecin.prenom}`,
-      typing: false,
-    };
-    stompClientRef.current.send(
-      "/app/chat.typing",
-      {},
-      JSON.stringify(indicator),
-    );
+    stompClientRef.current.send("/app/chat.typing", {}, JSON.stringify({ conversationId: selectedConversation.id, userId: medecin.id, userName: `Dr. ${medecin.prenom}`, typing: false }));
   };
 
   const handleFileSelect = (e) => {
-    const files = Array.from(e.target.files);
-    setSelectedFiles((prev) => [...prev, ...files]);
+    setSelectedFiles((prev) => [...prev, ...Array.from(e.target.files)]);
     e.target.value = "";
   };
 
-  const removeFile = (index) => {
-    setSelectedFiles((prev) => prev.filter((_, i) => i !== index));
-  };
+  const removeFile = (index) => setSelectedFiles((prev) => prev.filter((_, i) => i !== index));
 
   const sendFiles = async () => {
     if (selectedFiles.length === 0) return;
-
     setUploadingFile(true);
-
     try {
       for (const file of selectedFiles) {
         const formData = new FormData();
@@ -278,107 +160,48 @@ function ChatMedecin() {
         formData.append("senderId", medecin.id);
         formData.append("senderType", "MEDECIN");
         formData.append("content", `Fichier partagé: ${file.name}`);
-
-        await api.post("/api/messages/upload", formData, {
-          headers: { "Content-Type": "multipart/form-data" },
-        });
+        await api.post("/api/messages/upload", formData, { headers: { "Content-Type": "multipart/form-data" } });
       }
       setSelectedFiles([]);
     } catch (error) {
       console.error("❌ Erreur upload:", error);
-      alert("Erreur lors de l'envoi des fichiers");
     } finally {
       setUploadingFile(false);
     }
   };
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
-
-  const getConversationTitle = (conv) => {
-    if (conv.type === "PATIENT_EQUIPE") {
-      // Pour les conversations patient, afficher le nom du patient
-      return conv.patientName || "Patient";
-    } else {
-      // Pour les conversations médecin-médecin, afficher le nom de l'autre médecin
-      return conv.otherMedecinName || "Médecin";
-    }
-  };
+  const getConversationTitle = (conv) =>
+    conv.type === "PATIENT_EQUIPE" ? conv.patientName || "Patient" : conv.otherMedecinName || "Médecin";
 
   const getConversationSubtitle = (conv) => {
-    // Afficher le dernier message avec le nom de l'expéditeur
-    if (!conv.lastMessage) {
-      if (conv.type === "PATIENT_EQUIPE") {
-        return "Aucun message";
-      } else {
-        return "Conversation privée";
-      }
-    }
-
-    const senderName = conv.lastMessage.senderName;
+    if (!conv.lastMessage) return conv.type === "PATIENT_EQUIPE" ? "Aucun message" : "Conversation privée";
     const content = conv.lastMessage.content || "";
-    
-    // Tronquer le message s'il est trop long
-    const maxLength = 30;
-    const truncatedContent = content.length > maxLength 
-      ? content.substring(0, maxLength) + "..." 
-      : content;
-    
-    // Si on a un nom d'expéditeur, afficher "Nom: message", sinon juste le message
-    if (senderName) {
-      return `${senderName}: ${truncatedContent}`;
-    } else {
-      return truncatedContent;
-    }
+    const truncated = content.length > 30 ? content.substring(0, 30) + "..." : content;
+    return conv.lastMessage.senderName ? `${conv.lastMessage.senderName}: ${truncated}` : truncated;
   };
 
   const filteredConversations = conversations.filter((conv) =>
-    getConversationTitle(conv).toLowerCase().includes(searchTerm.toLowerCase()),
+    getConversationTitle(conv).toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const formatMessageTime = (dateString) => {
     try {
       const date = new Date(dateString);
-      const now = new Date();
-      const diffInHours = (now - date) / (1000 * 60 * 60);
-
-      if (diffInHours < 24) {
-        return date.toLocaleTimeString("fr-FR", {
-          hour: "2-digit",
-          minute: "2-digit",
-        });
-      } else if (diffInHours < 48) {
-        return "Hier";
-      } else {
-        return date.toLocaleDateString("fr-FR", {
-          day: "2-digit",
-          month: "2-digit",
-        });
-      }
-    } catch (error) {
-      return "";
-    }
+      const diffInHours = (new Date() - date) / (1000 * 60 * 60);
+      if (diffInHours < 24) return date.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
+      if (diffInHours < 48) return "Hier";
+      return date.toLocaleDateString("fr-FR", { day: "2-digit", month: "2-digit" });
+    } catch { return ""; }
   };
 
-  const isMyMessage = (message) => {
-    return message.senderId === medecin?.id && message.senderType === "MEDECIN";
-  };
+  const isMyMessage = (message) => message.senderId === medecin?.id && message.senderType === "MEDECIN";
 
   const loadUsers = async () => {
     try {
-      const patientsRes = await api.get(
-        `/api/patients/medecin/${medecin.id}/visibles`,
-      );
+      const patientsRes = await api.get(`/api/patients/medecin/${medecin.id}/visibles`);
       setPatients(patientsRes.data);
-      console.log("👥 Patients chargés:", patientsRes.data.length);
-
       const medecinsRes = await api.get("/api/medecins");
-      const autresMedecins = medecinsRes.data.filter(
-        (m) => m.id !== medecin.id,
-      );
-      setMedecins(autresMedecins);
-      console.log("👨‍⚕️ Médecins chargés:", autresMedecins.length);
+      setMedecins(medecinsRes.data.filter((m) => m.id !== medecin.id));
     } catch (error) {
       console.error("❌ Erreur chargement utilisateurs:", error);
     }
@@ -386,31 +209,23 @@ function ChatMedecin() {
 
   const createConversationWithUser = async (user, type) => {
     try {
-      let conversation;
-
+      let res;
       if (type === "patient") {
-        const response = await api.post(
-          `/api/conversations/patient/${user.id}`,
-        );
-        conversation = response.data;
+        res = await api.post(`/api/conversations/patient/${user.id}`);
       } else {
-        const response = await api.post(
-          "/api/conversations/medecin-to-medecin",
-          {
-            requestingMedecinId: medecin.id,
-            targetMedecinId: user.id,
-          },
-        );
-        conversation = response.data;
+        res = await api.post("/api/conversations/medecin-to-medecin", { requestingMedecinId: medecin.id, targetMedecinId: user.id });
       }
-
       await loadConversations();
-      setSelectedConversation(conversation);
+      setSelectedConversation(res.data);
       setShowNewConversation(false);
     } catch (error) {
       console.error("❌ Erreur création conversation:", error);
-      alert("Erreur lors de la création de la conversation");
     }
+  };
+
+  const getInitials = (name) => {
+    if (!name) return "?";
+    return name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2);
   };
 
   return (
@@ -418,167 +233,178 @@ function ChatMedecin() {
       <TopbarMedecin user={medecin} />
 
       <div className="chat-content">
-        <Container fluid className="h-100">
-          <Row className="h-100">
-            {/* Sidebar */}
-            <Col md={4} className="chat-sidebar p-0">
-              <div className="sidebar-header p-3 border-bottom">
-                <div className="d-flex justify-content-between align-items-center mb-3">
-                  <h5 className="mb-0">Messages</h5>
+        <Container fluid className="h-100 p-0">
+          <Row className="h-100 g-0">
+
+            {/* ===== SIDEBAR ===== */}
+            <Col md={4} lg={3} className="chat-sidebar">
+
+              {/* Header sidebar */}
+              <div className="chat-sidebar-header">
+                <div className="sidebar-top-row">
+                  <h5 className="sidebar-title-med">Messagerie</h5>
                   <button
-                    className="btn-new-chat"
+                    className="btn-new-chat-med"
                     onClick={() => setShowNewConversation(true)}
                     title="Nouvelle conversation"
                   >
                     <i className="bi bi-pencil-square"></i>
                   </button>
                 </div>
-                <Form.Control
-                  type="text"
-                  placeholder="Rechercher..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="mb-2"
-                />
-                <div className="d-flex align-items-center gap-2">
-                  <span
-                    className={`status-dot ${isConnected ? "online" : "offline"}`}
-                  ></span>
-                  <small className="text-muted">
-                    {isConnected ? "En ligne" : "Hors ligne"}
-                  </small>
+
+                {/* Statut + recherche */}
+                <div className="sidebar-search-row">
+                  <div className="ws-indicator">
+                    <span className={`ws-dot-med ${isConnected ? "online" : "offline"}`}></span>
+                    <span className="ws-label-med">{isConnected ? "En ligne" : "Hors ligne"}</span>
+                  </div>
+                </div>
+                <div className="search-field-wrapper">
+                  <i className="bi bi-search search-field-icon"></i>
+                  <input
+                    type="text"
+                    placeholder="Rechercher une conversation..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="search-field-med"
+                  />
                 </div>
               </div>
 
-              <div className="conversations-list">
+              {/* Liste conversations */}
+              <div className="conv-list-med">
                 {loading ? (
-                  <div className="text-center p-4">
-                    <div className="spinner-border text-primary" role="status">
+                  <div className="conv-loading">
+                    <div className="spinner-border text-purple" role="status">
                       <span className="visually-hidden">Chargement...</span>
                     </div>
                   </div>
                 ) : filteredConversations.length === 0 ? (
-                  <div className="text-center p-4">
-                    <div className="text-muted">
-                      <i className="bi bi-inbox" style={{ fontSize: "3rem", display: "block", marginBottom: "1rem" }}></i>
-                      <p className="fw-bold">Aucune conversation</p>
-                      <p className="small">Cliquez sur l'icône crayon pour commencer</p>
-                    </div>
+                  <div className="conv-empty">
+                    <i className="bi bi-inbox"></i>
+                    <p className="fw-bold mb-1">Aucune conversation</p>
+                    <p className="small">Cliquez sur ✏️ pour commencer</p>
                   </div>
                 ) : (
-                  <ListGroup variant="flush">
-                    {filteredConversations.map((conv) => (
-                      <ListGroup.Item
-                        key={conv.id}
-                        action
-                        active={selectedConversation?.id === conv.id}
-                        onClick={() => setSelectedConversation(conv)}
-                        className="conversation-item"
-                      >
-                        <div className="d-flex align-items-center">
-                          <div className="conversation-avatar me-3">
-                            {conv.type === "PATIENT_EQUIPE" ? "👤" : "👨‍⚕️"}
-                          </div>
-                          <div className="flex-grow-1">
-                            <div className="d-flex justify-content-between align-items-center mb-1">
-                              <strong>{getConversationTitle(conv)}</strong>
-                              <small className="text-muted">
-                                {conv.lastMessageAt && formatMessageTime(conv.lastMessageAt)}
-                              </small>
-                            </div>
-                            <small className="text-muted text-truncate d-block" style={{ maxWidth: "200px" }}>
-                              {getConversationSubtitle(conv)}
-                            </small>
-                          </div>
+                  filteredConversations.map((conv) => (
+                    <div
+                      key={conv.id}
+                      className={`conv-item-med ${selectedConversation?.id === conv.id ? "active" : ""}`}
+                      onClick={() => setSelectedConversation(conv)}
+                    >
+                      <div className="conv-avatar-med">
+                        {getInitials(getConversationTitle(conv))}
+                        <span className={`conv-type-dot ${conv.type === "PATIENT_EQUIPE" ? "patient" : "medecin"}`}></span>
+                      </div>
+                      <div className="conv-details">
+                        <div className="conv-title-row">
+                          <span className="conv-title-med">{getConversationTitle(conv)}</span>
+                          <span className="conv-time-med">
+                            {conv.lastMessageAt && formatMessageTime(conv.lastMessageAt)}
+                          </span>
                         </div>
-                      </ListGroup.Item>
-                    ))}
-                  </ListGroup>
+                        <div className="conv-last-msg">{getConversationSubtitle(conv)}</div>
+                      </div>
+                    </div>
+                  ))
                 )}
               </div>
             </Col>
 
-            {/* Zone messages */}
-            <Col md={8} className="chat-main p-0 d-flex flex-column">
+            {/* ===== ZONE CHAT ===== */}
+            <Col md={8} lg={9} className="chat-main-med">
               {!selectedConversation ? (
-                <div className="d-flex flex-column align-items-center justify-content-center h-100">
-                  <i className="bi bi-chat-dots" style={{ fontSize: "4rem", color: "#ccc" }}></i>
-                  <h4 className="mt-3 text-muted">Sélectionnez une conversation</h4>
-                  <p className="text-muted">Choisissez un patient ou un collègue</p>
+                <div className="chat-empty-med">
+                  <div className="chat-empty-icon-wrap">
+                    <i className="bi bi-chat-dots-fill"></i>
+                  </div>
+                  <h5>Sélectionnez une conversation</h5>
+                  <p>Choisissez un patient ou un collègue médecin</p>
+                  <button className="btn-start-chat" onClick={() => setShowNewConversation(true)}>
+                    <i className="bi bi-plus-circle me-2"></i>
+                    Nouvelle conversation
+                  </button>
                 </div>
               ) : (
                 <>
-                  <div className="chat-header p-3 border-bottom bg-light">
-                    <div className="d-flex align-items-center">
-                      <div className="conversation-avatar me-3">
-                        {selectedConversation.type === "PATIENT_EQUIPE" ? "👤" : "👨‍⚕️"}
+                  {/* Header chat */}
+                  <div className="chat-header-med">
+                    <div className="chat-header-left">
+                      <div className="chat-header-avatar-med">
+                        {getInitials(getConversationTitle(selectedConversation))}
                       </div>
-                      <div>
-                        <h5 className="mb-0">{getConversationTitle(selectedConversation)}</h5>
-                        <small className="text-muted">
-                          {selectedConversation.type === "PATIENT_EQUIPE" ? "Patient" : "Conversation privée"}
-                        </small>
+                      <div className="chat-header-info-med">
+                        <div className="chat-header-name-med">{getConversationTitle(selectedConversation)}</div>
+                        <div className="chat-header-sub-med">
+                          <span className={`type-pill ${selectedConversation.type === "PATIENT_EQUIPE" ? "patient" : "medecin"}`}>
+                            {selectedConversation.type === "PATIENT_EQUIPE" ? "Patient" : "Médecin"}
+                          </span>
+                        </div>
                       </div>
+                    </div>
+                    <div className="chat-header-actions-med">
+                      <button className="chat-hdr-btn" title="Informations">
+                        <i className="bi bi-info-circle"></i>
+                      </button>
                     </div>
                   </div>
 
-                  <div className="messages-container flex-grow-1 p-3">
-                    {messages.length === 0 ? (
-                      <div className="text-center text-muted">
-                        Aucun message. Commencez la conversation !
+                  {/* Messages */}
+                  <div className="messages-area-med">
+                    {messages.length === 0 && (
+                      <div className="no-msg-state">
+                        <i className="bi bi-chat-heart" style={{ fontSize: "3rem", color: "#d4aaff" }}></i>
+                        <p>Commencez la conversation !</p>
                       </div>
-                    ) : (
-                      messages.map((message, index) => (
-                        <div
-                          key={message.id || index}
-                          className={`message mb-3 ${isMyMessage(message) ? "message-sent" : "message-received"}`}
-                        >
-                          <div className="message-bubble">
-                            {/* Toujours afficher le nom de l'expéditeur */}
-                            <div className={`message-sender fw-bold mb-1 ${isMyMessage(message) ? "text-white" : "text-primary"}`} style={{ fontSize: "0.85rem" }}>
-                              {message.senderName}
-                            </div>
-
+                    )}
+                    {messages.map((message, index) => (
+                      <div
+                        key={message.id || index}
+                        className={`msg-row ${isMyMessage(message) ? "msg-sent" : "msg-received"}`}
+                      >
+                        {!isMyMessage(message) && (
+                          <div className="msg-avatar-med">{getInitials(message.senderName)}</div>
+                        )}
+                        <div className="msg-content-wrap">
+                          {!isMyMessage(message) && (
+                            <div className="msg-sender-name">{message.senderName}</div>
+                          )}
+                          <div className={`msg-bubble ${isMyMessage(message) ? "bubble-sent-med" : "bubble-received-med"}`}>
                             {message.messageType === "TEXT" ? (
-                              <div className="message-text">{message.content}</div>
+                              <div className="msg-text">{message.content}</div>
                             ) : (
-                              <div className="message-file d-flex align-items-center gap-2 p-2 bg-light rounded">
-                                <i className="bi bi-file-earmark"></i>
+                              <div className="msg-file-block">
+                                <i className="bi bi-file-earmark-fill me-2"></i>
                                 <div className="flex-grow-1">
                                   <div className="fw-bold">{message.fileName}</div>
                                   <small>{(message.fileSize / 1024).toFixed(1)} KB</small>
                                 </div>
-                                <a
-                                  href={`http://localhost:8080${message.fileUrl}`}
-                                  download
-                                  className="btn btn-sm btn-outline-primary"
-                                >
+                                <a href={`http://localhost:8080${message.fileUrl}`} download className="btn-dl-file">
                                   <i className="bi bi-download"></i>
                                 </a>
                               </div>
                             )}
-
-                            <div className="message-time text-muted" style={{ fontSize: "0.75rem" }}>
+                            <div className={`msg-time ${isMyMessage(message) ? "time-sent" : "time-received"}`}>
+                              <i className="bi bi-clock me-1"></i>
                               {formatMessageTime(message.createdAt)}
+                              {isMyMessage(message) && <i className="bi bi-check2-all ms-1"></i>}
                             </div>
                           </div>
                         </div>
-                      ))
-                    )}
+                      </div>
+                    ))}
                     <div ref={messagesEndRef} />
                   </div>
 
-                  <div className="chat-input p-3 border-top bg-light">
+                  {/* Zone saisie */}
+                  <div className="input-area-med">
                     {selectedFiles.length > 0 && (
-                      <div className="selected-files mb-2">
+                      <div className="selected-files-preview">
                         {selectedFiles.map((file, index) => (
-                          <div key={index} className="file-preview d-flex align-items-center gap-2 p-2 mb-1 bg-white rounded">
-                            <i className="bi bi-file-earmark"></i>
-                            <span className="flex-grow-1 text-truncate">{file.name}</span>
-                            <button
-                              className="btn btn-sm btn-outline-danger"
-                              onClick={() => removeFile(index)}
-                            >
+                          <div key={index} className="file-chip">
+                            <i className="bi bi-file-earmark me-2"></i>
+                            <span className="file-chip-name">{file.name}</span>
+                            <button className="file-chip-remove" onClick={() => removeFile(index)}>
                               <i className="bi bi-x"></i>
                             </button>
                           </div>
@@ -586,54 +412,44 @@ function ChatMedecin() {
                       </div>
                     )}
 
-                    <Form onSubmit={(e) => { e.preventDefault(); sendMessage(); }}>
-                      <div className="d-flex gap-2">
-                        <input
-                          type="file"
-                          ref={fileInputRef}
-                          onChange={handleFileSelect}
-                          style={{ display: "none" }}
-                          accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
-                          multiple
-                        />
+                    <div className="input-row-med">
+                      <input
+                        type="file"
+                        ref={fileInputRef}
+                        onChange={handleFileSelect}
+                        style={{ display: "none" }}
+                        accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+                        multiple
+                      />
+                      <button
+                        className="input-action-med"
+                        onClick={() => fileInputRef.current?.click()}
+                        disabled={uploadingFile}
+                        title="Joindre un fichier"
+                      >
+                        <i className="bi bi-paperclip"></i>
+                      </button>
 
-                        <Button
-                          variant="outline-secondary"
-                          onClick={() => fileInputRef.current?.click()}
-                          disabled={uploadingFile}
-                        >
-                          <i className="bi bi-paperclip"></i>
-                        </Button>
+                      <input
+                        type="text"
+                        placeholder="Tapez votre message..."
+                        value={messageInput}
+                        onChange={(e) => { setMessageInput(e.target.value); handleTyping(); }}
+                        onKeyPress={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMessage(); } }}
+                        className="msg-input-med"
+                      />
 
-                        <Form.Control
-                          type="text"
-                          placeholder="Tapez votre message..."
-                          value={messageInput}
-                          onChange={(e) => {
-                            setMessageInput(e.target.value);
-                            handleTyping();
-                          }}
-                          onKeyPress={(e) => {
-                            if (e.key === "Enter" && !e.shiftKey) {
-                              e.preventDefault();
-                              sendMessage();
-                            }
-                          }}
-                        />
-
-                        <Button
-                          variant="primary"
-                          type="submit"
-                          disabled={(!messageInput.trim() && selectedFiles.length === 0) || !isConnected || uploadingFile}
-                        >
-                          {uploadingFile ? (
-                            <span className="spinner-border spinner-border-sm"></span>
-                          ) : (
-                            <i className="bi bi-send"></i>
-                          )}
-                        </Button>
-                      </div>
-                    </Form>
+                      <button
+                        className={`btn-send-med ${(isConnected && (messageInput.trim() || selectedFiles.length > 0)) ? "active" : "disabled"}`}
+                        onClick={sendMessage}
+                        disabled={(!messageInput.trim() && selectedFiles.length === 0) || !isConnected || uploadingFile}
+                      >
+                        {uploadingFile
+                          ? <span className="spinner-border spinner-border-sm"></span>
+                          : <i className="bi bi-send-fill"></i>
+                        }
+                      </button>
+                    </div>
                   </div>
                 </>
               )}
@@ -642,52 +458,50 @@ function ChatMedecin() {
         </Container>
       </div>
 
-      {/* Modal */}
+      {/* ===== MODAL NOUVELLE CONVERSATION ===== */}
       {showNewConversation && (
-        <div className="modal-overlay" onClick={() => setShowNewConversation(false)}>
-          <div className="modal-content-custom" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header-custom">
-              <h5>💬 Nouvelle Conversation</h5>
-              <button className="btn-close-custom" onClick={() => setShowNewConversation(false)}>
-                ×
+        <div className="modal-overlay-med" onClick={() => setShowNewConversation(false)}>
+          <div className="modal-box-med" onClick={(e) => e.stopPropagation()}>
+
+            <div className="modal-hdr-med">
+              <div className="modal-hdr-title">
+                <i className="bi bi-chat-plus-fill me-2"></i>
+                Nouvelle conversation
+              </div>
+              <button className="modal-close-med" onClick={() => setShowNewConversation(false)}>
+                <i className="bi bi-x-lg"></i>
               </button>
             </div>
 
-            <div className="modal-body-custom">
-              <div className="user-type-selector mb-4">
+            <div className="modal-bdy-med">
+              <div className="type-selector-med">
                 <button
-                  className={`type-btn ${userType === "patient" ? "active" : ""}`}
+                  className={`type-pill-btn ${userType === "patient" ? "active" : ""}`}
                   onClick={() => setUserType("patient")}
                 >
-                  <i className="bi bi-person-fill"></i>
-                  <span>Patients</span>
+                  <i className="bi bi-person-fill me-2"></i>Patients
                 </button>
                 <button
-                  className={`type-btn ${userType === "medecin" ? "active" : ""}`}
+                  className={`type-pill-btn ${userType === "medecin" ? "active" : ""}`}
                   onClick={() => setUserType("medecin")}
                 >
-                  <i className="bi bi-person-badge"></i>
-                  <span>Médecins</span>
+                  <i className="bi bi-person-badge me-2"></i>Médecins
                 </button>
               </div>
 
-              <div className="users-list-modal">
+              <div className="users-list-med">
                 {userType === "patient" ? (
                   patients.length === 0 ? (
                     <p className="text-muted text-center py-4">Aucun patient disponible</p>
                   ) : (
                     patients.map((patient) => (
-                      <div
-                        key={patient.id}
-                        className="user-item-modal"
-                        onClick={() => createConversationWithUser(patient, "patient")}
-                      >
-                        <div className="user-avatar-modal">👤</div>
-                        <div className="user-info-modal">
-                          <div className="user-name-modal">{patient.prenom} {patient.nom}</div>
-                          <small className="text-muted">Dossier: {patient.numeroDossier}</small>
+                      <div key={patient.id} className="user-item-med" onClick={() => createConversationWithUser(patient, "patient")}>
+                        <div className="user-avatar-med patient">{getInitials(`${patient.prenom} ${patient.nom}`)}</div>
+                        <div className="user-info-med">
+                          <div className="user-name-med">{patient.prenom} {patient.nom}</div>
+                          <small>Dossier : {patient.numeroDossier}</small>
                         </div>
-                        <i className="bi bi-chevron-right"></i>
+                        <i className="bi bi-chevron-right user-chevron"></i>
                       </div>
                     ))
                   )
@@ -696,17 +510,13 @@ function ChatMedecin() {
                     <p className="text-muted text-center py-4">Aucun médecin disponible</p>
                   ) : (
                     medecins.map((med) => (
-                      <div
-                        key={med.id}
-                        className="user-item-modal"
-                        onClick={() => createConversationWithUser(med, "medecin")}
-                      >
-                        <div className="user-avatar-modal">👨‍⚕️</div>
-                        <div className="user-info-modal">
-                          <div className="user-name-modal">Dr. {med.prenom} {med.nom}</div>
-                          <small className="text-muted">{med.specialite || "Médecin"}</small>
+                      <div key={med.id} className="user-item-med" onClick={() => createConversationWithUser(med, "medecin")}>
+                        <div className="user-avatar-med medecin">{getInitials(`${med.prenom} ${med.nom}`)}</div>
+                        <div className="user-info-med">
+                          <div className="user-name-med">Dr. {med.prenom} {med.nom}</div>
+                          <small>{med.specialite || "Médecin"}</small>
                         </div>
-                        <i className="bi bi-chevron-right"></i>
+                        <i className="bi bi-chevron-right user-chevron"></i>
                       </div>
                     ))
                   )

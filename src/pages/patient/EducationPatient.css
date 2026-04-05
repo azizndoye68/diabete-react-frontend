@@ -16,9 +16,9 @@
 
 /* En-tête moderne avec gradient */
 .education-header {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #38ef7d 0%, #11998e 100%);
   color: white;
-  padding: 2rem 3rem;
+  padding: 0.75rem 3rem;
   box-shadow: 0 4px 20px rgba(102, 126, 234, 0.15);
   position: relative;
   overflow: hidden;
@@ -151,7 +151,7 @@
 }
 
 .filter-btn.btn-primary {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  background: linear-gradient(135deg, #38ef7d 0%, #11998e 100%) !important;
   border: none !important;
 }
 
@@ -162,8 +162,8 @@
 
 .filter-btn.btn-outline-secondary:hover {
   background: #f8f9fa !important;
-  border-color: #667eea !important;
-  color: #667eea !important;
+  border-color: #38ef7d !important;
+  color: #38ef7d !important;
 }
 
 /* Carte de contenu moderne */
@@ -188,7 +188,7 @@
   width: 100%;
   height: 220px;
   overflow: hidden;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #38ef7d 0%, #11998e 100%);
 }
 
 .card-thumbnail-image {
@@ -260,11 +260,11 @@
 .meta-item {
   display: flex;
   align-items: center;
-  color: #718096;
+  color: #38ef7d;
 }
 
 .meta-item i {
-  color: #667eea;
+  color: #38ef7d;
 }
 
 /* Bouton de consultation */
@@ -306,7 +306,7 @@
 }
 
 .empty-icon i {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #38ef7d 0%, #11998e 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;

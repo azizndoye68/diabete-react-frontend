@@ -9,7 +9,7 @@ function AideModal({ show, onHide }) {
       icon: 'bi-book-fill',
       title: 'Documentation',
       description: 'Guide complet d\'utilisation',
-      gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+      gradient: 'linear-gradient(135deg, #38ef7d 0%, #11998e 100%)',
       link: 'https://help.suividiabete.sn/',
       linkText: 'Accéder au guide'
     },
@@ -55,12 +55,12 @@ function AideModal({ show, onHide }) {
   ];
 
   return (
-    <Modal show={show} onHide={onHide} centered size="lg" className="aide-modal">
+    <Modal show={show} onHide={onHide} centered size="md" className="aide-modal">
       <Modal.Header 
         closeButton 
         className="aide-modal-header"
         style={{ 
-          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          background: 'linear-gradient(135deg, #38ef7d 0%, #11998e 100%)',
           color: 'white',
           border: 'none'
         }}
@@ -193,7 +193,7 @@ function AideModal({ show, onHide }) {
           onClick={onHide}
           className="btn-close-modal"
           style={{
-            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            background: 'linear-gradient(135deg, #38ef7d 0%, #11998e 100%)',
             border: 'none',
             padding: '0.6rem 2rem',
             borderRadius: '10px',

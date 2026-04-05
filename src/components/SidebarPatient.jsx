@@ -88,7 +88,7 @@ function SidebarPatient({ onShowAide, patient, isMedecin = false }) {
           cursor: "pointer",
           transition: "all 0.3s ease",
         }}
-        onClick={() => navigate("/profile")}
+        onClick={() => navigate("/patient/profil")}
         onMouseEnter={(e) => {
           e.currentTarget.style.background = "rgba(255, 255, 255, 0.15)";
           e.currentTarget.style.transform = "translateY(-2px)";
@@ -383,7 +383,7 @@ function SidebarPatient({ onShowAide, patient, isMedecin = false }) {
           )}
 
           {/* Objets connectés */}
-          {!isMedecin && (
+          {/*{!isMedecin && (
             <li
               style={{
                 display: "flex",
@@ -416,7 +416,7 @@ function SidebarPatient({ onShowAide, patient, isMedecin = false }) {
               ></i>
               <span>Objets connectés</span>
             </li>
-          )}
+          )}*/}
 
           {/* Section médecin */}
           {isMedecin && patient && (

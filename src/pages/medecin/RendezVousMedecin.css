@@ -72,7 +72,7 @@
   width: 60px;
   height: 60px;
   border-radius: 14px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #38ef7d 0%, #11998e 100%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -117,8 +117,8 @@
 }
 
 .btn-retour:hover {
-  border-color: #667eea;
-  color: #667eea;
+  border-color: #38ef7d;
+  color: #38ef7d;
   transform: translateY(-2px);
 }
 
@@ -198,7 +198,7 @@
   width: 50px;
   height: 50px;
   border-radius: 12px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #38ef7d 0%, #11998e 100%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -245,8 +245,8 @@
 }
 
 .form-control-custom:focus {
-  border-color: #667eea;
-  box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.15);
+  border-color: #38ef7d;
+  box-shadow: 0 0 0 0.2rem rgba(56, 239, 125, 0.15);
 }
 
 .form-actions,
@@ -260,22 +260,22 @@
 }
 
 .btn-save {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #38ef7d 0%, #11998e 100%);
   border: none;
   padding: 0.875rem 2rem;
   border-radius: 10px;
   font-weight: 600;
   color: white;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 4px 12px rgba(56, 239, 125, 0.3);
   flex: 1;
   min-width: 200px;
 }
 
 .btn-save:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
-  background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+  box-shadow: 0 6px 16px rgba(56, 239, 125, 0.4);
+  background: linear-gradient(135deg, #38ef7d 0%, #11998e 100%);
 }
 
 .btn-save:disabled {

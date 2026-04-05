@@ -16,9 +16,9 @@
 
 /* En-tête moderne avec gradient */
 .code-couleur-header {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #38ef7d 0%, #11998e 100%);
   color: white;
-  padding: 2rem 3rem;
+  padding: 0.75rem 3rem;
   box-shadow: 0 4px 20px rgba(102, 126, 234, 0.15);
   position: relative;
   overflow: hidden;
@@ -109,12 +109,12 @@
   border-radius: 20px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   background: linear-gradient(135deg, #ffffff 0%, #e3f2fd 100%);
-  border-left: 5px solid #2196f3 !important;
+  border-left: 5px solid #11998e !important;
 }
 
 .info-icon {
   font-size: 3rem;
-  color: #2196f3;
+  color: #11998e;
 }
 
 /* Carte de légende */

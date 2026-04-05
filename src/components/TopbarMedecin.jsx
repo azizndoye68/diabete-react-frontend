@@ -132,7 +132,7 @@ function TopbarMedecin({ user }) {
                 <Dropdown.Divider />
 
                 <Dropdown.Item 
-                  onClick={() => navigate("/profile")}
+                  onClick={() => navigate("/medecin/profil")}
                   className="profile-menu-item"
                 >
                   <FaUser className="menu-icon" />

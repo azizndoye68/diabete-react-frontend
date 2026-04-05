@@ -40,14 +40,14 @@ function HomePage() {
           <div className="top-bar-left">
             <span>FR | SN</span>
             <div className="d-flex align-items-center gap-2">
-              <FaPhoneAlt style={{ fontSize: '0.85rem' }} />
+              <FaPhoneAlt style={{ fontSize: "0.85rem" }} />
               <span>+221 77 123 45 67</span>
             </div>
             <span className="top-bar-divider">|</span>
             <span style={{ opacity: 0.9 }}>Lun - Ven | 9h - 17h</span>
           </div>
           <div className="d-flex align-items-center gap-2">
-            <FaEnvelope style={{ fontSize: '0.85rem' }} />
+            <FaEnvelope style={{ fontSize: "0.85rem" }} />
             <span>contact@diabete-plateforme.sn</span>
           </div>
         </div>
@@ -65,9 +65,7 @@ function HomePage() {
                 height="45"
               />
             </div>
-            <span className="brand-text">
-              Suivi<span className="highlight">Diabète</span> SN
-            </span>
+            <span className="brand-text">SuiviDiabète SN</span>
           </Navbar.Brand>
 
           <Navbar.Toggle aria-controls="navbar-nav" />
@@ -98,21 +96,19 @@ function HomePage() {
         <Container>
           <Row className="align-items-center">
             <Col lg={6} className="mb-5 mb-lg-0" data-aos="fade-right">
-              <div className="hero-badge">
-                PLATEFORME DE TÉLÉSUIVI
-              </div>
-              
+              <div className="hero-badge">PLATEFORME DE TÉLÉSUIVI</div>
+
               <h1 className="hero-title">
-                Gérez votre diabète en toute{' '}
+                Gérez votre diabète en toute{" "}
                 <span className="gradient-text">sérénité</span>
               </h1>
-              
+
               <p className="hero-description">
-                La solution numérique de télésuivi médical pensée pour le Sénégal.
-                Connectez-vous facilement avec votre équipe médicale pour un 
-                accompagnement personnalisé, où que vous soyez.
+                La solution numérique de télésuivi médical pensée pour le
+                Sénégal. Connectez-vous facilement avec votre équipe médicale
+                pour un accompagnement personnalisé, où que vous soyez.
               </p>
-              
+
               <div className="d-flex gap-3 flex-wrap mb-4">
                 <Button
                   size="lg"
@@ -122,7 +118,7 @@ function HomePage() {
                   Commencer maintenant
                   <i className="bi bi-arrow-right ms-2"></i>
                 </Button>
-                
+
                 <Button
                   size="lg"
                   className="btn-cta-secondary"
@@ -172,17 +168,13 @@ function HomePage() {
       <section className="types-section">
         <Container>
           <div data-aos="fade-up">
-            <div className="section-badge">
-              COMPRENDRE LE DIABÈTE
-            </div>
-            <h2 className="section-title">
-              Les différents types de diabète
-            </h2>
+            <div className="section-badge">COMPRENDRE LE DIABÈTE</div>
+            <h2 className="section-title">Les différents types de diabète</h2>
             <p className="section-description">
-              Découvrez les caractéristiques de chaque type pour mieux comprendre votre condition
+              Découvrez les caractéristiques de chaque type pour mieux
+              comprendre votre condition
             </p>
           </div>
-
           <Row className="g-4">
             {/* Type 1 */}
             <Col md={4} data-aos="fade-up" data-aos-delay="100">

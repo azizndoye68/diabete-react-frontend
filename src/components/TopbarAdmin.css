@@ -1,9 +1,9 @@
-/* src/components/TopbarMedecin.css */
+/* src/components/TopbarAdmin.css */
 
 /* ==================== */
 /* TOPBAR PRINCIPALE */
 /* ==================== */
-.topbar-medecin {
+.topbar-admin {
   background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
   box-shadow: 0 4px 20px rgba(17, 153, 142, 0.25);
   padding: 0.5rem 0;
@@ -12,7 +12,7 @@
   z-index: 1030;
 }
 
-.topbar-container {
+.topbar-admin-container {
   max-width: 1400px;
   margin: 0 auto;
   padding: 0 2rem;
@@ -24,7 +24,7 @@
 /* ==================== */
 /* LOGO ET BRAND */
 /* ==================== */
-.topbar-brand {
+.topbar-admin-brand {
   display: flex;
   align-items: center;
   cursor: pointer;
@@ -32,11 +32,11 @@
   margin-right: 2rem;
 }
 
-.topbar-brand:hover {
+.topbar-admin-brand:hover {
   transform: translateY(-2px);
 }
 
-.logo-wrapper {
+.admin-logo-wrapper {
   background: rgba(255, 255, 255, 0.2);
   backdrop-filter: blur(10px);
   padding: 6px;
@@ -48,12 +48,12 @@
   transition: all 0.3s ease;
 }
 
-.topbar-brand:hover .logo-wrapper {
+.topbar-admin-brand:hover .admin-logo-wrapper {
   background: rgba(255, 255, 255, 0.3);
   transform: rotate(5deg);
 }
 
-.brand-name {
+.admin-brand-name {
   font-weight: 700;
   font-size: 1.1rem;
   color: white;
@@ -61,24 +61,24 @@
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.brand-highlight {
+.admin-brand-highlight {
   color: #ffc107;
 }
 
 /* ==================== */
 /* NAVIGATION */
 /* ==================== */
-.topbar-nav {
+.topbar-admin-nav {
   display: flex;
-  gap: 0.5rem;
+  gap: 0.3rem;
   align-items: center;
 }
 
-.topbar-nav-link {
+.topbar-admin-nav-link {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.75rem 1.25rem;
+  padding: 0.65rem 1rem;
   border-radius: 12px;
   color: rgba(255, 255, 255, 0.9) !important;
   font-weight: 500;
@@ -87,29 +87,29 @@
   cursor: pointer;
 }
 
-.topbar-nav-link:hover {
+.topbar-admin-nav-link:hover {
   background: rgba(255, 255, 255, 0.15);
   color: white !important;
   transform: translateY(-2px);
 }
 
-.topbar-nav-link.active {
+.topbar-admin-nav-link.active {
   background: rgba(255, 255, 255, 0.25);
   color: white !important;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
-.nav-icon {
-  font-size: 1.1rem;
+.admin-nav-icon {
+  font-size: 1rem;
   display: flex;
   align-items: center;
 }
 
-.nav-label {
-  font-size: 0.95rem;
+.admin-nav-label {
+  font-size: 0.9rem;
 }
 
-.nav-badge {
+.admin-nav-badge {
   background: #dc3545;
   color: white;
   font-size: 0.7rem;
@@ -121,30 +121,48 @@
 }
 
 @keyframes pulse-badge {
-  0%, 100% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.1);
-  }
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
 }
 
 /* ==================== */
-/* ACTIONS (notifications + profil) */
+/* ACTIONS (aide + notifications + profil) */
 /* ==================== */
-.topbar-actions {
+.topbar-admin-actions {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 0.75rem;
   margin-left: 1rem;
 }
 
+/* Bouton action générique (aide) */
+.admin-action-btn {
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  border: none;
+  width: 45px;
+  height: 45px;
+  border-radius: 12px;
+  color: white;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.admin-action-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+}
+
 /* Notifications */
-.notification-wrapper {
+.admin-notification-wrapper {
   position: relative;
 }
 
-.notification-btn {
+.admin-notification-btn {
   background: rgba(255, 255, 255, 0.2);
   backdrop-filter: blur(10px);
   border: none;
@@ -161,12 +179,12 @@
   position: relative;
 }
 
-.notification-btn:hover {
+.admin-notification-btn:hover {
   background: rgba(255, 255, 255, 0.3);
   transform: translateY(-2px);
 }
 
-.notification-dot {
+.admin-notification-dot {
   position: absolute;
   top: 8px;
   right: 8px;
@@ -179,26 +197,22 @@
 }
 
 @keyframes pulse-dot {
-  0%, 100% {
-    box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.7);
-  }
-  50% {
-    box-shadow: 0 0 0 6px rgba(220, 53, 69, 0);
-  }
+  0%, 100% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.7); }
+  50% { box-shadow: 0 0 0 6px rgba(220, 53, 69, 0); }
 }
 
 /* ==================== */
 /* PROFIL DROPDOWN */
 /* ==================== */
-.profile-dropdown {
+.admin-profile-dropdown {
   position: relative;
 }
 
-.profile-toggle {
+.admin-profile-toggle {
   cursor: pointer;
 }
 
-.profile-info {
+.admin-profile-info {
   display: flex;
   align-items: center;
   gap: 1rem;
@@ -209,55 +223,55 @@
   transition: all 0.3s ease;
 }
 
-.profile-info:hover {
+.admin-profile-info:hover {
   background: rgba(255, 255, 255, 0.25);
   transform: translateY(-2px);
 }
 
-.profile-text {
+.admin-profile-text {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
   text-align: right;
 }
 
-.profile-name {
+.admin-profile-name {
   color: white;
   font-weight: 600;
   font-size: 0.95rem;
   line-height: 1.2;
 }
 
-.profile-role {
+.admin-profile-role {
   color: rgba(255, 255, 255, 0.8);
   font-size: 0.75rem;
 }
 
-.profile-avatar-wrapper {
+.admin-profile-avatar-wrapper {
   position: relative;
 }
 
-.profile-avatar {
+.admin-profile-avatar {
   border: 3px solid rgba(255, 255, 255, 0.3);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
-.status-indicator {
+.admin-status-indicator {
   position: absolute;
   bottom: 2px;
   right: 2px;
   width: 12px;
   height: 12px;
-  background: #28a745;
+  background: #ffc107;
   border: 3px solid #11998e;
   border-radius: 50%;
-  box-shadow: 0 0 8px rgba(40, 167, 69, 0.6);
+  box-shadow: 0 0 8px rgba(255, 193, 7, 0.6);
 }
 
 /* ==================== */
 /* DROPDOWN MENU */
 /* ==================== */
-.profile-menu {
+.admin-profile-menu {
   min-width: 280px;
   border-radius: 16px;
   border: none;
@@ -266,7 +280,7 @@
   margin-top: 0.5rem;
 }
 
-.profile-menu-header {
+.admin-profile-menu-header {
   display: flex;
   align-items: center;
   padding: 1rem;
@@ -276,7 +290,7 @@
   margin-bottom: 0.5rem;
 }
 
-.profile-menu-item {
+.admin-profile-menu-item {
   display: flex;
   align-items: center;
   gap: 0.75rem;
@@ -287,49 +301,45 @@
   font-size: 0.95rem;
 }
 
-.profile-menu-item:hover {
+.admin-profile-menu-item:hover {
   background: #f8f9fa;
   transform: translateX(5px);
 }
 
-.profile-menu-item:active {
-  transform: translateX(3px);
-}
-
-.menu-icon {
+.admin-menu-icon {
   font-size: 1rem;
   color: #11998e;
   width: 20px;
 }
 
-.logout-item {
+.admin-logout-item {
   color: #dc3545;
 }
 
-.logout-item:hover {
+.admin-logout-item:hover {
   background: rgba(220, 53, 69, 0.1);
   color: #dc3545;
 }
 
-.logout-item .menu-icon {
+.admin-logout-item .admin-menu-icon {
   color: #dc3545;
 }
 
 /* ==================== */
 /* BOUTON HAMBURGER */
 /* ==================== */
-.topbar-toggle {
+.topbar-admin-toggle {
   border: none;
   background: rgba(255, 255, 255, 0.2);
   padding: 0.5rem;
   border-radius: 8px;
 }
 
-.topbar-toggle:focus {
+.topbar-admin-toggle:focus {
   box-shadow: none;
 }
 
-.topbar-toggle .navbar-toggler-icon {
+.topbar-admin-toggle .navbar-toggler-icon {
   background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(255, 255, 255, 1)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
 }
 
@@ -337,22 +347,22 @@
 /* RESPONSIVE */
 /* ==================== */
 @media (max-width: 992px) {
-  .topbar-container {
+  .topbar-admin-container {
     padding: 0 1rem;
   }
 
-  .topbar-nav {
+  .topbar-admin-nav {
     flex-direction: column;
     align-items: stretch;
     padding: 1rem 0;
     gap: 0.5rem;
   }
 
-  .topbar-nav-link {
+  .topbar-admin-nav-link {
     justify-content: flex-start;
   }
 
-  .topbar-actions {
+  .topbar-admin-actions {
     flex-direction: column;
     align-items: stretch;
     gap: 0.75rem;
@@ -360,52 +370,44 @@
     padding: 1rem 0;
   }
 
-  .profile-info {
+  .admin-profile-info {
     justify-content: space-between;
   }
 
-  .profile-text {
+  .admin-profile-text {
     align-items: flex-start;
     text-align: left;
   }
 
-  .brand-name {
-    font-size: 1rem;
-  }
-
-  .notification-wrapper {
+  .admin-notification-wrapper,
+  .admin-action-btn {
     width: 100%;
   }
 
-  .notification-btn {
+  .admin-notification-btn {
     width: 100%;
     justify-content: center;
   }
 }
 
 @media (max-width: 576px) {
-  .topbar-container {
+  .topbar-admin-container {
     padding: 0 0.5rem;
   }
 
-  .brand-name {
+  .admin-brand-name {
     font-size: 0.9rem;
   }
 
-  .logo-wrapper {
+  .admin-logo-wrapper {
     padding: 4px;
   }
 
-  .logo-wrapper img {
-    width: 35px;
-    height: 35px;
-  }
-
-  .profile-name {
+  .admin-profile-name {
     font-size: 0.85rem;
   }
 
-  .nav-label {
+  .admin-nav-label {
     font-size: 0.9rem;
   }
 }

@@ -138,18 +138,18 @@ function DashboardPatient() {
         {/* Contenu principal */}
         <div className="dashboard-content">
           {/* Statistiques rapides */}
-          <Row className="g-4 mb-4">
+          <Row className="g-3 mb-3">
             {/* Glycémie actuelle - Grande carte */}
             <Col md={8}>
               <Card className="stat-card stat-card-primary h-100">
-                <Card.Body className="p-4">
-                  <div className="d-flex justify-content-between align-items-start mb-3">
+                <Card.Body className="p-1">
+                  <div className="d-flex justify-content-between align-items-start mb-2">
                     <div>
-                      <div className="d-flex align-items-center mb-2">
-                        <i className="bi bi-droplet-half stat-icon me-3"></i>
+                      <div className="d-flex align-items-center mb-1">
+                        <i className="bi bi-droplet-half stat-icon me-2"></i>
                         <h5 className="mb-0">Glycémie Actuelle</h5>
                       </div>
-                      <Badge bg={status.variant} className="mb-3">
+                      <Badge bg={status.variant} className="mb-2">
                         <i className={`bi bi-${status.icon} me-1`}></i>
                         {status.text}
                       </Badge>
@@ -158,7 +158,7 @@ function DashboardPatient() {
 
                   {glycemie ? (
                     <>
-                      <div className="glycemie-value mb-3">
+                      <div className="glycemie-value mb-2">
                         <span className="value-number">{glycemie.glycemie}</span>
                         <span className="value-unit">g/L</span>
                       </div>
@@ -180,28 +180,28 @@ function DashboardPatient() {
                       </div>
 
                       {/* Barre de progression visuelle */}
-                      <div className="mt-4">
-                        <div className="d-flex justify-content-between mb-2">
+                      <div className="mt-2">
+                        <div className="d-flex justify-content-between mb-1">
                           <small className="text-muted">Zone normale : 0.7 - 1.2 g/L</small>
                           <small className="text-muted">{glycemie.glycemie} g/L</small>
                         </div>
                         <ProgressBar
                           now={(glycemie.glycemie / 2) * 100}
                           variant={status.variant}
-                          style={{ height: "8px" }}
+                          style={{ height: "6px" }}
                         />
                       </div>
                     </>
                   ) : (
                     <div className="no-data-state">
-                      <i className="bi bi-inbox text-muted" style={{ fontSize: "3rem" }}></i>
-                      <p className="text-muted mt-3">Aucune mesure récente</p>
+                      <i className="bi bi-inbox text-muted" style={{ fontSize: "2rem" }}></i>
+                      <p className="text-muted mt-2 mb-0">Aucune mesure récente</p>
                     </div>
                   )}
 
                   <Button
                     variant="primary"
-                    className="w-100 mt-4 btn-action"
+                    className="w-100 mt-3 btn-action"
                     onClick={() => {
                       if (patientId) {
                         navigate(`/medecin/patient/${patientId}/ajouter-donnees`);
@@ -219,19 +219,19 @@ function DashboardPatient() {
 
             {/* Statistiques résumées */}
             <Col md={4}>
-              <Row className="g-3">
+              <Row className="g-2">
                 <Col xs={12}>
                   <Card className="stat-card-mini">
-                    <Card.Body className="p-3">
+                    <Card.Body className="p-2">
                       <div className="d-flex align-items-center">
                         <div className="mini-icon bg-info">
                           <i className="bi bi-bar-chart-line-fill"></i>
                         </div>
-                        <div className="ms-3">
+                        <div className="ms-2">
                           <p className="text-muted mb-0 small">Moyenne 7j</p>
-                          <h4 className="mb-0">
+                          <h5 className="mb-0">
                             {avgGlycemie || "--"} <small className="text-muted">g/L</small>
-                          </h4>
+                          </h5>
                         </div>
                       </div>
                     </Card.Body>
@@ -240,16 +240,16 @@ function DashboardPatient() {
 
                 <Col xs={12}>
                   <Card className="stat-card-mini">
-                    <Card.Body className="p-3">
+                    <Card.Body className="p-2">
                       <div className="d-flex align-items-center">
                         <div className="mini-icon bg-warning">
                           <i className="bi bi-activity"></i>
                         </div>
-                        <div className="ms-3">
+                        <div className="ms-2">
                           <p className="text-muted mb-0 small">Mesures</p>
-                          <h4 className="mb-0">
+                          <h5 className="mb-0">
                             {glycemies.length} <small className="text-muted">total</small>
-                          </h4>
+                          </h5>
                         </div>
                       </div>
                     </Card.Body>
@@ -258,16 +258,16 @@ function DashboardPatient() {
 
                 <Col xs={12}>
                   <Card className="stat-card-mini">
-                    <Card.Body className="p-3">
+                    <Card.Body className="p-2">
                       <div className="d-flex align-items-center">
                         <div className="mini-icon bg-purple">
                           <i className="bi bi-check2-circle"></i>
                         </div>
-                        <div className="ms-3">
+                        <div className="ms-2">
                           <p className="text-muted mb-0 small">Conformité</p>
-                          <h4 className="mb-0">
+                          <h5 className="mb-0">
                             85% <small className="text-muted">cible</small>
-                          </h4>
+                          </h5>
                         </div>
                       </div>
                     </Card.Body>
@@ -278,13 +278,13 @@ function DashboardPatient() {
           </Row>
 
           {/* Graphique de tendance */}
-          <Row className="g-4 mb-4">
+          <Row className="g-3 mb-3">
             <Col md={12}>
               <Card className="stat-card">
-                <Card.Body className="p-4">
-                  <div className="d-flex justify-content-between align-items-center mb-4">
+                <Card.Body className="p-3">
+                  <div className="d-flex justify-content-between align-items-center mb-2">
                     <div>
-                      <h5 className="mb-1">
+                      <h5 className="mb-0">
                         <i className="bi bi-graph-up me-2 text-primary"></i>
                         Tendance sur 7 jours
                       </h5>
@@ -314,12 +314,9 @@ function DashboardPatient() {
                     </div>
                   ) : (
                     <div className="no-data-state">
-                      <i className="bi bi-graph-up text-muted" style={{ fontSize: "3rem" }}></i>
-                      <p className="text-muted mt-3">
+                      <i className="bi bi-graph-up text-muted" style={{ fontSize: "2rem" }}></i>
+                      <p className="text-muted mt-2 mb-0">
                         Pas assez de données pour afficher une tendance
-                      </p>
-                      <p className="small text-muted">
-                        Ajoutez des mesures pour voir l'évolution
                       </p>
                     </div>
                   )}
@@ -329,14 +326,14 @@ function DashboardPatient() {
           </Row>
 
           {/* Actions rapides */}
-          <Row className="g-4">
+          <Row className="g-3">
             <Col md={4}>
               <Card className="action-card h-100" onClick={() => navigate("/carnet")}>
-                <Card.Body className="text-center p-4">
-                  <div className="action-icon bg-primary mb-3">
+                <Card.Body className="text-center p-3">
+                  <div className="action-icon bg-primary mb-2">
                     <i className="bi bi-journal-medical"></i>
                   </div>
-                  <h6 className="mb-2">Carnet de suivi</h6>
+                  <h6 className="mb-1">Carnet de suivi</h6>
                   <p className="text-muted small mb-0">
                     Consultez votre historique complet
                   </p>
@@ -346,11 +343,11 @@ function DashboardPatient() {
 
             <Col md={4}>
               <Card className="action-card h-100" onClick={() => navigate("/statistiques")}>
-                <Card.Body className="text-center p-4">
-                  <div className="action-icon bg-purple mb-3">
+                <Card.Body className="text-center p-3">
+                  <div className="action-icon bg-purple mb-2">
                     <i className="bi bi-pie-chart-fill"></i>
                   </div>
-                  <h6 className="mb-2">Statistiques</h6>
+                  <h6 className="mb-1">Statistiques</h6>
                   <p className="text-muted small mb-0">
                     Analysez vos données en détail
                   </p>
@@ -360,11 +357,11 @@ function DashboardPatient() {
 
             <Col md={4}>
               <Card className="action-card h-100" onClick={() => navigate("/patient/education")}>
-                <Card.Body className="text-center p-4">
-                  <div className="action-icon bg-info mb-3">
+                <Card.Body className="text-center p-3">
+                  <div className="action-icon bg-info mb-2">
                     <i className="bi bi-book-fill"></i>
                   </div>
-                  <h6 className="mb-2">Éducation</h6>
+                  <h6 className="mb-1">Éducation</h6>
                   <p className="text-muted small mb-0">
                     Apprenez à mieux gérer votre diabète
                   </p>

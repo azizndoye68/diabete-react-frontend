@@ -6,7 +6,7 @@
 }
 
 .equipes-main-content {
-  padding-top: 90px;
+  padding-top: 0px;
 }
 
 .equipes-main-content .container-fluid {
@@ -60,7 +60,7 @@
 }
 
 .equipes-title i {
-  color: #667eea;
+  color: #38ef7d;
   margin-right: 1rem;
 }
 
@@ -72,7 +72,7 @@
 }
 
 .btn-create-equipe {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #38ef7d 0%, #11998e 100%);
   border: none;
   padding: 0.4rem 0.7rem;
   width: fit-content;
@@ -80,12 +80,12 @@
   font-weight: 600;
   color: white;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 4px 15px rgba(56, 239, 125, 0.3);
   white-space: nowrap;
 }
 
 .btn-empty-state {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #38ef7d 0%, #11998e 100%);
   border: none;
   padding: 0.4rem 0.7rem;
   width: fit-content;
@@ -93,15 +93,15 @@
   font-weight: 600;
   color: white;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 4px 15px rgba(56, 239, 125, 0.3);
   white-space: nowrap;
 }
 
 
 .btn-create-equipe:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
-  background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+  box-shadow: 0 6px 20px rgba(56, 239, 125, 0.4);
+  background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
 }
 
 .btn-create-equipe i {
@@ -129,7 +129,7 @@
 }
 
 .section-title i {
-  color: #667eea;
+  color: #38ef7d;
   margin-right: 0.75rem;
 }
 
@@ -157,7 +157,7 @@
 }
 
 .equipe-card.equipe-owner {
-  border-left: 4px solid #667eea;
+  border-left: 4px solid #38ef7d;
 }
 
 .equipe-card.equipe-member {
@@ -179,22 +179,22 @@
   width: 60px;
   height: 60px;
   border-radius: 14px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #38ef7d 0%, #11998e 100%);
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
   font-size: 1.75rem;
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 4px 12px rgba(56, 239, 125, 0.3);
 }
 
 .owner-badge {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #38ef7d 0%, #11998e 100%);
   padding: 0.5rem 1rem;
   border-radius: 10px;
   font-size: 0.8rem;
   font-weight: 600;
-  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.2);
+  box-shadow: 0 2px 8px rgba(56, 239, 125, 0.2);
 }
 
 .member-badge {
@@ -234,7 +234,7 @@
 }
 
 .stat-item i {
-  color: #667eea;
+  color: #38ef7d;
   font-size: 1.2rem;
 }
 
@@ -256,16 +256,16 @@
 }
 
 .equipe-actions .btn-outline-primary {
-  border-color: #667eea;
-  color: #667eea;
+  border-color: #38ef7d;
+  color: #38ef7d;
 }
 
 .equipe-actions .btn-outline-primary:hover {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #38ef7d 0%, #11998e 100%);
   border-color: transparent;
   color: white;
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 4px 12px rgba(56, 239, 125, 0.3);
 }
 
 .equipe-actions .btn-outline-secondary {
@@ -329,24 +329,24 @@
 }
 
 .empty-state-card .btn {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #38ef7d 0%, #11998e 100%);
   border: none;
   color: white;
   padding: 0.875rem 2rem;
   border-radius: 12px;
   font-weight: 600;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 4px 12px rgba(56, 239, 125, 0.3);
 }
 
 .empty-state-card .btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 6px 16px rgba(56, 239, 125, 0.4);
 }
 
 /* ===== MODALS AMÉLIORÉS ===== */
 .modal-header {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #38ef7d 0%, #11998e 100%);
   color: white;
   border-radius: 0;
   padding: 1.5rem;
@@ -388,23 +388,23 @@
 
 .modal-body .form-control:focus,
 .modal-body .form-select:focus {
-  border-color: #667eea;
-  box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.15);
+  border-color: #38ef7d;
+  box-shadow: 0 0 0 0.2rem rgba(56, 239, 125  , 0.15);
 }
 
 .modal-body .d-flex .btn-primary {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #38ef7d 0%, #11998e 100%);
   border: none;
   padding: 0.75rem 1.75rem;
   border-radius: 10px;
   font-weight: 600;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 4px 12px rgba(56, 239, 125, 0.3);
 }
 
 .modal-body .d-flex .btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 6px 16px rgba(56, 239, 125, 0.4);
 }
 
 .modal-body .d-flex .btn-secondary {
@@ -462,7 +462,7 @@
 }
 
 .details-title i {
-  color: #667eea;
+  color: #38ef7d;
   margin-right: 0.5rem;
 }
 
@@ -486,14 +486,14 @@
 .member-item:hover {
   transform: translateX(5px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  border-color: #667eea;
+  border-color: #38ef7d;
 }
 
 .member-avatar {
   width: 50px;
   height: 50px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #38ef7d 0%, #11998e 100%);
   color: white;
   display: flex;
   align-items: center;
@@ -502,7 +502,7 @@
   font-size: 1.1rem;
   text-transform: uppercase;
   flex-shrink: 0;
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 4px 12px rgba(56, 239, 125, 0.3);
 }
 
 .member-info {
@@ -533,7 +533,7 @@
 }
 
 .member-details i {
-  color: #667eea;
+  color: #38ef7d;
   margin-right: 0.35rem;
 }
 
@@ -587,7 +587,7 @@
 }
 
 .team-owner i {
-  color: #667eea;
+  color: #38ef7d;
   margin-right: 0.5rem;
   font-size: 1rem;
 }

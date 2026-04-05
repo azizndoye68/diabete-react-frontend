@@ -2,7 +2,7 @@
 
 /* Sidebar avec dégradé moderne */
 .sidebar-patient {
-  background: linear-gradient(180deg, #198754 0%, #157347 100%);
+ background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%) !important;
   box-shadow: 4px 0 20px rgba(0, 0, 0, 0.15);
   z-index: 1000;
 }

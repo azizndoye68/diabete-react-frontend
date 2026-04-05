@@ -18,7 +18,6 @@ import MedecinsAttente from './pages/admin/MedecinsAttente';
 import PatientDossier from './pages/medecin/PatientDossier';
 import MonSuivi from './pages/patient/MonSuivi';
 import CodeCouleur from './pages/patient/CodeCouleur';
-import EquipeSoignante from './pages/patient/EquipeSoignante';
 import EducationMedecin from './pages/medecin/EducationMedecin';
 import EducationPatient from './pages/patient/EducationPatient';
 import ConsultationsMedecin from './pages/medecin/ConsultationsMedecin';
@@ -30,6 +29,10 @@ import RendezVousMedecin from './pages/medecin/RendezVousMedecin';
 import ListeRendezVousMedecin from './pages/medecin/ListeRendezVousMedecin';
 import EquipesMedicales from './pages/medecin/EquipesMedicales';
 import RattachementMedecin from './pages/patient/RattachementMedecin';
+import ProfilMedecin from './pages/medecin/ProfilMedecin';
+import ProfilPatient from './pages/patient/ProfilPatient';
+import TraitementPatient from './pages/patient/TraitementPatient';
+import RendezVousPatient from './pages/patient/RendezVousPatient';
 
 function App() {
   return (
@@ -53,7 +56,6 @@ function App() {
         <Route path="/patient/:id/dossier" element={<PatientDossier />} />
         <Route path="/mon-suivi" element={<MonSuivi />} />
         <Route path="/codes-couleurs" element={<CodeCouleur />} />
-        <Route path="/equipe-soignante" element={<EquipeSoignante />} />
         <Route path="/medecin/education" element={<EducationMedecin />} />
         <Route path="/patient/education" element={<EducationPatient />} />
         <Route path="/medecin/consultations" element={<ConsultationsMedecin />} />
@@ -64,6 +66,10 @@ function App() {
         <Route path="/medecin/liste-rendezvous" element={<ListeRendezVousMedecin />} />
         <Route path="/medecin/equipes-medicales" element={<EquipesMedicales />} />
         <Route path="/patient/rattachement-medecin" element={<RattachementMedecin />} />
+        <Route path="/medecin/profil" element={<ProfilMedecin />} />
+        <Route path="/patient/profil" element={<ProfilPatient />} />
+        <Route path="/patient/traitement" element={<TraitementPatient />} />
+        <Route path="/patient/rendez-vous" element={<RendezVousPatient />} />
 
 
         {/* Routes pour le médecin avec patientId */}
@@ -72,7 +78,6 @@ function App() {
         <Route path="/medecin/patient/:patientId/carnet" element={<CarnetGlycemie />} />
         <Route path="/medecin/patient/:patientId/statistiques" element={<Statistiques />} />
         <Route path="/medecin/patient/:patientId/mon-suivi" element={<MonSuivi />} />
-        <Route path="/medecin/patient/:patientId/equipe-soignante" element={<EquipeSoignante />} />
         <Route path="/medecin/patient/:patientId/education" element={<EducationPatient />} />
         <Route path="/medecin/patient/:patientId/codes-couleurs" element={<CodeCouleur />} />
         <Route path="/medecin/patient/:patientId/dossier" element={<PatientDossier />} />
@@ -81,6 +86,8 @@ function App() {
         <Route path="/medecin/patient/:patientId/consultations" element={<ConsultationsMedecin />} />
         <Route path="/medecin/patient/:patientId/traitements" element={<TraitementMedecin />} />
         <Route path="/medecin/patient/:patientId/rendez-vous" element={<RendezVousMedecin />} />
+        <Route path="/medecin/patient/:patientId/traitement" element={<TraitementPatient />} />
+        <Route path="/medecin/patient/:patientId/rendez-vous" element={<RendezVousPatient />} />
 
 
 

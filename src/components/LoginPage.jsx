@@ -249,7 +249,7 @@ function LoginForm() {
               />
             </div>
             <span className="brand-text">
-              Suivi<span className="highlight">Diabète</span> SN
+              SuiviDiabète SN
             </span>
           </Navbar.Brand>
 
@@ -283,7 +283,7 @@ function LoginForm() {
             <div className="login-info">
               <div className="info-content">
                 <h1 className="info-title">
-                  Bienvenue sur <span className="gradient-text">SuiviDiabète</span>
+                  Bienvenue sur <span className="gradient-text-green">SuiviDiabète</span>
                 </h1>
                 <p className="info-description">
                   Connectez-vous pour accéder à votre espace personnel et gérer 

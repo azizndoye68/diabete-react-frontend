@@ -61,7 +61,7 @@ function MonSuivi() {
       description: 'Gérer votre médication quotidienne',
       path: patientId 
         ? `/medecin/patient/${patientId}/traitement`
-        : `/traitement`
+        : `/patient/traitement`
     },
     { 
       title: 'Dossier médical', 
@@ -97,7 +97,7 @@ function MonSuivi() {
       description: 'Gérer vos consultations médicales',
       path: patientId 
         ? `/medecin/patient/${patientId}/rendez-vous`
-        : `/rendez-vous`
+        : `/patient/rendez-vous`
     },
   ] : [];
 
@@ -152,10 +152,10 @@ function MonSuivi() {
         <div className="mon-suivi-content">
           {/* Section d'introduction */}
           <Card className="intro-card mb-4">
-            <Card.Body className="p-4">
+            <Card.Body className="p-0">
               <Row className="align-items-center">
                 <Col md={8}>
-                  <h5 className="mb-2">
+                  <h5 className="mb-1">
                     <i className="bi bi-info-circle-fill text-primary me-2"></i>
                     Accédez rapidement à vos outils de suivi
                   </h5>
@@ -188,8 +188,8 @@ function MonSuivi() {
                     <div className="suivi-icon-container" style={{ background: item.gradient }}>
                       <i className={`bi ${item.icon}`}></i>
                     </div>
-                    <h5 className="suivi-card-title mt-3 mb-2">{item.title}</h5>
-                    <p className="suivi-card-description text-muted mb-3">
+                    <h5 className="suivi-card-title mt-1 mb-1">{item.title}</h5>
+                    <p className="suivi-card-description text-muted mb-1">
                       {item.description}
                     </p>
                     <div className="suivi-card-footer">

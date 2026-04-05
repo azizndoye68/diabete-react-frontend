@@ -27,8 +27,8 @@
 }
 
 .filter-switch .form-check-input:checked {
-  background-color: #667eea;
-  border-color: #667eea;
+  background-color: #38ef7d;
+  border-color: #11998e;
 }
 
 /* Badge de compteur */
@@ -49,8 +49,8 @@
 }
 
 .search-input:focus {
-  border-color: #667eea !important;
-  box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.15) !important;
+  border-color: #38ef7d !important;
+  box-shadow: 0 0 0 0.2rem rgba(56, 239, 125, 0.15) !important;
 }
 
 /* Bouton ajouter patient */
@@ -59,8 +59,8 @@
   padding: 0.6rem 1.5rem !important;
   font-weight: 600 !important;
   border: none !important;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
-  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3) !important;
+  background: linear-gradient(135deg, #38ef7d 0%, #11998e 100%) !important;
+  box-shadow: 0 4px 15px rgba(56, 239, 125, 0.3) !important;
   transition: all 0.3s ease !important;
   display: flex;
   align-items: center;
@@ -68,7 +68,16 @@
 
 .btn-add-patient:hover {
   transform: translateY(-2px) !important;
-  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4) !important;
+  background: linear-gradient(135deg, #0d7a6b 0%, #0a5c50 100%) !important;
+  box-shadow: 0 6px 20px rgba(17, 153, 142, 0.4) !important;
+}
+
+.btn-add-patient:focus,
+.btn-add-patient:active,
+.btn-add-patient:focus-visible {
+  background: linear-gradient(135deg, #0d7a6b 0%, #0a5c50 100%) !important;
+  box-shadow: 0 0 0 0.25rem rgba(17, 153, 142, 0.35) !important;
+  outline: none !important;
 }
 
 /* Cellule nom patient */
@@ -133,7 +142,7 @@
 }
 
 .icon-active.icon-primary {
-  color: #0d6efd;
+  color: #38ef7d;
 }
 
 .icon-inactive {
@@ -160,7 +169,7 @@
 }
 
 .notif-badge-primary {
-  background-color: #0d6efd !important;
+  background-color: #38ef7d !important;
 }
 
 /* Ligne étendue */
@@ -236,12 +245,12 @@
 }
 
 .modal-body-custom::-webkit-scrollbar-thumb {
-  background: #667eea;
+  background: #38ef7d;
   border-radius: 10px;
 }
 
 .modal-body-custom::-webkit-scrollbar-thumb:hover {
-  background: #764ba2;
+  background: #11998e;
 }
 
 /* Item de notification */
@@ -284,14 +293,14 @@
   padding: 0.6rem 2rem !important;
   font-weight: 600 !important;
   border: none !important;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
-  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3) !important;
+  background: linear-gradient(135deg, #38ef7d 0%, #11998e 100%) !important;
+  box-shadow: 0 4px 15px rgba(17, 153, 142, 0.3) !important;
   transition: all 0.3s ease !important;
 }
 
 .btn-close-modal:hover {
   transform: translateY(-2px) !important;
-  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4) !important;
+  box-shadow: 0 6px 20px rgba(17, 153, 142, 0.4) !important;
 }
 
 /* Responsive */

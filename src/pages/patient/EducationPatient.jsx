@@ -85,8 +85,8 @@ export default function EducationPatient() {
     const configs = {
       VIDEO: {
         icon: "bi-play-circle-fill",
-        gradient: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-        color: "#667eea",
+        gradient: "linear-gradient(135deg, #38ef7d 0%, #11998e 100%)",
+        color: "#38ef7d",
       },
       PDF: {
         icon: "bi-file-pdf-fill",
@@ -162,7 +162,7 @@ export default function EducationPatient() {
                       className="mini-icon"
                       style={{
                         background:
-                          "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                          "linear-gradient(135deg, #38ef7d 0%, #11998e 100%)",
                       }}
                     >
                       <i className="bi bi-collection-fill"></i>
@@ -183,7 +183,7 @@ export default function EducationPatient() {
                       className="mini-icon"
                       style={{
                         background:
-                          "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                          "linear-gradient(135deg, #38ef7d 0%, #11998e 100%)",
                       }}
                     >
                       <i className="bi bi-play-circle-fill"></i>

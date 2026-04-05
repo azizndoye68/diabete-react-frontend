@@ -38,7 +38,7 @@ const CustomTooltip = ({ active, payload, label }) => {
       <div style={{
         background: 'white',
         border: `3px solid ${color}`,
-        padding: '12px 16px',
+        padding: '0.75rem 3rem',
         borderRadius: 12,
         boxShadow: '0 4px 20px rgba(0,0,0,0.15)'
       }}>
@@ -115,32 +115,32 @@ function Statistiques() {
       <div style={{ marginLeft: '280px', padding: '2rem 3rem' }}>
         {/* En-tête */}
         <div style={{
-          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          background: 'linear-gradient(135deg, #38ef7d 0%, #11998e 100%)',
           padding: '2rem',
           borderRadius: '20px',
           marginBottom: '2rem',
           color: 'white'
         }}>
-          <h2 className="mb-2">📊 Statistiques de Glycémie</h2>
+          <h2 className="mb-0">Statistiques de Glycémie</h2>
           <p className="mb-0" style={{ opacity: 0.9 }}>
             {patient && `${patient.prenom} ${patient.nom}`}
           </p>
         </div>
 
         {/* Cartes de statistiques rapides */}
-        <Row className="g-4 mb-4">
+        <Row className="g-4 mb-0">
           <Col md={4}>
             <Card style={{
-              border: '2px solid #667eea',
+              border: '2px solid #38ef7d',
               borderRadius: '16px',
               boxShadow: '0 4px 15px rgba(0,0,0,0.08)'
             }}>
-              <Card.Body className="text-center p-4">
+              <Card.Body className="text-center p-1">
                 <div style={{
                   width: '60px',
                   height: '60px',
                   borderRadius: '12px',
-                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                  background: 'linear-gradient(135deg, #38ef7d 0%, #11998e  100%)',
                   display: 'inline-flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -148,8 +148,8 @@ function Statistiques() {
                 }}>
                   <i className="bi bi-graph-up" style={{ fontSize: '1.8rem', color: 'white' }}></i>
                 </div>
-                <h6 className="text-muted mb-2">Moyenne</h6>
-                <h3 className="mb-0" style={{ color: '#667eea', fontWeight: 'bold' }}>
+                <h6 className="text-muted mb-0">Moyenne</h6>
+                <h3 className="mb-0" style={{ color: '#38ef7d', fontWeight: 'bold' }}>
                   {stats.moyenne} <small style={{ fontSize: '1rem' }}>g/L</small>
                 </h3>
               </Card.Body>
@@ -162,7 +162,7 @@ function Statistiques() {
               borderRadius: '16px',
               boxShadow: '0 4px 15px rgba(0,0,0,0.08)'
             }}>
-              <Card.Body className="text-center p-4">
+              <Card.Body className="text-center p-1">
                 <div style={{
                   width: '60px',
                   height: '60px',
@@ -175,7 +175,7 @@ function Statistiques() {
                 }}>
                   <i className="bi bi-arrow-down-circle" style={{ fontSize: '1.8rem', color: 'white' }}></i>
                 </div>
-                <h6 className="text-muted mb-2">Minimum</h6>
+                <h6 className="text-muted mb-0">Minimum</h6>
                 <h3 className="mb-0" style={{ color: '#ffc107', fontWeight: 'bold' }}>
                   {stats.min} <small style={{ fontSize: '1rem' }}>g/L</small>
                 </h3>
@@ -189,7 +189,7 @@ function Statistiques() {
               borderRadius: '16px',
               boxShadow: '0 4px 15px rgba(0,0,0,0.08)'
             }}>
-              <Card.Body className="text-center p-4">
+              <Card.Body className="text-center p-1">
                 <div style={{
                   width: '60px',
                   height: '60px',
@@ -202,7 +202,7 @@ function Statistiques() {
                 }}>
                   <i className="bi bi-arrow-up-circle" style={{ fontSize: '1.8rem', color: 'white' }}></i>
                 </div>
-                <h6 className="text-muted mb-2">Maximum</h6>
+                <h6 className="text-muted mb-0">Maximum</h6>
                 <h3 className="mb-0" style={{ color: '#dc3545', fontWeight: 'bold' }}>
                   {stats.max} <small style={{ fontSize: '1rem' }}>g/L</small>
                 </h3>
@@ -213,12 +213,12 @@ function Statistiques() {
 
         {/* Légende moderne */}
         <Card className="mb-4" style={{
-          border: '2px solid #667eea',
+          border: '2px solid #38ef7d',
           borderRadius: '16px',
           boxShadow: '0 4px 15px rgba(0,0,0,0.08)'
         }}>
-          <Card.Body className="p-4">
-            <h6 className="fw-bold mb-3" style={{ color: '#667eea' }}>
+          <Card.Body className="p-1">
+            <h6 className="fw-bold mb-1" style={{ color: '#38ef7d' }}>
               <i className="bi bi-palette me-2"></i>
               Guide de lecture
             </h6>
@@ -250,13 +250,13 @@ function Statistiques() {
         </Card>
 
         {/* 📈 Courbe d'évolution */}
-        <Card className="mb-4" style={{
-          border: '2px solid #667eea',
+        <Card className="mb-2" style={{
+          border: '2px solid #38ef7d',
           borderRadius: '16px',
           boxShadow: '0 4px 15px rgba(0,0,0,0.08)'
         }}>
           <Card.Body className="p-4">
-            <h5 className="fw-bold mb-4" style={{ color: '#667eea' }}>
+            <h5 className="fw-bold mb-4" style={{ color: '#38ef7d' }}>
               <i className="bi bi-graph-up-arrow me-2"></i>
               Évolution sur les 7 derniers jours
             </h5>
@@ -265,14 +265,14 @@ function Statistiques() {
                 <ComposedChart data={data} margin={{ top: 10, right: 20, left: 0, bottom: 10 }}>
                   <defs>
                     <linearGradient id="colorGly" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#667eea" stopOpacity={0.3}/>
-                      <stop offset="95%" stopColor="#667eea" stopOpacity={0.05}/>
+                      <stop offset="5%" stopColor="#38ef7d" stopOpacity={0.3}/>
+                      <stop offset="95%" stopColor="#38ef7d  " stopOpacity={0.05}/>
                     </linearGradient>
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
                   
-                  <ReferenceLine y={0.7} stroke="#667eea" strokeDasharray="5 5" strokeWidth={2} />
-                  <ReferenceLine y={1.2} stroke="#667eea" strokeDasharray="5 5" strokeWidth={2} />
+                  <ReferenceLine y={0.7} stroke="#38ef7d" strokeDasharray="5 5" strokeWidth={2} />
+                  <ReferenceLine y={1.2} stroke="#38ef7d" strokeDasharray="5 5" strokeWidth={2} />
                   
                   <XAxis dataKey="date" tick={{ fill: '#666' }} />
                   <YAxis domain={[0, 2]} tick={{ fill: '#666' }} />
@@ -283,7 +283,7 @@ function Statistiques() {
                   <Line
                     type="monotone"
                     dataKey="glycemie"
-                    stroke="#667eea"
+                    stroke="#38ef7d"
                     strokeWidth={3}
                     dot={({ cx, cy, payload }) => (
                       <g>
@@ -306,12 +306,12 @@ function Statistiques() {
         {/* 📊 Histogramme */}
         {data.length > 0 && (
           <Card style={{
-            border: '2px solid #667eea',
+            border: '2px solid #38ef7d',
             borderRadius: '16px',
             boxShadow: '0 4px 15px rgba(0,0,0,0.08)'
           }}>
             <Card.Body className="p-4">
-              <h5 className="fw-bold mb-4" style={{ color: '#667eea' }}>
+              <h5 className="fw-bold mb-4" style={{ color: '#38ef7d' }}>
                 <i className="bi bi-bar-chart-fill me-2"></i>
                 Distribution des mesures
               </h5>
