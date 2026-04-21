@@ -312,7 +312,7 @@ function AjouterDonneeJournee() {
                           <Form.Group className="mb-3">
                             <Form.Label className="fw-semibold">
                               <i className="bi bi-graph-up me-2"></i>
-                              Taux de glycémie (g/L) *
+                              Taux de glycémie (g/L)
                             </Form.Label>
                             <Form.Control
                               type="number"
@@ -334,7 +334,7 @@ function AjouterDonneeJournee() {
                           <Form.Group className="mb-3">
                             <Form.Label className="fw-semibold">
                               <i className="bi bi-clock me-2"></i>
-                              Moment de la prise *
+                              Moment de la prise
                             </Form.Label>
                             <Form.Select 
                               name="moment" 
