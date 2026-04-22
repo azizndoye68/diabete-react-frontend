@@ -1,0 +1,178 @@
+/* src/components/SidebarAdmin.css */
+
+/* ==================== */
+/* SIDEBAR PRINCIPALE   */
+/* ==================== */
+.sidebar-admin {
+  background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%) !important;
+  box-shadow: 4px 0 20px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  animation: slideInLeft 0.4s ease-out;
+}
+
+/* ==================== */
+/* EN-TÊTE / LOGO       */
+/* ==================== */
+.app-header-admin {
+  transition: transform 0.3s ease;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.app-header-admin:hover {
+  transform: translateY(-2px);
+}
+
+.logo-container-admin {
+  background: rgba(255, 255, 255, 0.15);
+  padding: 8px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.app-header-admin:hover .logo-container-admin {
+  background: rgba(255, 255, 255, 0.25);
+  transform: rotate(5deg);
+}
+
+/* ==================== */
+/* CARTE PROFIL         */
+/* ==================== */
+.profile-card-admin {
+  background: rgba(255, 255, 255, 0.1);
+  borderRadius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+}
+
+.profile-card-admin:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* ==================== */
+/* MENU NAVIGATION      */
+/* ==================== */
+.menu-item-admin {
+  display: flex;
+  align-items: center;
+  padding: 14px 16px;
+  margin-bottom: 6px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 500;
+  font-size: 15px;
+  position: relative;
+  overflow: hidden;
+}
+
+.menu-item-admin::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 4px;
+  background: #ffc107;
+  transform: scaleY(0);
+  transition: transform 0.3s ease;
+}
+
+.menu-item-admin:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+  transform: translateX(5px);
+}
+
+.menu-item-admin:hover::before {
+  transform: scaleY(1);
+}
+
+.menu-item-admin:active {
+  transform: translateX(3px) scale(0.98);
+}
+
+.menu-icon-admin {
+  font-size: 20px;
+  margin-right: 14px;
+  min-width: 24px;
+  transition: all 0.3s ease;
+}
+
+.menu-item-admin:hover .menu-icon-admin {
+  transform: scale(1.1);
+}
+
+/* ==================== */
+/* FOOTER               */
+/* ==================== */
+.sidebar-footer-admin {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.logout-item-admin:hover {
+  background: rgba(255, 193, 7, 0.2);
+  color: #ffc107;
+}
+
+/* ==================== */
+/* SCROLLBAR            */
+/* ==================== */
+.sidebar-admin nav::-webkit-scrollbar {
+  width: 6px;
+}
+
+.sidebar-admin nav::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+}
+
+.sidebar-admin nav::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+}
+
+.sidebar-admin nav::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* ==================== */
+/* ANIMATION            */
+/* ==================== */
+@keyframes slideInLeft {
+  from {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* ==================== */
+/* RESPONSIVE           */
+/* ==================== */
+@media (max-width: 768px) {
+  .sidebar-admin {
+    width: 100% !important;
+    position: fixed !important;
+    z-index: 1050;
+  }
+
+  .menu-item-admin {
+    padding: 12px 14px;
+    font-size: 14px;
+  }
+
+  .menu-icon-admin {
+    font-size: 18px;
+    margin-right: 12px;
+  }
+}

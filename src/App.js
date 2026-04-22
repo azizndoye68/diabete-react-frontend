@@ -12,9 +12,6 @@ import Statistiques from './components/Statistiques';
 import DashboardMedecin from './pages/medecin/DashboardMedecin';
 import DashboardAdmin from './pages/admin/DashboardAdmin';
 import PatientsTable from './pages/medecin/PatientsTable';
-import PatientsList from './pages/admin/PatientsList';
-import MedecinsList from './pages/admin/MedecinsList';
-import MedecinsAttente from './pages/admin/MedecinsAttente';
 import PatientDossier from './pages/medecin/PatientDossier';
 import MonSuivi from './pages/patient/MonSuivi';
 import CodeCouleur from './pages/patient/CodeCouleur';
@@ -33,6 +30,9 @@ import ProfilMedecin from './pages/medecin/ProfilMedecin';
 import ProfilPatient from './pages/patient/ProfilPatient';
 import TraitementPatient from './pages/patient/TraitementPatient';
 import RendezVousPatient from './pages/patient/RendezVousPatient';
+import AdminPatientsPage from './pages/admin/AdminPatientsPage';
+import AdminMedecinsPage from './pages/admin/AdminMedecinsPage';
+import AdminAttentePage from './pages/admin/AdminAttentePage';
 
 function App() {
   return (
@@ -50,9 +50,6 @@ function App() {
         <Route path="/carnet" element={<CarnetGlycemie />} />
         <Route path="/statistiques" element={<Statistiques />} />
         <Route path="/medecin/patients-table" element={<PatientsTable />} />
-        <Route path="/admin/patients" element={<PatientsList />} />
-        <Route path="/admin/medecins" element={<MedecinsList />} />
-        <Route path="/admin/attente" element={<MedecinsAttente />} />
         <Route path="/patient/:id/dossier" element={<PatientDossier />} />
         <Route path="/mon-suivi" element={<MonSuivi />} />
         <Route path="/codes-couleurs" element={<CodeCouleur />} />
@@ -70,6 +67,10 @@ function App() {
         <Route path="/patient/profil" element={<ProfilPatient />} />
         <Route path="/patient/traitement" element={<TraitementPatient />} />
         <Route path="/patient/rendez-vous" element={<RendezVousPatient />} />
+        <Route path="/admin/patients" element={<AdminPatientsPage />} />
+        <Route path="/admin/medecins" element={<AdminMedecinsPage />} />
+        <Route path="/admin/attente" element={<AdminAttentePage />} />
+
 
 
         {/* Routes pour le médecin avec patientId */}
