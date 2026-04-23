@@ -1,43 +1,83 @@
 // src/pages/medecin/StatistiquesMedecin.jsx
 import React, { useEffect, useState } from 'react';
 import { Container, Row, Col, Card, Form, Button, Badge } from 'react-bootstrap';
-import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import {
+  LineChart, Line, BarChart, Bar, PieChart, Pie, Cell,
+  XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer
+} from 'recharts';
 import TopbarMedecin from '../../components/TopbarMedecin';
 import api from '../../services/api';
 import './StatistiquesMedecin.css';
 
+/* ── Tooltip personnalisé ────────────────────────────────────── */
+const CustomTooltip = ({ active, payload, label }) => {
+  if (!active || !payload?.length) return null;
+  return (
+    <div style={{
+      background: 'white',
+      border: '1.5px solid #f1f5f9',
+      borderRadius: 9,
+      padding: '8px 12px',
+      boxShadow: '0 4px 14px rgba(0,0,0,.08)',
+      fontSize: 12
+    }}>
+      {label && <p style={{ margin: '0 0 4px', color: '#64748b', fontWeight: 600 }}>{label}</p>}
+      {payload.map((entry, i) => (
+        <p key={i} style={{ margin: 0, color: entry.color, fontWeight: 700 }}>
+          {entry.name} : <span style={{ color: '#1e293b' }}>{entry.value}</span>
+        </p>
+      ))}
+    </div>
+  );
+};
+
+/* ── Carte KPI ───────────────────────────────────────────────── */
+function KpiCard({ icon, label, value, unit, gradient, delay }) {
+  return (
+    <Card className={`stat-card-mini sm-fade`} style={{ '--d': `${delay}ms` }}>
+      <Card.Body className="p-3">
+        <div className="stat-mini-icon" style={{ background: gradient }}>
+          <i className={`bi ${icon}`}></i>
+        </div>
+        <div className="stat-mini-info">
+          <small className="stat-mini-label">{label}</small>
+          <h3 className="stat-mini-value">
+            {value}{unit && <small>{unit}</small>}
+          </h3>
+        </div>
+      </Card.Body>
+    </Card>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   PAGE PRINCIPALE
+═══════════════════════════════════════════════════════════════ */
 function StatistiquesMedecin() {
-  const [medecin, setMedecin] = useState(null);
-  const [patients, setPatients] = useState([]);
+  const [medecin, setMedecin]             = useState(null);
+  const [patients, setPatients]           = useState([]);
   const [selectedPatient, setSelectedPatient] = useState('all');
-  const [periode, setPeriode] = useState('30');
-  const [loading, setLoading] = useState(true);
+  const [periode, setPeriode]             = useState('30');
+  const [loading, setLoading]             = useState(true);
   const [stats, setStats] = useState({
-    totalPatients: 0,
-    patientsActifs: 0,
-    moyenneGlycemie: 0,
-    conformite: 0,
-    alertes: 0
+    totalPatients: 0, patientsActifs: 0,
+    moyenneGlycemie: 0, conformite: 0, alertes: 0
   });
   const [chartData, setChartData] = useState({
-    evolutionGlycemie: [],
-    repartitionTypes: [],
-    conformitePatients: [],
-    alertesParType: []
+    evolutionGlycemie: [], repartitionTypes: [],
+    conformitePatients: [], alertesParType: []
   });
 
-  const COLORS = ['#667eea', '#f093fb', '#4facfe', '#43e97b', '#fa709a', '#ffc107'];
+  const COLORS = ['#11998e', '#667eea', '#0ea5e9', '#f59e0b', '#a855f7', '#ef4444'];
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const profileRes = await api.get('/api/auth/profile');
-        const medRes = await api.get(`/api/medecins/byUtilisateur/${profileRes.data.id}`);
+        const medRes     = await api.get(`/api/medecins/byUtilisateur/${profileRes.data.id}`);
         setMedecin(medRes.data);
-
         const patientsRes = await api.get(`/api/patients/medecin/${medRes.data.id}/visibles`);
         setPatients(patientsRes.data || []);
-
         await loadStatistics(medRes.data.id, 'all', '30');
       } catch (error) {
         console.error('Erreur chargement données:', error);
@@ -45,72 +85,60 @@ function StatistiquesMedecin() {
         setLoading(false);
       }
     };
-
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const processMesures = (mesures, evolutionData, counters) => {
+    const newEvolutionData = { ...evolutionData };
+    const newCounters      = { ...counters };
+    mesures.forEach(m => {
+      const date = new Date(m.dateSuivi).toLocaleDateString('fr-FR');
+      if (!newEvolutionData[date]) newEvolutionData[date] = { date, total: 0, count: 0 };
+      newEvolutionData[date].total += m.glycemie;
+      newEvolutionData[date].count++;
+      newCounters.totalGlycemies  += m.glycemie;
+      newCounters.countGlycemies++;
+      if (m.glycemie < 0.7 || m.glycemie > 1.8) newCounters.totalAlertes++;
+    });
+    return { evolutionData: newEvolutionData, counters: newCounters };
+  };
+
   const loadStatistics = async (medecinId, patientFilter, periodeJours) => {
     try {
       setLoading(true);
-      
-      const patientsRes = await api.get(`/api/patients/medecin/${medecinId}/visibles`);
-      const allPatients = patientsRes.data || [];
-      
-      let filteredPatients = allPatients;
-      if (patientFilter !== 'all') {
-        filteredPatients = allPatients.filter(p => p.id === parseInt(patientFilter));
-      }
+      const patientsRes  = await api.get(`/api/patients/medecin/${medecinId}/visibles`);
+      const allPatients  = patientsRes.data || [];
+      const filteredPatients = patientFilter !== 'all'
+        ? allPatients.filter(p => p.id === parseInt(patientFilter))
+        : allPatients;
 
-      // Calculer statistiques globales
-      const totalPatients = filteredPatients.length;
-      const counters = {
-        totalGlycemies: 0,
-        countGlycemies: 0,
-        patientsActifs: 0,
-        totalAlertes: 0
-      };
-      
-      const evolutionData = {};
+      const counters = { totalGlycemies: 0, countGlycemies: 0, patientsActifs: 0, totalAlertes: 0 };
+      const evolutionData    = {};
       const typesRepartition = {};
-      const conformiteData = [];
+      const conformiteData   = [];
 
       for (const patient of filteredPatients) {
         try {
           const suiviRes = await api.get(`/api/suivis/recentes?patientId=${patient.id}`);
-          const mesures = suiviRes.data || [];
-          
+          const mesures  = suiviRes.data || [];
           if (mesures.length > 0) {
             counters.patientsActifs++;
-            
-            // Filtrer par période
             const dateLimit = new Date();
             dateLimit.setDate(dateLimit.getDate() - parseInt(periodeJours));
-            
-            const mesuresPeriode = mesures.filter(m => 
-              new Date(m.dateSuivi) >= dateLimit
-            );
+            const mesuresPeriode = mesures.filter(m => new Date(m.dateSuivi) >= dateLimit);
+            const processed = processMesures(mesuresPeriode, evolutionData, counters);
+            Object.assign(evolutionData, processed.evolutionData);
+            Object.assign(counters, processed.counters);
 
-            // Traiter les mesures
-            const processedData = processMesures(mesuresPeriode, evolutionData, counters);
-            Object.assign(evolutionData, processedData.evolutionData);
-            Object.assign(counters, processedData.counters);
-
-            // Répartition types de diabète
             const type = patient.typeDiabete || 'Non spécifié';
             typesRepartition[type] = (typesRepartition[type] || 0) + 1;
 
-            // Conformité patient
-            const glycemiesNormales = mesuresPeriode.filter(m => 
-              m.glycemie >= 0.7 && m.glycemie <= 1.2
-            ).length;
-            const conformite = mesuresPeriode.length > 0 
-              ? Math.round((glycemiesNormales / mesuresPeriode.length) * 100)
-              : 0;
-
+            const glycemiesNormales = mesuresPeriode.filter(m => m.glycemie >= 0.7 && m.glycemie <= 1.2).length;
             conformiteData.push({
               nom: `${patient.prenom} ${patient.nom}`,
-              conformite: conformite
+              conformite: mesuresPeriode.length > 0
+                ? Math.round((glycemiesNormales / mesuresPeriode.length) * 100) : 0
             });
           }
         } catch (err) {
@@ -118,46 +146,34 @@ function StatistiquesMedecin() {
         }
       }
 
-      // Préparer données graphiques
       const evolutionArray = Object.values(evolutionData)
-        .map(d => ({
-          date: d.date,
-          moyenne: (d.total / d.count).toFixed(2)
-        }))
+        .map(d => ({ date: d.date, moyenne: (d.total / d.count).toFixed(2) }))
         .sort((a, b) => {
-          const [dayA, monthA, yearA] = a.date.split('/');
-          const [dayB, monthB, yearB] = b.date.split('/');
-          return new Date(yearA, monthA - 1, dayA) - new Date(yearB, monthB - 1, dayB);
+          const [dA, mA, yA] = a.date.split('/');
+          const [dB, mB, yB] = b.date.split('/');
+          return new Date(yA, mA - 1, dA) - new Date(yB, mB - 1, dB);
         })
         .slice(-30);
 
-      const typesArray = Object.entries(typesRepartition).map(([type, count]) => ({
-        name: type,
-        value: count
-      }));
-
       setStats({
-        totalPatients,
-        patientsActifs: counters.patientsActifs,
-        moyenneGlycemie: counters.countGlycemies > 0 
-          ? (counters.totalGlycemies / counters.countGlycemies).toFixed(2) 
-          : 0,
-        conformite: conformiteData.length > 0 
-          ? Math.round(conformiteData.reduce((sum, p) => sum + p.conformite, 0) / conformiteData.length)
-          : 0,
+        totalPatients:   filteredPatients.length,
+        patientsActifs:  counters.patientsActifs,
+        moyenneGlycemie: counters.countGlycemies > 0
+          ? (counters.totalGlycemies / counters.countGlycemies).toFixed(2) : 0,
+        conformite: conformiteData.length > 0
+          ? Math.round(conformiteData.reduce((s, p) => s + p.conformite, 0) / conformiteData.length) : 0,
         alertes: counters.totalAlertes
       });
 
       setChartData({
-        evolutionGlycemie: evolutionArray,
-        repartitionTypes: typesArray,
+        evolutionGlycemie:  evolutionArray,
+        repartitionTypes:   Object.entries(typesRepartition).map(([name, value]) => ({ name, value })),
         conformitePatients: conformiteData.slice(0, 10),
         alertesParType: [
-          { name: 'Hypoglycémies', value: Math.floor(counters.totalAlertes * 0.4), fill: '#ffc107' },
-          { name: 'Hyperglycémies', value: Math.floor(counters.totalAlertes * 0.6), fill: '#dc3545' }
+          { name: 'Hypoglycémies',  value: Math.floor(counters.totalAlertes * 0.4), fill: '#f59e0b' },
+          { name: 'Hyperglycémies', value: Math.floor(counters.totalAlertes * 0.6), fill: '#ef4444' }
         ]
       });
-
     } catch (error) {
       console.error('Erreur calcul statistiques:', error);
     } finally {
@@ -165,102 +181,74 @@ function StatistiquesMedecin() {
     }
   };
 
-  // Fonction helper pour traiter les mesures (évite le warning no-loop-func)
-  const processMesures = (mesures, evolutionData, counters) => {
-    const newEvolutionData = { ...evolutionData };
-    const newCounters = { ...counters };
-
-    mesures.forEach(m => {
-      const date = new Date(m.dateSuivi).toLocaleDateString('fr-FR');
-      if (!newEvolutionData[date]) {
-        newEvolutionData[date] = { date, total: 0, count: 0 };
-      }
-      newEvolutionData[date].total += m.glycemie;
-      newEvolutionData[date].count++;
-      
-      newCounters.totalGlycemies += m.glycemie;
-      newCounters.countGlycemies++;
-
-      // Compter alertes
-      if (m.glycemie < 0.7 || m.glycemie > 1.8) {
-        newCounters.totalAlertes++;
-      }
-    });
-
-    return { evolutionData: newEvolutionData, counters: newCounters };
-  };
-
   const handleFilterChange = () => {
-    if (medecin) {
-      loadStatistics(medecin.id, selectedPatient, periode);
-    }
+    if (medecin) loadStatistics(medecin.id, selectedPatient, periode);
   };
 
-  const exportPDF = () => {
-    window.print();
-  };
+  /* ── KPI cards config ── */
+  const kpis = [
+    { icon: 'bi-people-fill',        label: 'Patients',       value: stats.totalPatients,   unit: '',    gradient: 'linear-gradient(135deg,#667eea,#764ba2)', delay: 60  },
+    { icon: 'bi-activity',           label: 'Actifs',         value: stats.patientsActifs,  unit: '',    gradient: 'linear-gradient(135deg,#11998e,#38ef7d)',  delay: 120 },
+    { icon: 'bi-droplet-half',       label: 'Moy. Glycémie',  value: stats.moyenneGlycemie, unit: ' g/L',gradient: 'linear-gradient(135deg,#0ea5e9,#38bdf8)',  delay: 180 },
+    { icon: 'bi-check-circle',       label: 'Conformité',     value: stats.conformite,      unit: '%',   gradient: 'linear-gradient(135deg,#11998e,#38ef7d)',  delay: 240 },
+    { icon: 'bi-exclamation-triangle',label:'Alertes',        value: stats.alertes,         unit: '',    gradient: 'linear-gradient(135deg,#f59e0b,#fbbf24)',  delay: 300 },
+    { icon: 'bi-calendar-check',     label: 'Période',        value: periode,               unit: ' j',  gradient: 'linear-gradient(135deg,#667eea,#764ba2)', delay: 360 },
+  ];
 
   return (
     <div className="stats-medecin-wrapper">
       <TopbarMedecin user={medecin} />
 
       <div className="stats-medecin-content">
-        <Container fluid className="px-4">
-          {/* En-tête */}
-          <Row className="mb-4">
-            <Col>
-              <div className="stats-header">
-                <div className="stats-header-content">
-                  <div className="stats-icon-wrapper">
-                    <i className="bi bi-graph-up-arrow"></i>
-                  </div>
-                  <div>
-                    <h2 className="fw-bold mb-1">Statistiques & Rapports</h2>
-                    <p className="text-muted mb-0">
-                      <i className="bi bi-calendar3 me-2"></i>
-                      Analyse et suivi de vos patients
-                    </p>
-                  </div>
-                </div>
-                <Button className="btn-export" onClick={exportPDF}>
-                  <i className="bi bi-file-earmark-pdf me-2"></i>
-                  Exporter PDF
-                </Button>
-              </div>
-            </Col>
-          </Row>
+        <Container fluid className="px-0">
 
-          {/* Filtres */}
-          <Card className="filter-card mb-4">
-            <Card.Body className="p-4">
-              <Row className="g-3 align-items-end">
+          {/* ═══ EN-TÊTE ══════════════════════════════════════════ */}
+          <div className="stats-header sm-fade" style={{ '--d': '0ms' }}>
+            <div className="stats-header-content">
+              <div className="stats-icon-wrapper">
+                <i className="bi bi-graph-up-arrow"></i>
+              </div>
+              <div>
+                <h2>Statistiques &amp; Rapports</h2>
+                <p><i className="bi bi-calendar3 me-1"></i>Analyse et suivi de vos patients</p>
+              </div>
+            </div>
+            <Button className="btn-export" onClick={() => window.print()}>
+              <i className="bi bi-file-earmark-pdf me-1"></i>Exporter PDF
+            </Button>
+          </div>
+
+          {/* ═══ FILTRES ══════════════════════════════════════════ */}
+          <Card className={`filter-card sm-fade`} style={{ '--d': '80ms' }}>
+            <Card.Body>
+              <Row className="g-2 align-items-end">
                 <Col md={5}>
                   <Form.Label className="fw-semibold">
-                    <i className="bi bi-person me-2"></i>
-                    Patient
+                    <i className="bi bi-person me-1"></i>Patient
                   </Form.Label>
                   <Form.Select
                     value={selectedPatient}
-                    onChange={(e) => setSelectedPatient(e.target.value)}
+                    onChange={e => setSelectedPatient(e.target.value)}
                     className="form-select-custom"
+                    size="sm"
                   >
                     <option value="all">Tous les patients</option>
                     {patients.map(p => (
                       <option key={p.id} value={p.id}>
-                        {p.prenom} {p.nom} - {p.typeDiabete}
+                        {p.prenom} {p.nom} — {p.typeDiabete}
                       </option>
                     ))}
                   </Form.Select>
                 </Col>
                 <Col md={4}>
                   <Form.Label className="fw-semibold">
-                    <i className="bi bi-calendar-range me-2"></i>
-                    Période
+                    <i className="bi bi-calendar-range me-1"></i>Période
                   </Form.Label>
                   <Form.Select
                     value={periode}
-                    onChange={(e) => setPeriode(e.target.value)}
+                    onChange={e => setPeriode(e.target.value)}
                     className="form-select-custom"
+                    size="sm"
                   >
                     <option value="7">7 derniers jours</option>
                     <option value="30">30 derniers jours</option>
@@ -274,136 +262,55 @@ function StatistiquesMedecin() {
                     className="w-100 btn-filter"
                     onClick={handleFilterChange}
                     disabled={loading}
+                    size="sm"
                   >
-                    <i className="bi bi-funnel me-2"></i>
-                    Appliquer les filtres
+                    {loading
+                      ? <><i className="bi bi-hourglass-split me-1"></i>Chargement…</>
+                      : <><i className="bi bi-funnel me-1"></i>Appliquer</>
+                    }
                   </Button>
                 </Col>
               </Row>
             </Card.Body>
           </Card>
 
-          {/* Cartes statistiques */}
-          <Row className="g-4 mb-4">
-            <Col xl={2} md={4} sm={6}>
-              <Card className="stat-card-mini">
-                <Card.Body className="p-3">
-                  <div className="stat-mini-icon" style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
-                    <i className="bi bi-people-fill"></i>
-                  </div>
-                  <div className="stat-mini-info">
-                    <small className="stat-mini-label">Patients</small>
-                    <h3 className="stat-mini-value">{stats.totalPatients}</h3>
-                  </div>
-                </Card.Body>
-              </Card>
-            </Col>
-
-            <Col xl={2} md={4} sm={6}>
-              <Card className="stat-card-mini">
-                <Card.Body className="p-3">
-                  <div className="stat-mini-icon" style={{ background: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)' }}>
-                    <i className="bi bi-activity"></i>
-                  </div>
-                  <div className="stat-mini-info">
-                    <small className="stat-mini-label">Actifs</small>
-                    <h3 className="stat-mini-value">{stats.patientsActifs}</h3>
-                  </div>
-                </Card.Body>
-              </Card>
-            </Col>
-
-            <Col xl={2} md={4} sm={6}>
-              <Card className="stat-card-mini">
-                <Card.Body className="p-3">
-                  <div className="stat-mini-icon" style={{ background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)' }}>
-                    <i className="bi bi-droplet-half"></i>
-                  </div>
-                  <div className="stat-mini-info">
-                    <small className="stat-mini-label">Moy. Glycémie</small>
-                    <h3 className="stat-mini-value">{stats.moyenneGlycemie} <small>g/L</small></h3>
-                  </div>
-                </Card.Body>
-              </Card>
-            </Col>
-
-            <Col xl={2} md={4} sm={6}>
-              <Card className="stat-card-mini">
-                <Card.Body className="p-3">
-                  <div className="stat-mini-icon" style={{ background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)' }}>
-                    <i className="bi bi-check-circle"></i>
-                  </div>
-                  <div className="stat-mini-info">
-                    <small className="stat-mini-label">Conformité</small>
-                    <h3 className="stat-mini-value">{stats.conformite}%</h3>
-                  </div>
-                </Card.Body>
-              </Card>
-            </Col>
-
-            <Col xl={2} md={4} sm={6}>
-              <Card className="stat-card-mini">
-                <Card.Body className="p-3">
-                  <div className="stat-mini-icon" style={{ background: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)' }}>
-                    <i className="bi bi-exclamation-triangle"></i>
-                  </div>
-                  <div className="stat-mini-info">
-                    <small className="stat-mini-label">Alertes</small>
-                    <h3 className="stat-mini-value">{stats.alertes}</h3>
-                  </div>
-                </Card.Body>
-              </Card>
-            </Col>
-
-            <Col xl={2} md={4} sm={6}>
-              <Card className="stat-card-mini">
-                <Card.Body className="p-3">
-                  <div className="stat-mini-icon" style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
-                    <i className="bi bi-calendar-check"></i>
-                  </div>
-                  <div className="stat-mini-info">
-                    <small className="stat-mini-label">Période</small>
-                    <h3 className="stat-mini-value">{periode} <small>j</small></h3>
-                  </div>
-                </Card.Body>
-              </Card>
-            </Col>
+          {/* ═══ KPI CARDS ════════════════════════════════════════ */}
+          <Row className="g-2 mb-3">
+            {kpis.map((kpi, i) => (
+              <Col key={i} xl={2} md={4} sm={6} xs={6}>
+                <KpiCard {...kpi} />
+              </Col>
+            ))}
           </Row>
 
-          {/* Graphiques */}
-          <Row className="g-4 mb-4">
+          {/* ═══ GRAPHIQUES ROW 1 ═════════════════════════════════ */}
+          <Row className="g-3 mb-3">
             {/* Évolution glycémie */}
             <Col lg={8}>
-              <Card className="chart-card">
-                <Card.Body className="p-4">
+              <Card className={`chart-card sm-fade`} style={{ '--d': '420ms' }}>
+                <Card.Body>
                   <div className="chart-header">
-                    <h5 className="fw-bold">
+                    <h5>
                       <i className="bi bi-graph-up me-2" style={{ color: '#667eea' }}></i>
-                      Évolution de la glycémie moyenne
+                      Évolution glycémie moyenne
                     </h5>
                     <Badge className="badge-chart">Tendance</Badge>
                   </div>
-                  <ResponsiveContainer width="100%" height={300}>
+                  <ResponsiveContainer width="100%" height={240}>
                     <LineChart data={chartData.evolutionGlycemie}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#f1f3f5" />
-                      <XAxis dataKey="date" stroke="#6c757d" style={{ fontSize: '12px' }} />
-                      <YAxis stroke="#6c757d" style={{ fontSize: '12px' }} />
-                      <Tooltip
-                        contentStyle={{
-                          background: 'white',
-                          border: '1px solid #e9ecef',
-                          borderRadius: '8px'
-                        }}
-                      />
-                      <Legend />
+                      <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+                      <XAxis dataKey="date" stroke="#94a3b8" tick={{ fontSize: 10 }} />
+                      <YAxis stroke="#94a3b8" tick={{ fontSize: 10 }} />
+                      <Tooltip content={<CustomTooltip />} />
+                      <Legend wrapperStyle={{ fontSize: 11 }} />
                       <Line
                         type="monotone"
                         dataKey="moyenne"
-                        name="Glycémie moyenne (g/L)"
+                        name="Glycémie moy. (g/L)"
                         stroke="#667eea"
-                        strokeWidth={3}
-                        dot={{ fill: '#667eea', r: 4 }}
-                        activeDot={{ r: 6 }}
+                        strokeWidth={2.5}
+                        dot={{ fill: '#667eea', r: 3 }}
+                        activeDot={{ r: 5 }}
                       />
                     </LineChart>
                   </ResponsiveContainer>
@@ -411,34 +318,32 @@ function StatistiquesMedecin() {
               </Card>
             </Col>
 
-            {/* Répartition types de diabète */}
+            {/* Répartition types */}
             <Col lg={4}>
-              <Card className="chart-card">
-                <Card.Body className="p-4">
+              <Card className={`chart-card sm-fade`} style={{ '--d': '480ms' }}>
+                <Card.Body>
                   <div className="chart-header">
-                    <h5 className="fw-bold">
-                      <i className="bi bi-pie-chart me-2" style={{ color: '#f093fb' }}></i>
+                    <h5>
+                      <i className="bi bi-pie-chart me-2" style={{ color: '#11998e' }}></i>
                       Types de diabète
                     </h5>
                     <Badge className="badge-chart">Répartition</Badge>
                   </div>
-                  <ResponsiveContainer width="100%" height={300}>
+                  <ResponsiveContainer width="100%" height={240}>
                     <PieChart>
                       <Pie
                         data={chartData.repartitionTypes}
-                        cx="50%"
-                        cy="50%"
+                        cx="50%" cy="50%"
                         labelLine={false}
-                        label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                        outerRadius={80}
-                        fill="#8884d8"
+                        label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                        outerRadius={75}
                         dataKey="value"
                       >
-                        {chartData.repartitionTypes.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                        {chartData.repartitionTypes.map((_, i) => (
+                          <Cell key={i} fill={COLORS[i % COLORS.length]} />
                         ))}
                       </Pie>
-                      <Tooltip />
+                      <Tooltip content={<CustomTooltip />} />
                     </PieChart>
                   </ResponsiveContainer>
                 </Card.Body>
@@ -446,72 +351,84 @@ function StatistiquesMedecin() {
             </Col>
           </Row>
 
-          <Row className="g-4">
+          {/* ═══ GRAPHIQUES ROW 2 ═════════════════════════════════ */}
+          <Row className="g-3">
             {/* Conformité par patient */}
             <Col lg={6}>
-              <Card className="chart-card">
-                <Card.Body className="p-4">
+              <Card className={`chart-card sm-fade`} style={{ '--d': '540ms' }}>
+                <Card.Body>
                   <div className="chart-header">
-                    <h5 className="fw-bold">
-                      <i className="bi bi-bar-chart me-2" style={{ color: '#43e97b' }}></i>
-                      Conformité glycémique par patient
+                    <h5>
+                      <i className="bi bi-bar-chart me-2" style={{ color: '#11998e' }}></i>
+                      Conformité glycémique
                     </h5>
                     <Badge className="badge-chart">Top 10</Badge>
                   </div>
-                  <ResponsiveContainer width="100%" height={300}>
+                  <ResponsiveContainer width="100%" height={240}>
                     <BarChart data={chartData.conformitePatients}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#f1f3f5" />
-                      <XAxis dataKey="nom" stroke="#6c757d" style={{ fontSize: '11px' }} angle={-45} textAnchor="end" height={100} />
-                      <YAxis stroke="#6c757d" style={{ fontSize: '12px' }} />
-                      <Tooltip />
-                      <Bar dataKey="conformite" name="Conformité (%)" fill="url(#colorConformite)" radius={[8, 8, 0, 0]} />
+                      <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+                      <XAxis
+                        dataKey="nom"
+                        stroke="#94a3b8"
+                        tick={{ fontSize: 10 }}
+                        angle={-35}
+                        textAnchor="end"
+                        height={70}
+                      />
+                      <YAxis stroke="#94a3b8" tick={{ fontSize: 10 }} />
+                      <Tooltip content={<CustomTooltip />} />
                       <defs>
                         <linearGradient id="colorConformite" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="#43e97b" stopOpacity={0.8}/>
-                          <stop offset="95%" stopColor="#38f9d7" stopOpacity={0.8}/>
+                          <stop offset="5%"  stopColor="#11998e" stopOpacity={0.9} />
+                          <stop offset="95%" stopColor="#38ef7d" stopOpacity={0.8} />
                         </linearGradient>
                       </defs>
+                      <Bar
+                        dataKey="conformite"
+                        name="Conformité (%)"
+                        fill="url(#colorConformite)"
+                        radius={[5, 5, 0, 0]}
+                      />
                     </BarChart>
                   </ResponsiveContainer>
                 </Card.Body>
               </Card>
             </Col>
 
-            {/* Alertes par type */}
+            {/* Répartition alertes */}
             <Col lg={6}>
-              <Card className="chart-card">
-                <Card.Body className="p-4">
+              <Card className={`chart-card sm-fade`} style={{ '--d': '600ms' }}>
+                <Card.Body>
                   <div className="chart-header">
-                    <h5 className="fw-bold">
-                      <i className="bi bi-exclamation-triangle me-2" style={{ color: '#fa709a' }}></i>
+                    <h5>
+                      <i className="bi bi-exclamation-triangle me-2" style={{ color: '#f59e0b' }}></i>
                       Répartition des alertes
                     </h5>
                     <Badge className="badge-chart">Détails</Badge>
                   </div>
-                  <ResponsiveContainer width="100%" height={300}>
+                  <ResponsiveContainer width="100%" height={240}>
                     <PieChart>
                       <Pie
                         data={chartData.alertesParType}
-                        cx="50%"
-                        cy="50%"
+                        cx="50%" cy="50%"
                         labelLine={false}
-                        label={({ name, value }) => `${name}: ${value}`}
-                        outerRadius={90}
-                        fill="#8884d8"
+                        label={({ name, value }) => `${name} (${value})`}
+                        outerRadius={80}
                         dataKey="value"
                       >
-                        {chartData.alertesParType.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={entry.fill} />
+                        {chartData.alertesParType.map((entry, i) => (
+                          <Cell key={i} fill={entry.fill} />
                         ))}
                       </Pie>
-                      <Tooltip />
-                      <Legend />
+                      <Tooltip content={<CustomTooltip />} />
+                      <Legend wrapperStyle={{ fontSize: 11 }} />
                     </PieChart>
                   </ResponsiveContainer>
                 </Card.Body>
               </Card>
             </Col>
           </Row>
+
         </Container>
       </div>
     </div>

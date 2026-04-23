@@ -566,33 +566,45 @@ function PatientsTable({ medecinId, onStatsUpdate }) {
                     <Col md={6}>
                       <div className="info-item">
                         <i className="bi bi-telephone-fill me-2 text-primary"></i>
-                        <strong>Téléphone :</strong> {data.telephone || "--"}
+                        <span>
+                          <strong>Téléphone : </strong> {data.telephone || "--"}
+                        </span>
                       </div>
                       <div className="info-item">
                         <i className="bi bi-house-fill me-2 text-primary"></i>
-                        <strong>Adresse :</strong> {data.adresse || "--"}
+                        <span>
+                          <strong>Adresse : </strong> {data.adresse || "--"}
+                        </span>
                       </div>
                       <div className="info-item">
                         <i className="bi bi-geo-alt-fill me-2 text-primary"></i>
-                        <strong>Ville :</strong> {data.ville || "--"}
+                        <span>
+                          <strong>Ville : </strong> {data.ville || "--"}
+                        </span>
                       </div>
                     </Col>
                     <Col md={6}>
                       <div className="info-item">
                         <i className="bi bi-map-fill me-2 text-primary"></i>
-                        <strong>Région :</strong> {data.region || "--"}
+                        <span>
+                          <strong>Région : </strong> {data.region || "--"}
+                        </span>  
                       </div>
                       <div className="info-item">
                         <i className="bi bi-calendar-check-fill me-2 text-primary"></i>
-                        <strong>Date d'inscription :</strong>{" "}
-                        {data.dateEnregistrement || "--"}
+                        <span>
+                          <strong>Date d'inscription : </strong>{" "}
+                          {data.dateEnregistrement || "--"}
+                        </span>
                       </div>
                       <div className="info-item">
                         <i className="bi bi-person-badge-fill me-2 text-primary"></i>
-                        <strong>Médecin référent :</strong>{" "}
-                        {data.medecinPrenom
-                          ? `Dr. ${data.medecinPrenom} ${data.medecinNom}`
-                          : "Non référencé"}
+                        <span>
+                          <strong>Médecin référent : </strong>{" "}
+                          {data.medecinPrenom
+                            ? `Dr. ${data.medecinPrenom} ${data.medecinNom}`
+                            : "Non référencé"}
+                        </span>
                       </div>
                     </Col>
                   </Row>

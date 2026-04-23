@@ -50,7 +50,7 @@ function AdminAttentePage() {
               nomService: medecinInfo?.nomService || "--",
               ville: medecinInfo?.ville || "--",
               numeroProfessionnel: medecinInfo?.numeroProfessionnel || "--",
-              dateInscription: user.dateCreation || null,
+              dateInscription: medecinInfo?.dateEnregistrement || null,
             };
           }),
         );
@@ -378,7 +378,7 @@ function AdminAttentePage() {
                     <div className="aa-expanded-item">
                       <i className="bi bi-calendar3"></i>
                       <span>
-                        <strong>Inscription :</strong>{" "}
+                        <strong>Date d'inscription :</strong>{" "}
                         {formatDate(r.dateInscription)}
                       </span>
                     </div>

@@ -15,7 +15,6 @@ import PatientsTable from './pages/medecin/PatientsTable';
 import PatientDossier from './pages/medecin/PatientDossier';
 import MonSuivi from './pages/patient/MonSuivi';
 import CodeCouleur from './pages/patient/CodeCouleur';
-import EducationMedecin from './pages/medecin/EducationMedecin';
 import EducationPatient from './pages/patient/EducationPatient';
 import ConsultationsMedecin from './pages/medecin/ConsultationsMedecin';
 import TraitementMedecin from './pages/medecin/TraitementMedecin';
@@ -33,6 +32,8 @@ import RendezVousPatient from './pages/patient/RendezVousPatient';
 import AdminPatientsPage from './pages/admin/AdminPatientsPage';
 import AdminMedecinsPage from './pages/admin/AdminMedecinsPage';
 import AdminAttentePage from './pages/admin/AdminAttentePage';
+import Education from './pages/admin/Education';
+import AdminStatistiquesPage from './pages/admin/AdminStatistiquesPage';
 
 function App() {
   return (
@@ -53,7 +54,6 @@ function App() {
         <Route path="/patient/:id/dossier" element={<PatientDossier />} />
         <Route path="/mon-suivi" element={<MonSuivi />} />
         <Route path="/codes-couleurs" element={<CodeCouleur />} />
-        <Route path="/medecin/education" element={<EducationMedecin />} />
         <Route path="/patient/education" element={<EducationPatient />} />
         <Route path="/medecin/consultations" element={<ConsultationsMedecin />} />
         <Route path="/medecin/traitements" element={<TraitementMedecin />} />
@@ -70,6 +70,8 @@ function App() {
         <Route path="/admin/patients" element={<AdminPatientsPage />} />
         <Route path="/admin/medecins" element={<AdminMedecinsPage />} />
         <Route path="/admin/attente" element={<AdminAttentePage />} />
+        <Route path="/admin/education" element={<Education />} />
+        <Route path="/admin/statistiques" element={<AdminStatistiquesPage />} />
 
 
 

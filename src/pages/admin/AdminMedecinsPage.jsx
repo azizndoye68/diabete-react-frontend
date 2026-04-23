@@ -439,7 +439,7 @@ function AdminMedecinsPage() {
                     <div className="am-expanded-item">
                       <i className="bi bi-calendar-check-fill"></i>
                       <span>
-                        <strong>Inscription :</strong>{" "}
+                        <strong>Date d'inscription :</strong>{" "}
                         {r.dateEnregistrement || "--"}
                       </span>
                     </div>

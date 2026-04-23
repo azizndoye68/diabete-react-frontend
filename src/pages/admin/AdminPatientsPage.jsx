@@ -386,7 +386,7 @@ function AdminPatientsPage() {
                           className="ap-badge"
                           style={{
                             background:
-                              "linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)",
+                              "linear-gradient(135deg, #428484 0%, #0f0f0f 100%)",
                           }}
                         >
                           <i className="bi bi-check-circle me-1"></i>Rattaché

@@ -122,7 +122,7 @@ function SidebarAdmin({ admin, onShowAide }) {
             { icon: "bi-person-badge-fill", label: "Médecins", path: "/admin/medecins" },
             { icon: "bi-hourglass-split", label: "Médecins en attente", path: "/admin/attente" },
             { icon: "bi-bar-chart-line-fill", label: "Statistiques", path: "/admin/statistiques" },
-            { icon: "bi-mortarboard-fill", label: "Éducation", path: "/medecin/education" },
+            { icon: "bi-mortarboard-fill", label: "Éducation", path: "/admin/education" },
           ].map((item) => (
             <li
               key={item.path}
