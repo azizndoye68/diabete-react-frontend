@@ -56,9 +56,9 @@ function SidebarPatient({ onShowAide, patient, isMedecin = false }) {
       label: "Mes statistiques",
       onClick: () => {
         if (isMedecin && patient?.id) navigate(`/medecin/patient/${patient.id}/statistiques`);
-        else navigate("/statistiques");
+        else navigate("/patient/statistiques");
       },
-      path: isMedecin && patient?.id ? `/medecin/patient/${patient.id}/statistiques` : "/statistiques",
+      path: isMedecin && patient?.id ? `/medecin/patient/${patient.id}/statistiques` : "/patient/statistiques",
     },
     {
       icon: "bi-heart-pulse-fill",

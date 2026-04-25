@@ -8,7 +8,6 @@ import RegisterChoice from './components/RegisterChoice';
 import DashboardPatient from './components/DashboardPatient';
 import AjouterDonneesJournee from './pages/patient/AjouterDonneesJournee';
 import CarnetGlycemie from './pages/patient/CarnetGlycemie';
-import Statistiques from './components/Statistiques';
 import DashboardMedecin from './pages/medecin/DashboardMedecin';
 import DashboardAdmin from './pages/admin/DashboardAdmin';
 import PatientsTable from './pages/medecin/PatientsTable';
@@ -36,6 +35,7 @@ import Education from './pages/admin/Education';
 import AdminStatistiquesPage from './pages/admin/AdminStatistiquesPage';
 import Conseils from './pages/medecin/Conseils';
 import MesConseils from './pages/patient/MesConseils';
+import Statistiques from './pages/patient/Statistiques';
 
 function App() {
   return (
@@ -51,7 +51,6 @@ function App() {
         <Route path="/dashboard-admin" element={<DashboardAdmin />} />
         <Route path="/ajouter-donnees" element={<AjouterDonneesJournee />} />
         <Route path="/carnet" element={<CarnetGlycemie />} />
-        <Route path="/statistiques" element={<Statistiques />} />
         <Route path="/medecin/patients-table" element={<PatientsTable />} />
         <Route path="/patient/:id/dossier" element={<PatientDossier />} />
         <Route path="/mon-suivi" element={<MonSuivi />} />
@@ -75,6 +74,7 @@ function App() {
         <Route path="/admin/education" element={<Education />} />
         <Route path="/admin/statistiques" element={<AdminStatistiquesPage />} />
         <Route path="/patient/mesconseils" element={<MesConseils />} />
+        <Route path="/patient/statistiques" element={<Statistiques />} />
 
 
 
@@ -96,6 +96,7 @@ function App() {
         <Route path="/medecin/patient/:patientId/rendez-vous" element={<RendezVousPatient />} />
         <Route path="/medecin/patient/:patientId/conseils" element={<Conseils />} />
         <Route path="/medecin/patient/:patientId/mesconseils" element={<MesConseils />} />
+        <Route path="/medecin/patient/:patientId/statistiques" element={<Statistiques />} />
 
 
 
