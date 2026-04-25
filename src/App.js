@@ -34,6 +34,8 @@ import AdminMedecinsPage from './pages/admin/AdminMedecinsPage';
 import AdminAttentePage from './pages/admin/AdminAttentePage';
 import Education from './pages/admin/Education';
 import AdminStatistiquesPage from './pages/admin/AdminStatistiquesPage';
+import Conseils from './pages/medecin/Conseils';
+import MesConseils from './pages/patient/MesConseils';
 
 function App() {
   return (
@@ -72,6 +74,7 @@ function App() {
         <Route path="/admin/attente" element={<AdminAttentePage />} />
         <Route path="/admin/education" element={<Education />} />
         <Route path="/admin/statistiques" element={<AdminStatistiquesPage />} />
+        <Route path="/patient/mesconseils" element={<MesConseils />} />
 
 
 
@@ -91,6 +94,8 @@ function App() {
         <Route path="/medecin/patient/:patientId/rendez-vous" element={<RendezVousMedecin />} />
         <Route path="/medecin/patient/:patientId/traitement" element={<TraitementPatient />} />
         <Route path="/medecin/patient/:patientId/rendez-vous" element={<RendezVousPatient />} />
+        <Route path="/medecin/patient/:patientId/conseils" element={<Conseils />} />
+        <Route path="/medecin/patient/:patientId/mesconseils" element={<MesConseils />} />
 
 
 

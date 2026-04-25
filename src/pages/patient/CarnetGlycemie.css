@@ -13,7 +13,7 @@
 /* CONTENU PRINCIPAL    */
 /* ==================== */
 .carnet-main-content {
-  margin-left: 280px;
+  margin-left: 272px;
   min-height: 100vh;
   padding: 0;
 }
@@ -465,7 +465,7 @@
 /* ==================== */
 @media (max-width: 992px) {
   .carnet-main-content {
-    margin-left: 0;
+    margin-left: 72px;
   }
 
   .carnet-header {
@@ -602,3 +602,4 @@
     font-size: 1.2rem;
   }
 }
+

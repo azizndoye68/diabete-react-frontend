@@ -9,7 +9,7 @@
 
 /* Contenu principal du dashboard */
 .dashboard-main-content {
-  margin-left: 280px;
+  margin-left: 272px;
   min-height: 100vh;
   padding: 0;
 }
@@ -442,5 +442,12 @@
     width: 60px;
     height: 60px;
     font-size: 1.5rem;
+  }
+}
+
+/* Ajouter : */
+@media (max-width: 992px) {
+  .dashboard-main-content {
+    margin-left: 72px; /* collapsed */
   }
 }

@@ -11,7 +11,7 @@
 }
 
 .as-content {
-  margin-left: 280px;
+  margin-left: 272px;
   flex: 1;
   min-height: 100vh;
   overflow-x: hidden;
@@ -595,4 +595,10 @@
   .as-kpi-grid { grid-template-columns: 1fr 1fr; gap: 0.6rem; }
   .as-kpi      { padding: 0.875rem; }
   .as-kpi-val  { font-size: 1.3rem; }
+}
+
+@media (max-width: 992px) {
+  .as-content {
+    margin-left: 72px;
+  }
 }

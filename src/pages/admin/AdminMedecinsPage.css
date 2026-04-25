@@ -10,7 +10,7 @@
 }
 
 .am-content {
-  margin-left: 280px;
+  margin-left: 272px;
   flex: 1;
   min-height: 100vh;
   overflow-x: hidden;
@@ -625,4 +625,10 @@
   .am-btn-confirm-delete,
   .am-btn-confirm-edit { width: 100%; justify-content: center; }
   .am-hero-stat { padding: 0 0.75rem; }
+}
+
+@media (max-width: 992px) {
+  .am-content {
+    margin-left: 72px;
+  }
 }

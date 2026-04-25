@@ -10,7 +10,7 @@
 }
 
 .ap-content {
-  margin-left: 280px;
+  margin-left: 272px;
   flex: 1;
   min-height: 100vh;
   overflow-x: hidden;
@@ -533,4 +533,10 @@
   .ap-btn-cancel,
   .ap-btn-confirm-delete,
   .ap-btn-confirm-edit { width: 100%; justify-content: center; }
+}
+
+@media (max-width: 992px) {
+  .ap-content {
+    margin-left: 72px;
+  }
 }

@@ -10,7 +10,7 @@
 }
 
 .aa-content {
-  margin-left: 280px;
+  margin-left: 272px;
   flex: 1;
   min-height: 100vh;
   overflow-x: hidden;
@@ -594,4 +594,10 @@
   .aa-btn-cancel,
   .aa-btn-confirm-approve,
   .aa-btn-confirm-reject { width: 100%; justify-content: center; }
+}
+
+@media (max-width: 992px) {
+  .aa-content {
+    margin-left: 72px;
+  }
 }

@@ -1,618 +1,215 @@
 // src/components/SidebarPatient.jsx
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Image } from "react-bootstrap";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import defaultAvatar from "../images/default-avatar.jpg";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import "./SidebarPatient.css";
 
 function SidebarPatient({ onShowAide, patient, isMedecin = false }) {
   const navigate = useNavigate();
+  const location = useLocation();
+  const [collapsed, setCollapsed] = useState(false);
+
+  // Auto-collapse sur petit écran
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 992) {
+        setCollapsed(true);
+      } else {
+        setCollapsed(false);
+      }
+    };
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
     navigate("/login");
   };
 
+  const isActive = (path) => location.pathname === path;
+
+  const menuItems = [
+    {
+      icon: "bi-grid-fill",
+      label: "Tableau de bord",
+      onClick: () => {
+        if (isMedecin && patient?.id) navigate(`/medecin/patient/${patient.id}/dashboard`);
+        else navigate("/dashboard-patient");
+      },
+      path: isMedecin && patient?.id ? `/medecin/patient/${patient.id}/dashboard` : "/dashboard-patient",
+    },
+    {
+      icon: "bi-journal-medical",
+      label: "Carnet",
+      onClick: () => {
+        if (isMedecin && patient?.id) navigate(`/medecin/patient/${patient.id}/carnet`);
+        else navigate("/carnet");
+      },
+      path: isMedecin && patient?.id ? `/medecin/patient/${patient.id}/carnet` : "/carnet",
+    },
+    {
+      icon: "bi-graph-up-arrow",
+      label: "Mes statistiques",
+      onClick: () => {
+        if (isMedecin && patient?.id) navigate(`/medecin/patient/${patient.id}/statistiques`);
+        else navigate("/statistiques");
+      },
+      path: isMedecin && patient?.id ? `/medecin/patient/${patient.id}/statistiques` : "/statistiques",
+    },
+    {
+      icon: "bi-heart-pulse-fill",
+      label: "Mon suivi",
+      onClick: () => {
+        if (isMedecin && patient?.id) navigate(`/medecin/patient/${patient.id}/mon-suivi`);
+        else navigate("/mon-suivi");
+      },
+      path: isMedecin && patient?.id ? `/medecin/patient/${patient.id}/mon-suivi` : "/mon-suivi",
+    },
+    ...(!isMedecin ? [
+      {
+        icon: "bi-chat-dots-fill",
+        label: "Équipe soignante",
+        onClick: () => navigate("/patient/messagerie"),
+        path: "/patient/messagerie",
+      },
+      {
+        icon: "bi-book-fill",
+        label: "Éducation partagée",
+        onClick: () => navigate("/patient/education"),
+        path: "/patient/education",
+      },
+    ] : []),
+  ];
+
+  const medecinItems = isMedecin && patient ? [
+    {
+      icon: "bi-clipboard2-pulse-fill",
+      label: "Informations",
+      onClick: () => navigate(`/medecin/patient/${patient.id}/traitements`),
+      path: `/medecin/patient/${patient.id}/traitements`,
+    },
+    {
+      icon: "bi-person-lines-fill",
+      label: "Consultations",
+      onClick: () => navigate(`/medecin/patient/${patient.id}/consultations`),
+      path: `/medecin/patient/${patient.id}/consultations`,
+    },
+    {
+      icon: "bi-calendar-check-fill",
+      label: "Rendez-vous",
+      onClick: () => navigate(`/medecin/patient/${patient.id}/rendez-vous`),
+      path: `/medecin/patient/${patient.id}/rendez-vous`,
+    },
+    {
+      icon: "bi-lightbulb-fill",
+      label: "Conseils",
+      onClick: () => navigate(`/medecin/patient/${patient.id}/conseils`),
+      path: `/medecin/patient/${patient.id}/conseils`,
+    },
+  ] : [];
+
   return (
-    <div
-      className="sidebar-patient"
-      style={{
-        position: "fixed",
-        height: "100vh",
-        width: "280px",
-        background: "linear-gradient(180deg, #667eea 0%, #764ba2 100%)",
-        color: "white",
-        display: "flex",
-        flexDirection: "column",
-        boxShadow: "4px 0 20px rgba(102, 126, 234, 0.2)",
-      }}
-    >
-      {/* Logo */}
+    <div className={`sp-sidebar ${collapsed ? "sp-collapsed" : ""}`}>
+
+      {/* ── Logo ── */}
       <div
-        style={{
-          padding: "20px",
-          borderBottom: "1px solid rgba(255, 255, 255, 0.1)",
-          cursor: "pointer",
-        }}
-        onClick={() =>
-          navigate(isMedecin ? "/dashboard-medecin" : "/dashboard-patient")
-        }
+        className="sp-logo"
+        onClick={() => navigate(isMedecin ? "/dashboard-medecin" : "/dashboard-patient")}
       >
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <div
-            style={{
-              background: "rgba(255, 255, 255, 0.2)",
-              padding: "8px",
-              borderRadius: "12px",
-              display: "flex",
-              alignItems: "center",
-              boxShadow: "0 4px 15px rgba(0, 0, 0, 0.1)",
-            }}
-          >
-            <Image
-              src={require("../images/logo-diabete.png")}
-              alt="Logo santé"
-              width="45"
-              height="45"
-            />
-          </div>
-          <span
-            style={{
-              fontWeight: "bold",
-              fontSize: "15px",
-              marginLeft: "12px",
-              textTransform: "uppercase",
-              letterSpacing: "0.5px",
-            }}
-          >
-            Suivi<span style={{ color: "#ffc107" }}>Diabète</span> SN
+        <div className="sp-logo-icon">
+          <Image src={require("../images/logo-diabete.png")} alt="Logo" width="36" height="36" />
+        </div>
+        {!collapsed && (
+          <span className="sp-logo-text">
+            Suivi<span className="sp-logo-accent">Diabète</span> SN
           </span>
-        </div>
+        )}
       </div>
 
-      {/* Profil */}
+      {/* ── Toggle button ── */}
+      <button className="sp-toggle" onClick={() => setCollapsed((c) => !c)} title={collapsed ? "Agrandir" : "Réduire"}>
+        <i className={`bi ${collapsed ? "bi-chevron-right" : "bi-chevron-left"}`}></i>
+      </button>
+
+      {/* ── Profil ── */}
       <div
-        style={{
-          margin: "20px",
-          padding: "16px",
-          background: "rgba(255, 255, 255, 0.1)",
-          borderRadius: "16px",
-          border: "1px solid rgba(255, 255, 255, 0.2)",
-          cursor: "pointer",
-          transition: "all 0.3s ease",
-        }}
-        onClick={() => navigate("/patient/profil")}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.background = "rgba(255, 255, 255, 0.15)";
-          e.currentTarget.style.transform = "translateY(-2px)";
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.background = "rgba(255, 255, 255, 0.1)";
-          e.currentTarget.style.transform = "translateY(0)";
-        }}
+        className="sp-profile"
+        onClick={() => !isMedecin && navigate("/patient/profil")}
+        title={patient ? `${patient.prenom} ${patient.nom}` : ""}
       >
-        <div style={{ display: "flex", alignItems: "center" }}>
-          <div style={{ position: "relative" }}>
-            <Image
-              src={defaultAvatar}
-              roundedCircle
-              width="55"
-              height="55"
-              style={{
-                border: "3px solid rgba(255, 255, 255, 0.3)",
-                boxShadow: "0 4px 12px rgba(0, 0, 0, 0.2)",
-              }}
-            />
-            <div
-              style={{
-                position: "absolute",
-                bottom: "2px",
-                right: "2px",
-                width: "14px",
-                height: "14px",
-                background: "#ffc107",
-                border: "3px solid #667eea",
-                borderRadius: "50%",
-                boxShadow: "0 0 12px rgba(255, 193, 7, 0.8)",
-              }}
-            ></div>
-          </div>
-          {patient && (
-            <div style={{ marginLeft: "12px", flexGrow: 1 }}>
-              <div
-                style={{ fontWeight: "bold", fontSize: "16px", color: "white" }}
-              >
-                {patient.prenom} {patient.nom}
-              </div>
-              <small
-                style={{ color: "rgba(255, 255, 255, 0.75)", fontSize: "13px" }}
-              >
-                {isMedecin ? "Patient (vue médecin)" : "Patient"}
-              </small>
-            </div>
-          )}
+        <div className="sp-avatar-wrap">
+          <Image src={defaultAvatar} roundedCircle className="sp-avatar" />
+          <span className="sp-status-dot"></span>
         </div>
+        {!collapsed && patient && (
+          <div className="sp-profile-info">
+            <div className="sp-profile-name">{patient.prenom} {patient.nom}</div>
+            <div className="sp-profile-role">{isMedecin ? "Vue médecin" : "Patient"}</div>
+          </div>
+        )}
       </div>
 
-      {/* Menu Navigation */}
-      <nav style={{ flexGrow: 1, padding: "0 12px", overflowY: "auto" }}>
-        <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
-          {/* Tableau de bord */}
-          <li
-            style={{
-              display: "flex",
-              alignItems: "center",
-              padding: "14px 16px",
-              marginBottom: "6px",
-              borderRadius: "12px",
-              cursor: "pointer",
-              transition: "all 0.3s ease",
-              fontWeight: "500",
-              fontSize: "15px",
-            }}
-            onClick={() => {
-              if (isMedecin && patient?.id) {
-                navigate(`/medecin/patient/${patient.id}/dashboard`);
-              } else {
-                navigate("/dashboard-patient");
-              }
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = "rgba(255, 255, 255, 0.15)";
-              e.currentTarget.style.transform = "translateX(5px)";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = "transparent";
-              e.currentTarget.style.transform = "translateX(0)";
-            }}
-          >
-            <i
-              className="bi bi-grid-fill"
-              style={{
-                fontSize: "20px",
-                marginRight: "14px",
-                minWidth: "24px",
-              }}
-            ></i>
-            <span>Tableau de bord</span>
-          </li>
-
-          {/* Carnet */}
-          <li
-            style={{
-              display: "flex",
-              alignItems: "center",
-              padding: "14px 16px",
-              marginBottom: "6px",
-              borderRadius: "12px",
-              cursor: "pointer",
-              transition: "all 0.3s ease",
-              fontWeight: "500",
-              fontSize: "15px",
-            }}
-            onClick={() => {
-              if (isMedecin && patient?.id) {
-                navigate(`/medecin/patient/${patient.id}/carnet`);
-              } else {
-                navigate("/carnet");
-              }
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = "rgba(255, 255, 255, 0.15)";
-              e.currentTarget.style.transform = "translateX(5px)";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = "transparent";
-              e.currentTarget.style.transform = "translateX(0)";
-            }}
-          >
-            <i
-              className="bi bi-journal-medical"
-              style={{
-                fontSize: "20px",
-                marginRight: "14px",
-                minWidth: "24px",
-              }}
-            ></i>
-            <span>Carnet</span>
-          </li>
-
-          {/* Statistiques */}
-          <li
-            style={{
-              display: "flex",
-              alignItems: "center",
-              padding: "14px 16px",
-              marginBottom: "6px",
-              borderRadius: "12px",
-              cursor: "pointer",
-              transition: "all 0.3s ease",
-              fontWeight: "500",
-              fontSize: "15px",
-            }}
-            onClick={() => {
-              if (isMedecin && patient?.id) {
-                navigate(`/medecin/patient/${patient.id}/statistiques`);
-              } else {
-                navigate("/statistiques");
-              }
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = "rgba(255, 255, 255, 0.15)";
-              e.currentTarget.style.transform = "translateX(5px)";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = "transparent";
-              e.currentTarget.style.transform = "translateX(0)";
-            }}
-          >
-            <i
-              className="bi bi-graph-up-arrow"
-              style={{
-                fontSize: "20px",
-                marginRight: "14px",
-                minWidth: "24px",
-              }}
-            ></i>
-            <span>Mes statistiques</span>
-          </li>
-
-          {/* Mon suivi */}
-          <li
-            style={{
-              display: "flex",
-              alignItems: "center",
-              padding: "14px 16px",
-              marginBottom: "6px",
-              borderRadius: "12px",
-              cursor: "pointer",
-              transition: "all 0.3s ease",
-              fontWeight: "500",
-              fontSize: "15px",
-            }}
-            onClick={() => {
-              if (isMedecin && patient?.id) {
-                navigate(`/medecin/patient/${patient.id}/mon-suivi`);
-              } else {
-                navigate("/mon-suivi");
-              }
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = "rgba(255, 255, 255, 0.15)";
-              e.currentTarget.style.transform = "translateX(5px)";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = "transparent";
-              e.currentTarget.style.transform = "translateX(0)";
-            }}
-          >
-            <i
-              className="bi bi-heart-pulse-fill"
-              style={{
-                fontSize: "20px",
-                marginRight: "14px",
-                minWidth: "24px",
-              }}
-            ></i>
-            <span>Mon suivi</span>
-          </li>
-
-          {/* Équipe soignante */}
-          {!isMedecin && (
+      {/* ── Navigation ── */}
+      <nav className="sp-nav">
+        <ul className="sp-menu">
+          {menuItems.map((item) => (
             <li
-              style={{
-                display: "flex",
-                alignItems: "center",
-                padding: "14px 16px",
-                marginBottom: "6px",
-                borderRadius: "12px",
-                cursor: "pointer",
-                transition: "all 0.3s ease",
-                fontWeight: "500",
-                fontSize: "15px",
-              }}
-              onClick={() => navigate("/patient/messagerie")}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = "rgba(255, 255, 255, 0.15)";
-                e.currentTarget.style.transform = "translateX(5px)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = "transparent";
-                e.currentTarget.style.transform = "translateX(0)";
-              }}
+              key={item.path}
+              className={`sp-item ${isActive(item.path) ? "sp-item--active" : ""}`}
+              onClick={item.onClick}
+              title={collapsed ? item.label : ""}
             >
-              <i
-                className="bi bi-chat-dots-fill"
-                style={{
-                  fontSize: "20px",
-                  marginRight: "14px",
-                  minWidth: "24px",
-                }}
-              ></i>
-              <span>Équipe soignante</span>
+              <i className={`bi ${item.icon} sp-icon`}></i>
+              {!collapsed && <span className="sp-label">{item.label}</span>}
+              {collapsed && <span className="sp-tooltip">{item.label}</span>}
             </li>
-          )}
-
-          {/* Éducation */}
-          {!isMedecin && (
-            <li
-              style={{
-                display: "flex",
-                alignItems: "center",
-                padding: "14px 16px",
-                marginBottom: "6px",
-                borderRadius: "12px",
-                cursor: "pointer",
-                transition: "all 0.3s ease",
-                fontWeight: "500",
-                fontSize: "15px",
-              }}
-              onClick={() => {
-                if (isMedecin && patient?.id) {
-                  navigate(`/medecin/patient/${patient.id}/education`);
-                } else {
-                  navigate("/patient/education");
-                }
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = "rgba(255, 255, 255, 0.15)";
-                e.currentTarget.style.transform = "translateX(5px)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = "transparent";
-                e.currentTarget.style.transform = "translateX(0)";
-              }}
-            >
-              <i
-                className="bi bi-book-fill"
-                style={{
-                  fontSize: "20px",
-                  marginRight: "14px",
-                  minWidth: "24px",
-                }}
-              ></i>
-              <span>Éducation</span>
-            </li>
-          )}
-
-          {/* Objets connectés */}
-          {/*{!isMedecin && (
-            <li
-              style={{
-                display: "flex",
-                alignItems: "center",
-                padding: "14px 16px",
-                marginBottom: "6px",
-                borderRadius: "12px",
-                cursor: "pointer",
-                transition: "all 0.3s ease",
-                fontWeight: "500",
-                fontSize: "15px",
-              }}
-              onClick={() => navigate("/objets")}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = "rgba(255, 255, 255, 0.15)";
-                e.currentTarget.style.transform = "translateX(5px)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = "transparent";
-                e.currentTarget.style.transform = "translateX(0)";
-              }}
-            >
-              <i
-                className="bi bi-smartwatch"
-                style={{
-                  fontSize: "20px",
-                  marginRight: "14px",
-                  minWidth: "24px",
-                }}
-              ></i>
-              <span>Objets connectés</span>
-            </li>
-          )}*/}
+          ))}
 
           {/* Section médecin */}
-          {isMedecin && patient && (
+          {medecinItems.length > 0 && (
             <>
-              <div
-                style={{
-                  height: "1px",
-                  background: "rgba(255, 255, 255, 0.15)",
-                  margin: "16px 0",
-                }}
-              ></div>
-
-              <li
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  padding: "14px 16px",
-                  marginBottom: "6px",
-                  borderRadius: "12px",
-                  cursor: "pointer",
-                  transition: "all 0.3s ease",
-                  fontWeight: "500",
-                  fontSize: "15px",
-                }}
-                onClick={() =>
-                  navigate(`/medecin/patient/${patient.id}/traitements`)
-                }
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.background =
-                    "rgba(255, 255, 255, 0.15)";
-                  e.currentTarget.style.transform = "translateX(5px)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background = "transparent";
-                  e.currentTarget.style.transform = "translateX(0)";
-                }}
-              >
-                <i
-                  className="bi bi-clipboard2-pulse-fill"
-                  style={{
-                    fontSize: "20px",
-                    marginRight: "14px",
-                    minWidth: "24px",
-                  }}
-                ></i>
-                <span>Informations</span>
-              </li>
-
-              <li
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  padding: "14px 16px",
-                  marginBottom: "6px",
-                  borderRadius: "12px",
-                  cursor: "pointer",
-                  transition: "all 0.3s ease",
-                  fontWeight: "500",
-                  fontSize: "15px",
-                }}
-                onClick={() =>
-                  navigate(`/medecin/patient/${patient.id}/consultations`)
-                }
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.background =
-                    "rgba(255, 255, 255, 0.15)";
-                  e.currentTarget.style.transform = "translateX(5px)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background = "transparent";
-                  e.currentTarget.style.transform = "translateX(0)";
-                }}
-              >
-                <i
-                  className="bi bi-person-lines-fill"
-                  style={{
-                    fontSize: "20px",
-                    marginRight: "14px",
-                    minWidth: "24px",
-                  }}
-                ></i>
-                <span>Consultations</span>
-              </li>
-
-              <li
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  padding: "14px 16px",
-                  marginBottom: "6px",
-                  borderRadius: "12px",
-                  cursor: "pointer",
-                  transition: "all 0.3s ease",
-                  fontWeight: "500",
-                  fontSize: "15px",
-                }}
-                onClick={() =>
-                  navigate(`/medecin/patient/${patient.id}/rendez-vous`)
-                }
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.background =
-                    "rgba(255, 255, 255, 0.15)";
-                  e.currentTarget.style.transform = "translateX(5px)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background = "transparent";
-                  e.currentTarget.style.transform = "translateX(0)";
-                }}
-              >
-                <i
-                  className="bi bi-calendar-check-fill"
-                  style={{
-                    fontSize: "20px",
-                    marginRight: "14px",
-                    minWidth: "24px",
-                  }}
-                ></i>
-                <span>Rendez-vous</span>
-              </li>
+              <div className="sp-divider"></div>
+              {medecinItems.map((item) => (
+                <li
+                  key={item.path}
+                  className={`sp-item ${isActive(item.path) ? "sp-item--active" : ""}`}
+                  onClick={item.onClick}
+                  title={collapsed ? item.label : ""}
+                >
+                  <i className={`bi ${item.icon} sp-icon`}></i>
+                  {!collapsed && <span className="sp-label">{item.label}</span>}
+                  {collapsed && <span className="sp-tooltip">{item.label}</span>}
+                </li>
+              ))}
             </>
           )}
         </ul>
       </nav>
 
-      {/* Footer - Version compacte */}
+      {/* ── Footer ── */}
       {!isMedecin && (
-        <div
-          style={{
-            padding: "8px 12px",
-            borderTop: "1px solid rgba(255, 255, 255, 0.15)",
-            background: "rgba(0, 0, 0, 0.15)",
-          }}
-        >
+        <div className="sp-footer">
           <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              padding: "10px 16px",
-              marginBottom: "4px",
-              borderRadius: "12px",
-              cursor: "pointer",
-              transition: "all 0.3s ease",
-              fontWeight: "500",
-              fontSize: "14px",
-            }}
+            className="sp-item"
             onClick={onShowAide}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = "rgba(255, 255, 255, 0.15)";
-              e.currentTarget.style.transform = "translateX(5px)";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = "transparent";
-              e.currentTarget.style.transform = "translateX(0)";
-            }}
+            title={collapsed ? "Aide" : ""}
           >
-            <i
-              className="bi bi-question-circle-fill"
-              style={{
-                fontSize: "18px",
-                marginRight: "12px",
-                minWidth: "20px",
-              }}
-            ></i>
-            <span>Aide</span>
+            <i className="bi bi-question-circle-fill sp-icon"></i>
+            {!collapsed && <span className="sp-label">Aide</span>}
+            {collapsed && <span className="sp-tooltip">Aide</span>}
           </div>
-
           <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              padding: "10px 16px",
-              borderRadius: "12px",
-              cursor: "pointer",
-              transition: "all 0.3s ease",
-              fontWeight: "500",
-              fontSize: "14px",
-            }}
+            className="sp-item sp-item--logout"
             onClick={handleLogout}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = "rgba(255, 193, 7, 0.2)";
-              e.currentTarget.style.color = "#ffc107";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = "transparent";
-              e.currentTarget.style.color = "white";
-            }}
+            title={collapsed ? "Déconnexion" : ""}
           >
-            <i
-              className="bi bi-box-arrow-right"
-              style={{
-                fontSize: "18px",
-                marginRight: "12px",
-                minWidth: "20px",
-              }}
-            ></i>
-            <span>Déconnexion</span>
+            <i className="bi bi-box-arrow-right sp-icon"></i>
+            {!collapsed && <span className="sp-label">Déconnexion</span>}
+            {collapsed && <span className="sp-tooltip">Déconnexion</span>}
           </div>
         </div>
       )}

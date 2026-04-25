@@ -228,7 +228,7 @@ function DashboardPatient() {
                           <i className="bi bi-bar-chart-line-fill"></i>
                         </div>
                         <div className="ms-2">
-                          <p className="text-muted mb-0 small">Moyenne 7j</p>
+                          <p className="text-muted mb-0 small">Moyenne 30j</p>
                           <h5 className="mb-0">
                             {avgGlycemie || "--"} <small className="text-muted">g/L</small>
                           </h5>

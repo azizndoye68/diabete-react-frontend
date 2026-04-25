@@ -73,18 +73,18 @@ function MonSuivi() {
         : `/patient/${patient.id}/dossier`
     },
     { 
-      title: 'Carnet de glycémie', 
-      icon: 'bi-journal-medical',
-      gradient: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
-      description: 'Consulter vos mesures de glycémie',
+      title: 'Mes conseils', 
+      icon: 'bi bi-lightbulb-fill',
+      gradient: 'linear-gradient(135deg, #f6d365 0%, #fda085 100%)',
+      description: 'Consulter vos recommandations personnalisées',
       path: patientId 
-        ? `/medecin/patient/${patientId}/carnet`
-        : `/carnet`
+        ? `/medecin/patient/${patientId}/mesconseils`
+        : `/patient/mesconseils`
     },
     { 
       title: 'Statistiques', 
       icon: 'bi-graph-up-arrow',
-      gradient: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
+      gradient: 'linear-gradient(135deg, #af3a5d 0%, #c0751e 100%)',
       description: 'Analyser vos données en détail',
       path: patientId 
         ? `/medecin/patient/${patientId}/statistiques`

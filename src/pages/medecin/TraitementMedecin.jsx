@@ -126,7 +126,7 @@ function TraitementMedecin() {
                   <i className="bi bi-prescription2"></i>
                 </div>
                 <div className="header-info">
-                  <h2 className="header-title">Dossier Médical & Traitement</h2>
+                  <h2 className="header-title">Dossier Médical et Traitement</h2>
                   <p className="header-subtitle">
                     <i className="bi bi-person-badge me-2"></i>
                     {patient?.prenom} {patient?.nom}

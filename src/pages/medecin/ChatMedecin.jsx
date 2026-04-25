@@ -30,7 +30,9 @@ function ChatMedecin() {
     const fetchMedecin = async () => {
       try {
         const profileRes = await api.get("/api/auth/profile");
-        const medRes = await api.get(`/api/medecins/byUtilisateur/${profileRes.data.id}`);
+        const medRes = await api.get(
+          `/api/medecins/byUtilisateur/${profileRes.data.id}`,
+        );
         setMedecin(medRes.data);
       } catch (error) {
         console.error("❌ Erreur profil médecin:", error);
@@ -45,27 +47,46 @@ function ChatMedecin() {
       loadUsers();
       connectWebSocket();
     }
-    return () => { if (stompClientRef.current) stompClientRef.current.disconnect(); };
+    return () => {
+      if (stompClientRef.current) stompClientRef.current.disconnect();
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [medecin]);
 
-  useEffect(() => { messagesEndRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages]);
-  useEffect(() => { if (selectedConversation) loadMessages(selectedConversation.id); }, [selectedConversation]);
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
+  useEffect(() => {
+    if (selectedConversation) loadMessages(selectedConversation.id);
+  }, [selectedConversation]);
 
   const connectWebSocket = () => {
     if (!medecin) return;
     const initWebSocket = () => {
-      if (!window.SockJS || !window.Stomp) { setTimeout(initWebSocket, 100); return; }
+      if (!window.SockJS || !window.Stomp) {
+        setTimeout(initWebSocket, 100);
+        return;
+      }
       const socket = new WebSocket("ws://localhost:8080/ws");
       const client = window.Stomp.over(socket);
       client.debug = () => {};
-      client.connect({}, () => {
-        setIsConnected(true);
-        client.subscribe(`/topic/medecin/${medecin.id}/messages`, (message) => {
-          handleNewMessage(JSON.parse(message.body));
-        });
-        stompClientRef.current = client;
-      }, () => { setIsConnected(false); setTimeout(connectWebSocket, 3000); });
+      client.connect(
+        {},
+        () => {
+          setIsConnected(true);
+          client.subscribe(
+            `/topic/medecin/${medecin.id}/messages`,
+            (message) => {
+              handleNewMessage(JSON.parse(message.body));
+            },
+          );
+          stompClientRef.current = client;
+        },
+        () => {
+          setIsConnected(false);
+          setTimeout(connectWebSocket, 3000);
+        },
+      );
     };
     initWebSocket();
   };
@@ -74,7 +95,9 @@ function ChatMedecin() {
     if (!medecin) return;
     try {
       setLoading(true);
-      const response = await api.get(`/api/conversations/medecin/${medecin.id}`);
+      const response = await api.get(
+        `/api/conversations/medecin/${medecin.id}`,
+      );
       setConversations(response.data);
     } catch (error) {
       console.error("❌ Erreur chargement conversations:", error);
@@ -85,7 +108,9 @@ function ChatMedecin() {
 
   const loadMessages = async (conversationId) => {
     try {
-      const response = await api.get(`/api/messages/conversation/${conversationId}?page=0&size=100`);
+      const response = await api.get(
+        `/api/messages/conversation/${conversationId}?page=0&size=100`,
+      );
       setMessages(response.data.content.reverse());
     } catch (error) {
       console.error("❌ Erreur chargement messages:", error);
@@ -93,7 +118,10 @@ function ChatMedecin() {
   };
 
   const handleNewMessage = (newMessage) => {
-    if (selectedConversation && newMessage.conversationId === selectedConversation.id) {
+    if (
+      selectedConversation &&
+      newMessage.conversationId === selectedConversation.id
+    ) {
       setMessages((prev) => {
         if (prev.some((msg) => msg.id === newMessage.id)) return prev;
         return [...prev, newMessage];
@@ -102,9 +130,13 @@ function ChatMedecin() {
     setConversations((prev) =>
       prev.map((conv) =>
         conv.id === newMessage.conversationId
-          ? { ...conv, lastMessage: newMessage, lastMessageAt: newMessage.createdAt }
-          : conv
-      )
+          ? {
+              ...conv,
+              lastMessage: newMessage,
+              lastMessageAt: newMessage.createdAt,
+            }
+          : conv,
+      ),
     );
   };
 
@@ -120,8 +152,20 @@ function ChatMedecin() {
           content: messageInput,
           messageType: "TEXT",
         };
-        stompClientRef.current.send("/app/chat.send", {}, JSON.stringify(message));
-        setMessages((prev) => [...prev, { ...message, id: Date.now(), senderName: `Dr. ${medecin.prenom} ${medecin.nom}`, createdAt: new Date().toISOString() }]);
+        stompClientRef.current.send(
+          "/app/chat.send",
+          {},
+          JSON.stringify(message),
+        );
+        setMessages((prev) => [
+          ...prev,
+          {
+            ...message,
+            id: Date.now(),
+            senderName: `Dr. ${medecin.prenom} ${medecin.nom}`,
+            createdAt: new Date().toISOString(),
+          },
+        ]);
         setMessageInput("");
       }
       stopTyping();
@@ -132,14 +176,32 @@ function ChatMedecin() {
 
   const handleTyping = () => {
     if (!selectedConversation || !stompClientRef.current) return;
-    stompClientRef.current.send("/app/chat.typing", {}, JSON.stringify({ conversationId: selectedConversation.id, userId: medecin.id, userName: `Dr. ${medecin.prenom}`, typing: true }));
+    stompClientRef.current.send(
+      "/app/chat.typing",
+      {},
+      JSON.stringify({
+        conversationId: selectedConversation.id,
+        userId: medecin.id,
+        userName: `Dr. ${medecin.prenom}`,
+        typing: true,
+      }),
+    );
     clearTimeout(typingTimeoutRef.current);
     typingTimeoutRef.current = setTimeout(stopTyping, 2000);
   };
 
   const stopTyping = () => {
     if (!selectedConversation || !stompClientRef.current) return;
-    stompClientRef.current.send("/app/chat.typing", {}, JSON.stringify({ conversationId: selectedConversation.id, userId: medecin.id, userName: `Dr. ${medecin.prenom}`, typing: false }));
+    stompClientRef.current.send(
+      "/app/chat.typing",
+      {},
+      JSON.stringify({
+        conversationId: selectedConversation.id,
+        userId: medecin.id,
+        userName: `Dr. ${medecin.prenom}`,
+        typing: false,
+      }),
+    );
   };
 
   const handleFileSelect = (e) => {
@@ -147,7 +209,8 @@ function ChatMedecin() {
     e.target.value = "";
   };
 
-  const removeFile = (index) => setSelectedFiles((prev) => prev.filter((_, i) => i !== index));
+  const removeFile = (index) =>
+    setSelectedFiles((prev) => prev.filter((_, i) => i !== index));
 
   const sendFiles = async () => {
     if (selectedFiles.length === 0) return;
@@ -160,7 +223,9 @@ function ChatMedecin() {
         formData.append("senderId", medecin.id);
         formData.append("senderType", "MEDECIN");
         formData.append("content", `Fichier partagé: ${file.name}`);
-        await api.post("/api/messages/upload", formData, { headers: { "Content-Type": "multipart/form-data" } });
+        await api.post("/api/messages/upload", formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
       }
       setSelectedFiles([]);
     } catch (error) {
@@ -171,34 +236,54 @@ function ChatMedecin() {
   };
 
   const getConversationTitle = (conv) =>
-    conv.type === "PATIENT_EQUIPE" ? conv.patientName || "Patient" : conv.otherMedecinName || "Médecin";
+    conv.type === "PATIENT_EQUIPE"
+      ? conv.patientName || "Patient"
+      : conv.otherMedecinName || "Médecin";
 
   const getConversationSubtitle = (conv) => {
-    if (!conv.lastMessage) return conv.type === "PATIENT_EQUIPE" ? "Aucun message" : "Conversation privée";
+    if (!conv.lastMessage)
+      return conv.type === "PATIENT_EQUIPE"
+        ? "Aucun message"
+        : "Conversation privée";
     const content = conv.lastMessage.content || "";
-    const truncated = content.length > 30 ? content.substring(0, 30) + "..." : content;
-    return conv.lastMessage.senderName ? `${conv.lastMessage.senderName}: ${truncated}` : truncated;
+    const truncated =
+      content.length > 30 ? content.substring(0, 30) + "..." : content;
+    return conv.lastMessage.senderName
+      ? `${conv.lastMessage.senderName}: ${truncated}`
+      : truncated;
   };
 
   const filteredConversations = conversations.filter((conv) =>
-    getConversationTitle(conv).toLowerCase().includes(searchTerm.toLowerCase())
+    getConversationTitle(conv).toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   const formatMessageTime = (dateString) => {
     try {
       const date = new Date(dateString);
       const diffInHours = (new Date() - date) / (1000 * 60 * 60);
-      if (diffInHours < 24) return date.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
+      if (diffInHours < 24)
+        return date.toLocaleTimeString("fr-FR", {
+          hour: "2-digit",
+          minute: "2-digit",
+        });
       if (diffInHours < 48) return "Hier";
-      return date.toLocaleDateString("fr-FR", { day: "2-digit", month: "2-digit" });
-    } catch { return ""; }
+      return date.toLocaleDateString("fr-FR", {
+        day: "2-digit",
+        month: "2-digit",
+      });
+    } catch {
+      return "";
+    }
   };
 
-  const isMyMessage = (message) => message.senderId === medecin?.id && message.senderType === "MEDECIN";
+  const isMyMessage = (message) =>
+    message.senderId === medecin?.id && message.senderType === "MEDECIN";
 
   const loadUsers = async () => {
     try {
-      const patientsRes = await api.get(`/api/patients/medecin/${medecin.id}/visibles`);
+      const patientsRes = await api.get(
+        `/api/patients/medecin/${medecin.id}/visibles`,
+      );
       setPatients(patientsRes.data);
       const medecinsRes = await api.get("/api/medecins");
       setMedecins(medecinsRes.data.filter((m) => m.id !== medecin.id));
@@ -210,22 +295,66 @@ function ChatMedecin() {
   const createConversationWithUser = async (user, type) => {
     try {
       let res;
+
       if (type === "patient") {
-        res = await api.post(`/api/conversations/patient/${user.id}`);
+        res = await api.post(`/api/conversations/patient/${user.id}`, {
+          medecinId: medecin.id,
+        });
       } else {
-        res = await api.post("/api/conversations/medecin-to-medecin", { requestingMedecinId: medecin.id, targetMedecinId: user.id });
+        res = await api.post("/api/conversations/medecin-to-medecin", {
+          requestingMedecinId: medecin.id,
+          targetMedecinId: user.id,
+        });
       }
-      await loadConversations();
-      setSelectedConversation(res.data);
+
+      const createdId = res.data.id;
+
+      // ✅ Recharger la liste enrichie (avec patientName, otherMedecinName)
+      const conversationsRes = await api.get(
+        `/api/conversations/medecin/${medecin.id}`,
+      );
+      const updatedList = conversationsRes.data;
+      setConversations(updatedList);
+
+      // ✅ Chercher la conversation enrichie par son ID
+      const enriched = updatedList.find((c) => c.id === createdId);
+
+      if (enriched) {
+        setSelectedConversation(enriched);
+      } else {
+        // ✅ Fallback : construire un objet enrichi manuellement depuis les données locales
+        const fallback = {
+          ...res.data,
+          patientName: type === "patient" ? `${user.prenom} ${user.nom}` : null,
+          otherMedecinName:
+            type === "medecin" ? `Dr. ${user.prenom} ${user.nom}` : null,
+        };
+        setSelectedConversation(fallback);
+
+        // Ajouter manuellement à la liste si pas trouvé
+        setConversations((prev) => {
+          const exists = prev.some((c) => c.id === createdId);
+          return exists ? prev : [fallback, ...prev];
+        });
+      }
+
       setShowNewConversation(false);
     } catch (error) {
       console.error("❌ Erreur création conversation:", error);
+      if (error.response) {
+        console.error("Status:", error.response.status);
+        console.error("Data:", error.response.data);
+      }
     }
   };
-
   const getInitials = (name) => {
     if (!name) return "?";
-    return name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2);
+    return name
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase()
+      .slice(0, 2);
   };
 
   return (
@@ -235,10 +364,8 @@ function ChatMedecin() {
       <div className="chat-content">
         <Container fluid className="h-100 p-0">
           <Row className="h-100 g-0">
-
             {/* ===== SIDEBAR ===== */}
             <Col md={4} lg={3} className="chat-sidebar">
-
               {/* Header sidebar */}
               <div className="chat-sidebar-header">
                 <div className="sidebar-top-row">
@@ -255,8 +382,12 @@ function ChatMedecin() {
                 {/* Statut + recherche */}
                 <div className="sidebar-search-row">
                   <div className="ws-indicator">
-                    <span className={`ws-dot-med ${isConnected ? "online" : "offline"}`}></span>
-                    <span className="ws-label-med">{isConnected ? "En ligne" : "Hors ligne"}</span>
+                    <span
+                      className={`ws-dot-med ${isConnected ? "online" : "offline"}`}
+                    ></span>
+                    <span className="ws-label-med">
+                      {isConnected ? "En ligne" : "Hors ligne"}
+                    </span>
                   </div>
                 </div>
                 <div className="search-field-wrapper">
@@ -294,16 +425,23 @@ function ChatMedecin() {
                     >
                       <div className="conv-avatar-med">
                         {getInitials(getConversationTitle(conv))}
-                        <span className={`conv-type-dot ${conv.type === "PATIENT_EQUIPE" ? "patient" : "medecin"}`}></span>
+                        <span
+                          className={`conv-type-dot ${conv.type === "PATIENT_EQUIPE" ? "patient" : "medecin"}`}
+                        ></span>
                       </div>
                       <div className="conv-details">
                         <div className="conv-title-row">
-                          <span className="conv-title-med">{getConversationTitle(conv)}</span>
+                          <span className="conv-title-med">
+                            {getConversationTitle(conv)}
+                          </span>
                           <span className="conv-time-med">
-                            {conv.lastMessageAt && formatMessageTime(conv.lastMessageAt)}
+                            {conv.lastMessageAt &&
+                              formatMessageTime(conv.lastMessageAt)}
                           </span>
                         </div>
-                        <div className="conv-last-msg">{getConversationSubtitle(conv)}</div>
+                        <div className="conv-last-msg">
+                          {getConversationSubtitle(conv)}
+                        </div>
                       </div>
                     </div>
                   ))
@@ -320,7 +458,10 @@ function ChatMedecin() {
                   </div>
                   <h5>Sélectionnez une conversation</h5>
                   <p>Choisissez un patient ou un collègue médecin</p>
-                  <button className="btn-start-chat" onClick={() => setShowNewConversation(true)}>
+                  <button
+                    className="btn-start-chat"
+                    onClick={() => setShowNewConversation(true)}
+                  >
                     <i className="bi bi-plus-circle me-2"></i>
                     Nouvelle conversation
                   </button>
@@ -331,13 +472,21 @@ function ChatMedecin() {
                   <div className="chat-header-med">
                     <div className="chat-header-left">
                       <div className="chat-header-avatar-med">
-                        {getInitials(getConversationTitle(selectedConversation))}
+                        {getInitials(
+                          getConversationTitle(selectedConversation),
+                        )}
                       </div>
                       <div className="chat-header-info-med">
-                        <div className="chat-header-name-med">{getConversationTitle(selectedConversation)}</div>
+                        <div className="chat-header-name-med">
+                          {getConversationTitle(selectedConversation)}
+                        </div>
                         <div className="chat-header-sub-med">
-                          <span className={`type-pill ${selectedConversation.type === "PATIENT_EQUIPE" ? "patient" : "medecin"}`}>
-                            {selectedConversation.type === "PATIENT_EQUIPE" ? "Patient" : "Médecin"}
+                          <span
+                            className={`type-pill ${selectedConversation.type === "PATIENT_EQUIPE" ? "patient" : "medecin"}`}
+                          >
+                            {selectedConversation.type === "PATIENT_EQUIPE"
+                              ? "Patient"
+                              : "Médecin"}
                           </span>
                         </div>
                       </div>
@@ -353,7 +502,10 @@ function ChatMedecin() {
                   <div className="messages-area-med">
                     {messages.length === 0 && (
                       <div className="no-msg-state">
-                        <i className="bi bi-chat-heart" style={{ fontSize: "3rem", color: "#d4aaff" }}></i>
+                        <i
+                          className="bi bi-chat-heart"
+                          style={{ fontSize: "3rem", color: "#d4aaff" }}
+                        ></i>
                         <p>Commencez la conversation !</p>
                       </div>
                     )}
@@ -363,31 +515,49 @@ function ChatMedecin() {
                         className={`msg-row ${isMyMessage(message) ? "msg-sent" : "msg-received"}`}
                       >
                         {!isMyMessage(message) && (
-                          <div className="msg-avatar-med">{getInitials(message.senderName)}</div>
+                          <div className="msg-avatar-med">
+                            {getInitials(message.senderName)}
+                          </div>
                         )}
                         <div className="msg-content-wrap">
                           {!isMyMessage(message) && (
-                            <div className="msg-sender-name">{message.senderName}</div>
+                            <div className="msg-sender-name">
+                              {message.senderName}
+                            </div>
                           )}
-                          <div className={`msg-bubble ${isMyMessage(message) ? "bubble-sent-med" : "bubble-received-med"}`}>
+                          <div
+                            className={`msg-bubble ${isMyMessage(message) ? "bubble-sent-med" : "bubble-received-med"}`}
+                          >
                             {message.messageType === "TEXT" ? (
                               <div className="msg-text">{message.content}</div>
                             ) : (
                               <div className="msg-file-block">
                                 <i className="bi bi-file-earmark-fill me-2"></i>
                                 <div className="flex-grow-1">
-                                  <div className="fw-bold">{message.fileName}</div>
-                                  <small>{(message.fileSize / 1024).toFixed(1)} KB</small>
+                                  <div className="fw-bold">
+                                    {message.fileName}
+                                  </div>
+                                  <small>
+                                    {(message.fileSize / 1024).toFixed(1)} KB
+                                  </small>
                                 </div>
-                                <a href={`http://localhost:8080${message.fileUrl}`} download className="btn-dl-file">
+                                <a
+                                  href={`http://localhost:8080${message.fileUrl}`}
+                                  download
+                                  className="btn-dl-file"
+                                >
                                   <i className="bi bi-download"></i>
                                 </a>
                               </div>
                             )}
-                            <div className={`msg-time ${isMyMessage(message) ? "time-sent" : "time-received"}`}>
+                            <div
+                              className={`msg-time ${isMyMessage(message) ? "time-sent" : "time-received"}`}
+                            >
                               <i className="bi bi-clock me-1"></i>
                               {formatMessageTime(message.createdAt)}
-                              {isMyMessage(message) && <i className="bi bi-check2-all ms-1"></i>}
+                              {isMyMessage(message) && (
+                                <i className="bi bi-check2-all ms-1"></i>
+                              )}
                             </div>
                           </div>
                         </div>
@@ -404,7 +574,10 @@ function ChatMedecin() {
                           <div key={index} className="file-chip">
                             <i className="bi bi-file-earmark me-2"></i>
                             <span className="file-chip-name">{file.name}</span>
-                            <button className="file-chip-remove" onClick={() => removeFile(index)}>
+                            <button
+                              className="file-chip-remove"
+                              onClick={() => removeFile(index)}
+                            >
                               <i className="bi bi-x"></i>
                             </button>
                           </div>
@@ -434,20 +607,34 @@ function ChatMedecin() {
                         type="text"
                         placeholder="Tapez votre message..."
                         value={messageInput}
-                        onChange={(e) => { setMessageInput(e.target.value); handleTyping(); }}
-                        onKeyPress={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMessage(); } }}
+                        onChange={(e) => {
+                          setMessageInput(e.target.value);
+                          handleTyping();
+                        }}
+                        onKeyPress={(e) => {
+                          if (e.key === "Enter" && !e.shiftKey) {
+                            e.preventDefault();
+                            sendMessage();
+                          }
+                        }}
                         className="msg-input-med"
                       />
 
                       <button
-                        className={`btn-send-med ${(isConnected && (messageInput.trim() || selectedFiles.length > 0)) ? "active" : "disabled"}`}
+                        className={`btn-send-med ${isConnected && (messageInput.trim() || selectedFiles.length > 0) ? "active" : "disabled"}`}
                         onClick={sendMessage}
-                        disabled={(!messageInput.trim() && selectedFiles.length === 0) || !isConnected || uploadingFile}
-                      >
-                        {uploadingFile
-                          ? <span className="spinner-border spinner-border-sm"></span>
-                          : <i className="bi bi-send-fill"></i>
+                        disabled={
+                          (!messageInput.trim() &&
+                            selectedFiles.length === 0) ||
+                          !isConnected ||
+                          uploadingFile
                         }
+                      >
+                        {uploadingFile ? (
+                          <span className="spinner-border spinner-border-sm"></span>
+                        ) : (
+                          <i className="bi bi-send-fill"></i>
+                        )}
                       </button>
                     </div>
                   </div>
@@ -460,15 +647,20 @@ function ChatMedecin() {
 
       {/* ===== MODAL NOUVELLE CONVERSATION ===== */}
       {showNewConversation && (
-        <div className="modal-overlay-med" onClick={() => setShowNewConversation(false)}>
+        <div
+          className="modal-overlay-med"
+          onClick={() => setShowNewConversation(false)}
+        >
           <div className="modal-box-med" onClick={(e) => e.stopPropagation()}>
-
             <div className="modal-hdr-med">
               <div className="modal-hdr-title">
                 <i className="bi bi-chat-plus-fill me-2"></i>
                 Nouvelle conversation
               </div>
-              <button className="modal-close-med" onClick={() => setShowNewConversation(false)}>
+              <button
+                className="modal-close-med"
+                onClick={() => setShowNewConversation(false)}
+              >
                 <i className="bi bi-x-lg"></i>
               </button>
             </div>
@@ -492,34 +684,54 @@ function ChatMedecin() {
               <div className="users-list-med">
                 {userType === "patient" ? (
                   patients.length === 0 ? (
-                    <p className="text-muted text-center py-4">Aucun patient disponible</p>
+                    <p className="text-muted text-center py-4">
+                      Aucun patient disponible
+                    </p>
                   ) : (
                     patients.map((patient) => (
-                      <div key={patient.id} className="user-item-med" onClick={() => createConversationWithUser(patient, "patient")}>
-                        <div className="user-avatar-med patient">{getInitials(`${patient.prenom} ${patient.nom}`)}</div>
+                      <div
+                        key={patient.id}
+                        className="user-item-med"
+                        onClick={() =>
+                          createConversationWithUser(patient, "patient")
+                        }
+                      >
+                        <div className="user-avatar-med patient">
+                          {getInitials(`${patient.prenom} ${patient.nom}`)}
+                        </div>
                         <div className="user-info-med">
-                          <div className="user-name-med">{patient.prenom} {patient.nom}</div>
+                          <div className="user-name-med">
+                            {patient.prenom} {patient.nom}
+                          </div>
                           <small>Dossier : {patient.numeroDossier}</small>
                         </div>
                         <i className="bi bi-chevron-right user-chevron"></i>
                       </div>
                     ))
                   )
+                ) : medecins.length === 0 ? (
+                  <p className="text-muted text-center py-4">
+                    Aucun médecin disponible
+                  </p>
                 ) : (
-                  medecins.length === 0 ? (
-                    <p className="text-muted text-center py-4">Aucun médecin disponible</p>
-                  ) : (
-                    medecins.map((med) => (
-                      <div key={med.id} className="user-item-med" onClick={() => createConversationWithUser(med, "medecin")}>
-                        <div className="user-avatar-med medecin">{getInitials(`${med.prenom} ${med.nom}`)}</div>
-                        <div className="user-info-med">
-                          <div className="user-name-med">Dr. {med.prenom} {med.nom}</div>
-                          <small>{med.specialite || "Médecin"}</small>
-                        </div>
-                        <i className="bi bi-chevron-right user-chevron"></i>
+                  medecins.map((med) => (
+                    <div
+                      key={med.id}
+                      className="user-item-med"
+                      onClick={() => createConversationWithUser(med, "medecin")}
+                    >
+                      <div className="user-avatar-med medecin">
+                        {getInitials(`${med.prenom} ${med.nom}`)}
                       </div>
-                    ))
-                  )
+                      <div className="user-info-med">
+                        <div className="user-name-med">
+                          Dr. {med.prenom} {med.nom}
+                        </div>
+                        <small>{med.specialite || "Médecin"}</small>
+                      </div>
+                      <i className="bi bi-chevron-right user-chevron"></i>
+                    </div>
+                  ))
                 )}
               </div>
             </div>

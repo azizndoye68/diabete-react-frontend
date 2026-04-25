@@ -9,7 +9,7 @@
 
 /* Contenu principal */
 .ajouter-donnee-main-content {
-  margin-left: 280px;
+  margin-left: 272px;
   min-height: 100vh;
   padding: 0;
 }
@@ -438,5 +438,11 @@
 
   .tab-text {
     text-align: center;
+  }
+}
+
+@media (max-width: 992px) {
+  .ajouter-donnee-main-content {
+    margin-left: 72px;
   }
 }
