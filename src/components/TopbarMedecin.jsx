@@ -9,14 +9,25 @@ import {
   FaUsers,
   FaCalendarAlt,
   FaSignOutAlt,
-  FaBell,
 } from "react-icons/fa";
 import defaultAvatar from "../images/default-avatar.jpg";
 import "./TopbarMedecin.css";
+import NotificationDropdown from "./NotificationDropdown"; // 🆕
+import { useNotifications } from "../hooks/useNotifications"; // 🆕
 
 function TopbarMedecin({ user }) {
   const navigate = useNavigate();
   const location = useLocation();
+
+  // 🆕 Hook notifications branché sur medecinId
+  const {
+    notifications,
+    unreadCount,
+    loading: notifLoading,
+    fetchNotifications,
+    markAsRead,
+    markAllAsRead,
+  } = useNotifications(user?.id, "medecin");
 
   const navItems = [
     { path: "/dashboard-medecin", label: "Mes patients", icon: <FaUsers /> },
@@ -49,10 +60,8 @@ function TopbarMedecin({ user }) {
           </span>
         </Navbar.Brand>
 
-        {/* Bouton hamburger (mobile) */}
         <Navbar.Toggle aria-controls="topbar-nav" className="topbar-toggle" />
 
-        {/* Contenu responsive */}
         <Navbar.Collapse id="topbar-nav">
           {/* Navigation */}
           <Nav className="topbar-nav mx-auto">
@@ -75,24 +84,24 @@ function TopbarMedecin({ user }) {
 
           {/* Actions à droite */}
           <div className="topbar-actions">
-            {/* Notifications */}
+            {/* 🆕 Cloche dynamique */}
             <div className="notification-wrapper">
-              <button
-                className="notification-btn"
-                onClick={() => navigate("/notifications")}
-                title="Notifications"
-              >
-                <FaBell />
-                <span className="notification-dot"></span>
-              </button>
+              <NotificationDropdown
+                patientId={user?.id}
+                role="medecin"
+                notifications={notifications}
+                unreadCount={unreadCount}
+                loading={notifLoading}
+                onOpen={fetchNotifications}
+                onMarkAsRead={markAsRead}
+                onMarkAllAsRead={markAllAsRead}
+                navigateTo="/medecin/notifications" // 🆕 page dédiée médecin
+              />
             </div>
 
             {/* Profil avec dropdown */}
             <Dropdown align="end" className="profile-dropdown">
-              <Dropdown.Toggle
-                as="div"
-                className="profile-toggle"
-              >
+              <Dropdown.Toggle as="div" className="profile-toggle">
                 <div className="profile-info">
                   <div className="profile-text">
                     <span className="profile-name">
@@ -115,12 +124,7 @@ function TopbarMedecin({ user }) {
 
               <Dropdown.Menu className="profile-menu">
                 <div className="profile-menu-header">
-                  <Image
-                    src={defaultAvatar}
-                    roundedCircle
-                    width={50}
-                    height={50}
-                  />
+                  <Image src={defaultAvatar} roundedCircle width={50} height={50} />
                   <div className="ms-3">
                     <div className="fw-bold">
                       Dr. {user?.prenom} {user?.nom}
@@ -131,7 +135,7 @@ function TopbarMedecin({ user }) {
 
                 <Dropdown.Divider />
 
-                <Dropdown.Item 
+                <Dropdown.Item
                   onClick={() => navigate("/medecin/profil")}
                   className="profile-menu-item"
                 >
@@ -139,7 +143,7 @@ function TopbarMedecin({ user }) {
                   <span>Mon compte</span>
                 </Dropdown.Item>
 
-                <Dropdown.Item 
+                <Dropdown.Item
                   onClick={() => navigate("/medecin/equipes-medicales")}
                   className="profile-menu-item"
                 >
@@ -147,7 +151,7 @@ function TopbarMedecin({ user }) {
                   <span>Mes équipes</span>
                 </Dropdown.Item>
 
-                <Dropdown.Item 
+                <Dropdown.Item
                   onClick={() => navigate("/medecin/liste-rendezvous")}
                   className="profile-menu-item"
                 >
@@ -157,7 +161,7 @@ function TopbarMedecin({ user }) {
 
                 <Dropdown.Divider />
 
-                <Dropdown.Item 
+                <Dropdown.Item
                   onClick={handleLogout}
                   className="profile-menu-item logout-item"
                 >

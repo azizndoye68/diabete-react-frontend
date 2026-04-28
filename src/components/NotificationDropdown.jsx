@@ -4,17 +4,17 @@ import { useNavigate } from "react-router-dom";
 import "./NotificationDropdown.css";
 
 const TYPE_CONFIG = {
-  HYPOGLYCEMIE:             { icon: "bi-arrow-down-circle-fill", color: "#f59e0b", label: "Hypoglycémie" },
+  HYPOGLYCEMIE:             { icon: "bi-arrow-down-circle-fill",    color: "#f59e0b", label: "Hypoglycémie" },
   HYPOGLYCEMIE_SEVERE:      { icon: "bi-exclamation-triangle-fill", color: "#ef4444", label: "Hypoglycémie sévère" },
-  HYPERGLYCEMIE:            { icon: "bi-arrow-up-circle-fill", color: "#f97316", label: "Hyperglycémie" },
-  HYPERGLYCEMIE_SEVERE:     { icon: "bi-exclamation-octagon-fill", color: "#dc2626", label: "Hyperglycémie sévère" },
-  RAPPEL_MESURE:            { icon: "bi-clock-fill", color: "#11998e", label: "Rappel mesure" },
-  INACTIVITE_PATIENT:       { icon: "bi-person-x-fill", color: "#8b5cf6", label: "Inactivité" },
-  RENDEZ_VOUS_PLANIFIE:     { icon: "bi-calendar-plus-fill", color: "#11998e", label: "RDV planifié" },
-  RENDEZ_VOUS_CONFIRME:     { icon: "bi-calendar-check-fill", color: "#10b981", label: "RDV confirmé" },
-  RENDEZ_VOUS_ANNULE:       { icon: "bi-calendar-x-fill", color: "#ef4444", label: "RDV annulé" },
-  RENDEZ_VOUS_RAPPEL_J1:    { icon: "bi-calendar-event-fill", color: "#3b82f6", label: "Rappel RDV demain" },
-  RENDEZ_VOUS_RAPPEL_H2:    { icon: "bi-alarm-fill", color: "#8b5cf6", label: "Rappel RDV 2h" },
+  HYPERGLYCEMIE:            { icon: "bi-arrow-up-circle-fill",      color: "#f97316", label: "Hyperglycémie" },
+  HYPERGLYCEMIE_SEVERE:     { icon: "bi-exclamation-octagon-fill",  color: "#dc2626", label: "Hyperglycémie sévère" },
+  RAPPEL_MESURE:            { icon: "bi-clock-fill",                color: "#11998e", label: "Rappel mesure" },
+  INACTIVITE_PATIENT:       { icon: "bi-person-x-fill",             color: "#8b5cf6", label: "Inactivité patient" },
+  RENDEZ_VOUS_PLANIFIE:     { icon: "bi-calendar-plus-fill",        color: "#11998e", label: "RDV planifié" },
+  RENDEZ_VOUS_CONFIRME:     { icon: "bi-calendar-check-fill",       color: "#10b981", label: "RDV confirmé" },
+  RENDEZ_VOUS_ANNULE:       { icon: "bi-calendar-x-fill",           color: "#ef4444", label: "RDV annulé" },
+  RENDEZ_VOUS_RAPPEL_J1:    { icon: "bi-calendar-event-fill",       color: "#3b82f6", label: "Rappel RDV demain" },
+  RENDEZ_VOUS_RAPPEL_H2:    { icon: "bi-alarm-fill",                color: "#8b5cf6", label: "Rappel RDV dans 2h" },
 };
 
 function timeAgo(dateStr) {
@@ -37,12 +37,14 @@ export default function NotificationDropdown({
   onOpen,
   onMarkAsRead,
   onMarkAllAsRead,
+  navigateTo, // 🆕
 }) {
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
   const navigate = useNavigate();
 
-  // Fermer si clic en dehors
+  const targetPage = navigateTo || "/notifications"; // 🆕
+
   useEffect(() => {
     const handler = (e) => {
       if (ref.current && !ref.current.contains(e.target)) setOpen(false);
@@ -59,11 +61,12 @@ export default function NotificationDropdown({
   const handleNotifClick = (notif) => {
     if (notif.statut !== "LU") onMarkAsRead(notif.id);
     setOpen(false);
-    navigate("/patient/notifications");
+    navigate(targetPage); // 🆕
   };
 
   const preview = notifications.slice(0, 5);
-  const cfg = (type) => TYPE_CONFIG[type] || { icon: "bi-bell-fill", color: "#6b7280", label: type };
+  const cfg = (type) =>
+    TYPE_CONFIG[type] || { icon: "bi-bell-fill", color: "#6b7280", label: type };
 
   return (
     <div className="notif-wrapper" ref={ref}>
@@ -145,7 +148,7 @@ export default function NotificationDropdown({
           <div className="notif-footer">
             <button
               className="notif-see-all"
-              onClick={() => { setOpen(false); navigate("/patient/notifications"); }}
+              onClick={() => { setOpen(false); navigate(targetPage); }} // 🆕
             >
               Voir toutes les notifications
               <i className="bi bi-arrow-right ms-1" />

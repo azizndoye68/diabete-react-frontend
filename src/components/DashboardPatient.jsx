@@ -8,7 +8,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import AideModal from "./AideModal";
 import GlycemieChart from "./GlycemieChart";
 import NotificationDropdown from "../components/NotificationDropdown"; // 🆕
-import { useNotifications } from "../hooks/useNotifications";          // 🆕
+import { useNotifications } from "../hooks/useNotifications"; // 🆕
 
 function DashboardPatient() {
   const [patient, setPatient] = useState(null);
@@ -50,7 +50,7 @@ function DashboardPatient() {
           const profileRes = await api.get("/api/auth/profile");
           const utilisateurId = profileRes.data.id;
           const patientRes = await api.get(
-            `/api/patients/byUtilisateur/${utilisateurId}`
+            `/api/patients/byUtilisateur/${utilisateurId}`,
           );
           patientData = patientRes.data;
           realPatientId = patientData.id;
@@ -84,17 +84,27 @@ function DashboardPatient() {
   }, [patientId]);
 
   const getGlycemieStatus = (value) => {
-    if (!value) return { text: "N/A", variant: "secondary", icon: "question-circle" };
-    if (value < 0.7) return { text: "Faible", variant: "warning", icon: "arrow-down-circle-fill" };
-    if (value >= 0.7 && value <= 1.2) return { text: "Normal", variant: "success", icon: "check-circle-fill" };
+    if (!value)
+      return { text: "N/A", variant: "secondary", icon: "question-circle" };
+    if (value < 0.7)
+      return {
+        text: "Faible",
+        variant: "warning",
+        icon: "arrow-down-circle-fill",
+      };
+    if (value >= 0.7 && value <= 1.2)
+      return { text: "Normal", variant: "success", icon: "check-circle-fill" };
     return { text: "Élevé", variant: "danger", icon: "arrow-up-circle-fill" };
   };
 
   const status = getGlycemieStatus(glycemie?.glycemie);
 
-  const avgGlycemie = glycemies.length > 0
-    ? (glycemies.reduce((sum, g) => sum + g.glycemie, 0) / glycemies.length).toFixed(2)
-    : null;
+  const avgGlycemie =
+    glycemies.length > 0
+      ? (
+          glycemies.reduce((sum, g) => sum + g.glycemie, 0) / glycemies.length
+        ).toFixed(2)
+      : null;
 
   return (
     <div className="dashboard-wrapper">
@@ -136,13 +146,14 @@ function DashboardPatient() {
             <div className="header-actions">
               <NotificationDropdown
                 patientId={patient?.id}
-                role="patient"
+                role="medecin"
                 notifications={notifications}
                 unreadCount={unreadCount}
                 loading={notifLoading}
                 onOpen={fetchNotifications}
                 onMarkAsRead={markAsRead}
                 onMarkAllAsRead={markAllAsRead}
+                navigateTo="/patient/notifications" // 🆕 page dédiée patient
               />
             </div>
           </div>
@@ -170,7 +181,9 @@ function DashboardPatient() {
                   {glycemie ? (
                     <>
                       <div className="glycemie-value mb-2">
-                        <span className="value-number">{glycemie.glycemie}</span>
+                        <span className="value-number">
+                          {glycemie.glycemie}
+                        </span>
                         <span className="value-unit">g/L</span>
                       </div>
 
@@ -178,22 +191,30 @@ function DashboardPatient() {
                         <div className="detail-item">
                           <i className="bi bi-clock-history me-2"></i>
                           <span>
-                            {glycemie.moment === "avant_repas" ? "Avant" : "Après"} le{" "}
-                            {glycemie.repas}
+                            {glycemie.moment === "avant_repas"
+                              ? "Avant"
+                              : "Après"}{" "}
+                            le {glycemie.repas}
                           </span>
                         </div>
                         <div className="detail-item">
                           <i className="bi bi-calendar-event me-2"></i>
                           <span>
-                            {new Date(glycemie.dateSuivi).toLocaleString("fr-FR")}
+                            {new Date(glycemie.dateSuivi).toLocaleString(
+                              "fr-FR",
+                            )}
                           </span>
                         </div>
                       </div>
 
                       <div className="mt-2">
                         <div className="d-flex justify-content-between mb-1">
-                          <small className="text-muted">Zone normale : 0.7 - 1.2 g/L</small>
-                          <small className="text-muted">{glycemie.glycemie} g/L</small>
+                          <small className="text-muted">
+                            Zone normale : 0.7 - 1.2 g/L
+                          </small>
+                          <small className="text-muted">
+                            {glycemie.glycemie} g/L
+                          </small>
                         </div>
                         <ProgressBar
                           now={(glycemie.glycemie / 2) * 100}
@@ -204,8 +225,13 @@ function DashboardPatient() {
                     </>
                   ) : (
                     <div className="no-data-state">
-                      <i className="bi bi-inbox text-muted" style={{ fontSize: "2rem" }}></i>
-                      <p className="text-muted mt-2 mb-0">Aucune mesure récente</p>
+                      <i
+                        className="bi bi-inbox text-muted"
+                        style={{ fontSize: "2rem" }}
+                      ></i>
+                      <p className="text-muted mt-2 mb-0">
+                        Aucune mesure récente
+                      </p>
                     </div>
                   )}
 
@@ -214,7 +240,9 @@ function DashboardPatient() {
                     className="w-100 mt-3 btn-action"
                     onClick={() => {
                       if (patientId) {
-                        navigate(`/medecin/patient/${patientId}/ajouter-donnees`);
+                        navigate(
+                          `/medecin/patient/${patientId}/ajouter-donnees`,
+                        );
                       } else {
                         navigate("/ajouter-donnees");
                       }
@@ -239,7 +267,8 @@ function DashboardPatient() {
                         <div className="ms-2">
                           <p className="text-muted mb-0 small">Moyenne 30j</p>
                           <h5 className="mb-0">
-                            {avgGlycemie || "--"} <small className="text-muted">g/L</small>
+                            {avgGlycemie || "--"}{" "}
+                            <small className="text-muted">g/L</small>
                           </h5>
                         </div>
                       </div>
@@ -257,7 +286,8 @@ function DashboardPatient() {
                         <div className="ms-2">
                           <p className="text-muted mb-0 small">Mesures</p>
                           <h5 className="mb-0">
-                            {glycemies.length} <small className="text-muted">total</small>
+                            {glycemies.length}{" "}
+                            <small className="text-muted">total</small>
                           </h5>
                         </div>
                       </div>
@@ -322,7 +352,10 @@ function DashboardPatient() {
                     </div>
                   ) : (
                     <div className="no-data-state">
-                      <i className="bi bi-graph-up text-muted" style={{ fontSize: "2rem" }}></i>
+                      <i
+                        className="bi bi-graph-up text-muted"
+                        style={{ fontSize: "2rem" }}
+                      ></i>
                       <p className="text-muted mt-2 mb-0">
                         Pas assez de données pour afficher une tendance
                       </p>
@@ -335,7 +368,10 @@ function DashboardPatient() {
 
           <Row className="g-3">
             <Col md={4}>
-              <Card className="action-card h-100" onClick={() => navigate("/carnet")}>
+              <Card
+                className="action-card h-100"
+                onClick={() => navigate("/carnet")}
+              >
                 <Card.Body className="text-center p-3">
                   <div className="action-icon bg-primary mb-2">
                     <i className="bi bi-journal-medical"></i>
@@ -349,7 +385,10 @@ function DashboardPatient() {
             </Col>
 
             <Col md={4}>
-              <Card className="action-card h-100" onClick={() => navigate("/statistiques")}>
+              <Card
+                className="action-card h-100"
+                onClick={() => navigate("/statistiques")}
+              >
                 <Card.Body className="text-center p-3">
                   <div className="action-icon bg-purple mb-2">
                     <i className="bi bi-pie-chart-fill"></i>
@@ -363,7 +402,10 @@ function DashboardPatient() {
             </Col>
 
             <Col md={4}>
-              <Card className="action-card h-100" onClick={() => navigate("/patient/education")}>
+              <Card
+                className="action-card h-100"
+                onClick={() => navigate("/patient/education")}
+              >
                 <Card.Body className="text-center p-3">
                   <div className="action-icon bg-info mb-2">
                     <i className="bi bi-book-fill"></i>

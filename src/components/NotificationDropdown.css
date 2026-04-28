@@ -115,7 +115,7 @@
 
 /* Liste */
 .notif-list {
-  max-height: 360px;
+  max-height: 272px;
   overflow-y: auto;
   scrollbar-width: thin;
   scrollbar-color: #e5e7eb transparent;
