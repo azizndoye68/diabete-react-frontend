@@ -7,6 +7,8 @@ import "./DashboardPatient.css";
 import { useNavigate, useParams } from "react-router-dom";
 import AideModal from "./AideModal";
 import GlycemieChart from "./GlycemieChart";
+import NotificationDropdown from "../components/NotificationDropdown"; // 🆕
+import { useNotifications } from "../hooks/useNotifications";          // 🆕
 
 function DashboardPatient() {
   const [patient, setPatient] = useState(null);
@@ -17,6 +19,16 @@ function DashboardPatient() {
 
   const navigate = useNavigate();
   const { patientId } = useParams();
+
+  // 🆕 Hook notifications — branché sur patient?.id
+  const {
+    notifications,
+    unreadCount,
+    loading: notifLoading,
+    fetchNotifications,
+    markAsRead,
+    markAllAsRead,
+  } = useNotifications(patient?.id, "patient");
 
   // Horloge en temps réel
   useEffect(() => {
@@ -71,7 +83,6 @@ function DashboardPatient() {
     fetchData();
   }, [patientId]);
 
-  // Fonction pour obtenir le statut de la glycémie
   const getGlycemieStatus = (value) => {
     if (!value) return { text: "N/A", variant: "secondary", icon: "question-circle" };
     if (value < 0.7) return { text: "Faible", variant: "warning", icon: "arrow-down-circle-fill" };
@@ -81,7 +92,6 @@ function DashboardPatient() {
 
   const status = getGlycemieStatus(glycemie?.glycemie);
 
-  // Calculer la moyenne des glycémies récentes
   const avgGlycemie = glycemies.length > 0
     ? (glycemies.reduce((sum, g) => sum + g.glycemie, 0) / glycemies.length).toFixed(2)
     : null;
@@ -95,7 +105,7 @@ function DashboardPatient() {
       />
 
       <div className="dashboard-main-content">
-        {/* En-tête moderne avec gradient */}
+        {/* En-tête */}
         <div className="dashboard-header">
           <div className="header-content">
             <div className="welcome-section">
@@ -122,24 +132,25 @@ function DashboardPatient() {
               </div>
             </div>
 
+            {/* 🆕 Remplacement de l'ancien bouton statique */}
             <div className="header-actions">
-              <button
-                className="notification-btn"
-                onClick={() => navigate("/notifications")}
-                title="Notifications"
-              >
-                <i className="bi bi-bell-fill"></i>
-                <span className="notification-badge">3</span>
-              </button>
+              <NotificationDropdown
+                patientId={patient?.id}
+                role="patient"
+                notifications={notifications}
+                unreadCount={unreadCount}
+                loading={notifLoading}
+                onOpen={fetchNotifications}
+                onMarkAsRead={markAsRead}
+                onMarkAllAsRead={markAllAsRead}
+              />
             </div>
           </div>
         </div>
 
-        {/* Contenu principal */}
+        {/* Contenu principal — identique, rien ne change ici */}
         <div className="dashboard-content">
-          {/* Statistiques rapides */}
           <Row className="g-3 mb-3">
-            {/* Glycémie actuelle - Grande carte */}
             <Col md={8}>
               <Card className="stat-card stat-card-primary h-100">
                 <Card.Body className="p-1">
@@ -179,7 +190,6 @@ function DashboardPatient() {
                         </div>
                       </div>
 
-                      {/* Barre de progression visuelle */}
                       <div className="mt-2">
                         <div className="d-flex justify-content-between mb-1">
                           <small className="text-muted">Zone normale : 0.7 - 1.2 g/L</small>
@@ -217,7 +227,6 @@ function DashboardPatient() {
               </Card>
             </Col>
 
-            {/* Statistiques résumées */}
             <Col md={4}>
               <Row className="g-2">
                 <Col xs={12}>
@@ -277,7 +286,6 @@ function DashboardPatient() {
             </Col>
           </Row>
 
-          {/* Graphique de tendance */}
           <Row className="g-3 mb-3">
             <Col md={12}>
               <Card className="stat-card">
@@ -286,7 +294,7 @@ function DashboardPatient() {
                     <div>
                       <h5 className="mb-0">
                         <i className="bi bi-graph-up me-2 text-primary"></i>
-                        Tendance sur 7 jours
+                        Tendance sur 30 jours
                       </h5>
                       <p className="text-muted mb-0 small">
                         Évolution de votre glycémie
@@ -325,7 +333,6 @@ function DashboardPatient() {
             </Col>
           </Row>
 
-          {/* Actions rapides */}
           <Row className="g-3">
             <Col md={4}>
               <Card className="action-card h-100" onClick={() => navigate("/carnet")}>

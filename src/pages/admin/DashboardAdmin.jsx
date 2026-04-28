@@ -107,7 +107,7 @@ function DashboardAdmin() {
             <div>
               <p className="da-topbar-date"><i className="bi bi-calendar3 me-2"></i>{formatDate(time)}</p>
               <h1 className="da-topbar-title">
-                Bonjour, <span className="da-topbar-name">{admin?.username || "Admin"}</span> 👋
+                Bonjour, <span className="da-topbar-name">{admin?.username || "Admin"}</span>
               </h1>
             </div>
             <div className="da-topbar-right">

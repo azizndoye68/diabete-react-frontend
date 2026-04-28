@@ -384,6 +384,29 @@
   border-left: 5px solid #11998e !important;
 }
 
+/* Fix dropdown notification visible au-dessus du header */
+.dashboard-header {
+  overflow: visible !important;
+}
+
+.header-content {
+  overflow: visible !important;
+}
+
+.header-actions {
+  overflow: visible !important;
+  position: relative;
+  z-index: 9999;
+}
+
+.dashboard-main-content {
+  overflow: visible !important;
+}
+
+.dashboard-wrapper {
+  overflow: visible !important;
+}
+
 /* Responsive */
 @media (max-width: 992px) {
   .dashboard-main-content {

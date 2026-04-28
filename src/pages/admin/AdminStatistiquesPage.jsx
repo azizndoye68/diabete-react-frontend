@@ -238,7 +238,7 @@ function AdminStatistiquesPage() {
               <p className="as-topbar-date">
                 <i className="bi bi-bar-chart-line-fill me-2"></i>Gestion des données
               </p>
-              <h1 className="as-topbar-title">Statistiques & Exportation</h1>
+              <h1 className="as-topbar-title">Statistiques et Exportation</h1>
             </div>
             <button
               className="as-btn-export-all"

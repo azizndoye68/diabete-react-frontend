@@ -132,7 +132,7 @@ export default function EducationPatient() {
               <div className="greeting-text">
                 <h1 className="display-6 fw-bold mb-0">
                   <i className="bi bi-book-fill me-3"></i>
-                  Éducation & Sensibilisation
+                  Éducation et Sensibilisation
                 </h1>
                 <p className="text-muted mb-0">
                   Apprenez à mieux gérer votre diabète grâce à ces contenus

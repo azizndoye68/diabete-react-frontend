@@ -36,6 +36,7 @@ import AdminStatistiquesPage from './pages/admin/AdminStatistiquesPage';
 import Conseils from './pages/medecin/Conseils';
 import MesConseils from './pages/patient/MesConseils';
 import Statistiques from './pages/patient/Statistiques';
+import NotificationsPage from './pages/patient/NotificationsPage';
 
 function App() {
   return (
@@ -75,6 +76,7 @@ function App() {
         <Route path="/admin/statistiques" element={<AdminStatistiquesPage />} />
         <Route path="/patient/mesconseils" element={<MesConseils />} />
         <Route path="/patient/statistiques" element={<Statistiques />} />
+        <Route path="/patient/notifications" element={<NotificationsPage />} />
 
 
 

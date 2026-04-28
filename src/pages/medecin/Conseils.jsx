@@ -488,13 +488,15 @@ function Conseils() {
 
                       {c.typeConseil === "PDF" && c.urlPdf && (
                         <a
-                          href={c.urlPdf}
+                          href={`${c.urlPdf}#toolbar=1&view=FitH`}
                           target="_blank"
                           rel="noreferrer"
                           className="co-card-link co-card-link--pdf"
+                          type="application/pdf"
+                          F
                         >
-                          <i className="bi bi-download"></i>{" "}
-                          {c.nomFichierPdf || "Télécharger"}
+                          <i className="bi bi-eye"></i>{" "}
+                          {c.nomFichierPdf || "Voir le PDF"}
                         </a>
                       )}
 
@@ -618,13 +620,14 @@ function Conseils() {
                       <i className="bi bi-file-earmark-pdf"></i> Document PDF
                     </div>
                     <a
-                      href={selectedConseil.urlPdf}
+                      href={`${selectedConseil.urlPdf}#toolbar=1&view=FitH`}
                       target="_blank"
                       rel="noreferrer"
                       className="co-card-link co-card-link--pdf"
+                      type="application/pdf"
                     >
                       <i className="bi bi-download"></i>{" "}
-                      {selectedConseil.nomFichierPdf || "Télécharger"}
+                      {selectedConseil.nomFichierPdf || "Voir le PDF"}
                     </a>
                   </div>
                 )}
