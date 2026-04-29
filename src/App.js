@@ -38,6 +38,7 @@ import MesConseils from './pages/patient/MesConseils';
 import Statistiques from './pages/patient/Statistiques';
 import NotificationsPage from './pages/patient/NotificationsPage';
 import NotificationsMedecinPage from './pages/medecin/NotificationsMedecinPage';
+import RappelsGlycemiePage from './pages/patient/RappelsGlycemiePage';
 
 function App() {
   return (
@@ -79,6 +80,7 @@ function App() {
         <Route path="/patient/statistiques" element={<Statistiques />} />
         <Route path="/patient/notifications" element={<NotificationsPage />} />
         <Route path="/medecin/notifications" element={<NotificationsMedecinPage />} />
+        <Route path="/patient/rappels-glycemie" element={<RappelsGlycemiePage />} />
 
 
 
@@ -101,6 +103,7 @@ function App() {
         <Route path="/medecin/patient/:patientId/conseils" element={<Conseils />} />
         <Route path="/medecin/patient/:patientId/mesconseils" element={<MesConseils />} />
         <Route path="/medecin/patient/:patientId/statistiques" element={<Statistiques />} />
+        <Route path="/medecin/patient/:patientId/rappels-glycemie" element={<RappelsGlycemiePage />} />
 
 
 
