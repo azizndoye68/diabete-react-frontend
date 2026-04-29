@@ -35,6 +35,10 @@ function PatientsTable({ medecinId, onStatsUpdate }) {
     const fetchPatients = async () => {
       setLoading(true);
       try {
+        // =====================================================
+        // 1. Récupérer tous les patients visibles pour ce médecin
+        // (ses propres patients + patients du propriétaire si membre)
+        // =====================================================
         const res = await api.get(
           `/api/patients/medecin/${medecinId}/visibles`,
         );
@@ -47,12 +51,14 @@ function PatientsTable({ medecinId, onStatsUpdate }) {
             let medecinNom = null;
             let traitement = null;
             let allergies = null;
-
             let countAlertes = 0;
             let countInactivite = 0;
             let countMessages = 0;
             let notifications = [];
 
+            // =====================================================
+            // 2. Dernière glycémie
+            // =====================================================
             try {
               const mesureRes = await api.get(
                 `/api/suivis/last?patientId=${p.id}`,
@@ -60,12 +66,18 @@ function PatientsTable({ medecinId, onStatsUpdate }) {
               derniereGlycemie = mesureRes.data?.glycemie ?? null;
             } catch {}
 
+            // =====================================================
+            // 3. Dossier médical
+            // =====================================================
             try {
               const dossierRes = await api.get(`/api/dossiers/patient/${p.id}`);
               traitement = dossierRes.data?.traitement ?? null;
               allergies = dossierRes.data?.allergies ?? null;
             } catch {}
 
+            // =====================================================
+            // 4. Infos du médecin référent du patient
+            // =====================================================
             if (p.medecinId) {
               try {
                 const medRes = await api.get(`/api/medecins/${p.medecinId}`);
@@ -74,30 +86,56 @@ function PatientsTable({ medecinId, onStatsUpdate }) {
               } catch {}
             }
 
+            // =====================================================
+            // 5. Notifications
+            // On utilise le medecinId du PATIENT (son référent)
+            // car les alertes sont enregistrées avec le medecinId
+            // du référent, pas du médecin connecté.
+            //
+            // Exemple :
+            //   - Médecin B (membre) voit les patients de A (propriétaire)
+            //   - Les alertes du patient X (référent = A) sont enregistrées
+            //     avec medecinId = A
+            //   - On appelle donc /medecin/A/patient/X ✅
+            //
+            //   - Pour ses propres patients (référent = B) :
+            //   - On appelle /medecin/B/patient/Y ✅
+            // =====================================================
             try {
-              const notifRes = await api.get(
-                `/api/notification-history/patient/${p.id}`,
-              );
-              const allNotifications = notifRes.data || [];
+              const medecinReferentId = p.medecinId;
 
-              notifications = allNotifications.sort(
-                (a, b) => new Date(b.dateEnvoi) - new Date(a.dateEnvoi),
-              );
+              if (!medecinReferentId) {
+                console.warn(
+                  `Patient ${p.id} n'a pas de médecin référent, notifications ignorées`,
+                );
+              } else {
+                const notifRes = await api.get(
+                  `/api/notification-history/medecin/${medecinReferentId}/patient/${p.id}`,
+                );
+                const allNotifications = notifRes.data || [];
 
-              notifications
-                .filter((notif) => notif.statut !== "LU")
-                .forEach((notif) => {
-                  if (
-                    notif.typeAlerte === "HYPOGLYCEMIE_SEVERE" ||
-                    notif.typeAlerte === "HYPERGLYCEMIE_SEVERE"
-                  ) {
-                    countAlertes++;
-                  } else if (notif.typeAlerte === "INACTIVITE_PATIENT") {
-                    countInactivite++;
-                  }
-                });
+                notifications = allNotifications.sort(
+                  (a, b) => new Date(b.dateEnvoi) - new Date(a.dateEnvoi),
+                );
+
+                notifications
+                  .filter((notif) => notif.statut !== "LU")
+                  .forEach((notif) => {
+                    if (
+                      notif.typeAlerte === "HYPOGLYCEMIE_SEVERE" ||
+                      notif.typeAlerte === "HYPERGLYCEMIE_SEVERE"
+                    ) {
+                      countAlertes++;
+                    } else if (notif.typeAlerte === "INACTIVITE_PATIENT") {
+                      countInactivite++;
+                    }
+                  });
+              }
             } catch (err) {
-              console.error("Erreur récupération notifications", err);
+              console.error(
+                `Erreur récupération notifications patient ${p.id}:`,
+                err,
+              );
             }
 
             return {
@@ -107,6 +145,8 @@ function PatientsTable({ medecinId, onStatsUpdate }) {
               medecinNom,
               traitement,
               allergies,
+              // Patient direct si son référent est le médecin connecté
+              // Patient d'équipe si son référent est un autre médecin (propriétaire)
               source: p.medecinId === medecinId ? "DIRECT" : "EQUIPE",
               countAlertes,
               countInactivite,
@@ -118,7 +158,6 @@ function PatientsTable({ medecinId, onStatsUpdate }) {
 
         setPatients(enriched);
 
-        // Mettre à jour les stats
         if (onStatsUpdate) {
           const totalAlertes = enriched.reduce(
             (sum, p) => sum + p.countAlertes,
@@ -144,6 +183,9 @@ function PatientsTable({ medecinId, onStatsUpdate }) {
     fetchPatients();
   }, [medecinId, onStatsUpdate]);
 
+  // =====================================================
+  // Marquer des notifications comme lues
+  // =====================================================
   const markNotificationsAsRead = async (notifications) => {
     try {
       await Promise.all(
@@ -156,11 +198,13 @@ function PatientsTable({ medecinId, onStatsUpdate }) {
     }
   };
 
+  // =====================================================
+  // Afficher le modal de notifications
+  // =====================================================
   const handleShowNotifications = async (patient, type) => {
     let filteredNotifications = [];
     let titre = "";
 
-    // Utiliser directement patient.notifications sans re-filtrer
     const allNotifs = patient.notifications;
 
     if (type === "alerte") {
@@ -174,7 +218,7 @@ function PatientsTable({ medecinId, onStatsUpdate }) {
       filteredNotifications = allNotifs.filter(
         (n) => n.typeAlerte === "INACTIVITE_PATIENT",
       );
-      titre = "Patients inactifs";
+      titre = "Inactivité patient";
     } else if (type === "message") {
       filteredNotifications = [];
       titre = "Messages du patient";
@@ -209,6 +253,9 @@ function PatientsTable({ medecinId, onStatsUpdate }) {
     setShowModal(true);
   };
 
+  // =====================================================
+  // Filtrage
+  // =====================================================
   const filteredPatients = useMemo(() => {
     let data = [...patients];
 
@@ -227,6 +274,9 @@ function PatientsTable({ medecinId, onStatsUpdate }) {
     return data;
   }, [patients, search, filterReferent]);
 
+  // =====================================================
+  // Colonnes DataTable
+  // =====================================================
   const columns = [
     {
       name: "Prénom",
@@ -339,6 +389,7 @@ function PatientsTable({ medecinId, onStatsUpdate }) {
       name: "Notifications",
       cell: (r) => (
         <div className="notifications-cell">
+          {/* Alertes critiques */}
           <div
             className="notif-icon-wrapper"
             onClick={(e) => {
@@ -358,13 +409,14 @@ function PatientsTable({ medecinId, onStatsUpdate }) {
             )}
           </div>
 
+          {/* Inactivité */}
           <div
             className="notif-icon-wrapper"
             onClick={(e) => {
               e.stopPropagation();
               handleShowNotifications(r, "inactivite");
             }}
-            title="Patients inactifs"
+            title="Inactivité patient"
           >
             <Bell
               size={22}
@@ -385,6 +437,7 @@ function PatientsTable({ medecinId, onStatsUpdate }) {
             )}
           </div>
 
+          {/* Messages */}
           <div
             className="notif-icon-wrapper"
             onClick={(e) => {
@@ -417,12 +470,12 @@ function PatientsTable({ medecinId, onStatsUpdate }) {
     },
   ];
 
+  // =====================================================
+  // Styles DataTable
+  // =====================================================
   const customStyles = {
     table: {
-      style: {
-        backgroundColor: "white",
-        borderRadius: "16px",
-      },
+      style: { backgroundColor: "white", borderRadius: "16px" },
     },
     headRow: {
       style: {
@@ -437,16 +490,10 @@ function PatientsTable({ medecinId, onStatsUpdate }) {
       },
     },
     headCells: {
-      style: {
-        paddingLeft: "20px",
-        paddingRight: "20px",
-      },
+      style: { paddingLeft: "20px", paddingRight: "20px" },
     },
     cells: {
-      style: {
-        paddingLeft: "20px",
-        paddingRight: "20px",
-      },
+      style: { paddingLeft: "20px", paddingRight: "20px" },
     },
     rows: {
       style: {
@@ -471,10 +518,12 @@ function PatientsTable({ medecinId, onStatsUpdate }) {
     },
   };
 
+  // =====================================================
+  // Utilitaires
+  // =====================================================
   const formatDate = (dateString) => {
     if (!dateString) return "--";
-    const date = new Date(dateString);
-    return date.toLocaleDateString("fr-FR", {
+    return new Date(dateString).toLocaleDateString("fr-FR", {
       day: "2-digit",
       month: "2-digit",
       year: "numeric",
@@ -504,6 +553,9 @@ function PatientsTable({ medecinId, onStatsUpdate }) {
     }
   };
 
+  // =====================================================
+  // Rendu
+  // =====================================================
   return (
     <>
       <Card className="patients-table-card">
@@ -567,7 +619,8 @@ function PatientsTable({ medecinId, onStatsUpdate }) {
                       <div className="info-item">
                         <i className="bi bi-telephone-fill me-2 text-primary"></i>
                         <span>
-                          <strong>Téléphone : </strong> {data.telephone || "--"}
+                          <strong>Téléphone : </strong>{" "}
+                          {data.telephone || "--"}
                         </span>
                       </div>
                       <div className="info-item">
@@ -588,7 +641,7 @@ function PatientsTable({ medecinId, onStatsUpdate }) {
                         <i className="bi bi-map-fill me-2 text-primary"></i>
                         <span>
                           <strong>Région : </strong> {data.region || "--"}
-                        </span>  
+                        </span>
                       </div>
                       <div className="info-item">
                         <i className="bi bi-calendar-check-fill me-2 text-primary"></i>
@@ -637,14 +690,15 @@ function PatientsTable({ medecinId, onStatsUpdate }) {
           closeButton
           className="modal-header-custom"
           style={{
-            background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+            background: "linear-gradient(135deg, #38ef7d 0%, #11998e 100%)",
           }}
         >
           <Modal.Title className="text-white">
             <i className="bi bi-bell-fill me-2"></i>
-            {modalData.type} - {modalData.patientNom}
+            {modalData.type} — {modalData.patientNom}
           </Modal.Title>
         </Modal.Header>
+
         <Modal.Body className="modal-body-custom">
           {modalData.notifications.length === 0 ? (
             <div className="no-notifications-state">
@@ -652,7 +706,9 @@ function PatientsTable({ medecinId, onStatsUpdate }) {
                 className="bi bi-check-circle"
                 style={{ fontSize: "4rem", color: "#51cf66" }}
               ></i>
-              <p className="text-muted mt-3 mb-0">Aucune notification</p>
+              <p className="text-muted mt-3 mb-0">
+                Aucune notification pour ce patient
+              </p>
             </div>
           ) : (
             <ListGroup variant="flush">
@@ -679,9 +735,9 @@ function PatientsTable({ medecinId, onStatsUpdate }) {
                         {notif.canal}
                       </Badge>
                       <Badge
-                        bg={notif.statut === "ENVOYE" ? "success" : "danger"}
+                        bg={notif.statut === "ENVOYE" ? "success" : "secondary"}
                       >
-                        {notif.statut}
+                        {notif.statut === "ENVOYE" ? "Non lu" : "Lu"}
                       </Badge>
                     </div>
                   </ListGroup.Item>
@@ -690,6 +746,7 @@ function PatientsTable({ medecinId, onStatsUpdate }) {
             </ListGroup>
           )}
         </Modal.Body>
+
         <Modal.Footer className="modal-footer-custom">
           <Button
             variant="primary"
