@@ -64,7 +64,7 @@ export default function RappelsGlycemiePage() {
         const profileRes = await api.get("/api/auth/profile");
         const utilisateurId = profileRes.data.id;
         const patientRes = await api.get(
-          `/api/patients/byUtilisateur/${utilisateurId}`
+          `/api/patients/byUtilisateur/${utilisateurId}`,
         );
         const patientData = patientRes.data;
         setPatient(patientData);
@@ -72,7 +72,7 @@ export default function RappelsGlycemiePage() {
         // Charger les préférences existantes
         try {
           const prefRes = await api.get(
-            `/api/notification-preferences/patient/${patientData.id}`
+            `/api/notification-preferences/patient/${patientData.id}`,
           );
           const data = prefRes.data;
 
@@ -105,6 +105,12 @@ export default function RappelsGlycemiePage() {
   // =====================================================
   // Sauvegarde
   // =====================================================
+  const toBackendTime = (time) => {
+    if (!time) return null;
+    // Ajouter :00 si format HH:mm
+    return time.length === 5 ? `${time}:00` : time;
+  };
+
   const handleSave = async () => {
     if (!patient?.id) return;
     setSaving(true);
@@ -114,9 +120,11 @@ export default function RappelsGlycemiePage() {
     try {
       await api.post("/api/notification-preferences", {
         patientId: patient.id,
-        rappelMatin: enabled.rappelMatin ? prefs.rappelMatin || null : null,
-        rappelMidi: enabled.rappelMidi ? prefs.rappelMidi || null : null,
-        rappelSoir: enabled.rappelSoir ? prefs.rappelSoir || null : null,
+        rappelMatin: enabled.rappelMatin
+          ? toBackendTime(prefs.rappelMatin)
+          : null,
+        rappelMidi: enabled.rappelMidi ? toBackendTime(prefs.rappelMidi) : null,
+        rappelSoir: enabled.rappelSoir ? toBackendTime(prefs.rappelSoir) : null,
         alerteEmailActif: prefs.alerteEmailActif,
         alerteSmsActif: prefs.alerteSmsActif,
       });
@@ -150,10 +158,7 @@ export default function RappelsGlycemiePage() {
         {/* Header */}
         <div className="rappels-header">
           <div className="rappels-header-left">
-            <button
-              className="rappels-back-btn"
-              onClick={() => navigate(-1)}
-            >
+            <button className="rappels-back-btn" onClick={() => navigate(-1)}>
               <i className="bi bi-arrow-left" />
             </button>
             <div>
@@ -180,9 +185,9 @@ export default function RappelsGlycemiePage() {
               <div className="rappels-info-banner">
                 <i className="bi bi-info-circle-fill" />
                 <p>
-                  Activez les rappels aux moments de la journée où vous souhaitez
-                  être notifié pour mesurer votre glycémie. Vous recevrez une
-                  notification par email à l'heure choisie.
+                  Activez les rappels aux moments de la journée où vous
+                  souhaitez être notifié pour mesurer votre glycémie. Vous
+                  recevrez une notification par email à l'heure choisie.
                 </p>
               </div>
 
@@ -293,9 +298,7 @@ export default function RappelsGlycemiePage() {
                     </div>
                     <div>
                       <p className="canal-label">SMS</p>
-                      <p className="canal-desc">
-                        Recevoir les rappels par SMS
-                      </p>
+                      <p className="canal-desc">Recevoir les rappels par SMS</p>
                     </div>
                   </div>
                   <label className="rappel-toggle">

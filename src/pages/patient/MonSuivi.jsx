@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Card, Row, Col } from "react-bootstrap";
+import { Card, Row, Col, Button } from "react-bootstrap";
 import { useNavigate, useParams } from "react-router-dom";
 import SidebarPatient from "../../components/SidebarPatient";
 import AideModal from "../../components/AideModal";
@@ -49,6 +49,33 @@ function MonSuivi() {
   const suiviItems = patient
     ? [
         {
+          title: "Mes conseils",
+          icon: "bi bi-lightbulb-fill",
+          gradient: "linear-gradient(135deg, #f6d365 0%, #fda085 100%)",
+          description: "Consulter vos recommandations personnalisées",
+          path: patientId
+            ? `/medecin/patient/${patientId}/mesconseils`
+            : `/patient/mesconseils`,
+        },
+        {
+          title: "Rendez-vous",
+          icon: "bi-calendar-check",
+          gradient: "linear-gradient(135deg, #30cfd0 0%, #330867 100%)",
+          description: "Gérer vos consultations médicales",
+          path: patientId
+            ? `/medecin/patient/${patientId}/rendez-vous`
+            : `/patient/rendez-vous`,
+        },
+        {
+          title: "Rappels glycémie",
+          icon: "bi-alarm-fill",
+          gradient: "linear-gradient(135deg, #af3a5d 0%, #c0751e 100%)",
+          description: "Configurez vos rappels quotidiens de mesure",
+          path: patientId
+            ? `/medecin/patient/${patientId}/rappels-glycemie`
+            : `/patient/rappels-glycemie`,
+        },
+        {
           title: "Codes couleurs",
           icon: "bi-palette-fill",
           gradient: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
@@ -74,33 +101,6 @@ function MonSuivi() {
           path: patientId
             ? `/medecin/patient/${patientId}/dossier`
             : `/patient/${patient.id}/dossier`,
-        },
-        {
-          title: "Mes conseils",
-          icon: "bi bi-lightbulb-fill",
-          gradient: "linear-gradient(135deg, #f6d365 0%, #fda085 100%)",
-          description: "Consulter vos recommandations personnalisées",
-          path: patientId
-            ? `/medecin/patient/${patientId}/mesconseils`
-            : `/patient/mesconseils`,
-        },
-        {
-          title: "Rappels glycémie",
-          icon: "bi-alarm-fill",
-          gradient: "linear-gradient(135deg, #af3a5d 0%, #c0751e 100%)",
-          description: "Configurez vos rappels quotidiens de mesure",
-          path: patientId
-            ? `/medecin/patient/${patientId}/rappels-glycemie`
-            : `/patient/rappels-glycemie`,
-        },
-        {
-          title: "Rendez-vous",
-          icon: "bi-calendar-check",
-          gradient: "linear-gradient(135deg, #30cfd0 0%, #330867 100%)",
-          description: "Gérer vos consultations médicales",
-          path: patientId
-            ? `/medecin/patient/${patientId}/rendez-vous`
-            : `/patient/rendez-vous`,
         },
       ]
     : [];
@@ -140,14 +140,14 @@ function MonSuivi() {
             </div>
 
             <div className="header-actions">
-              <button
-                className="notification-btn"
-                onClick={() => navigate("/notifications")}
-                title="Notifications"
+              <Button
+                variant="light"
+                className="action-header-btn"
+                onClick={() => navigate(patientId ? `/medecin/patient/${patientId}/dashboard` : '/dashboard-patient')}
               >
-                <i className="bi bi-bell-fill"></i>
-                <span className="notification-badge">3</span>
-              </button>
+                <i className="bi bi-arrow-left me-2"></i>
+                Retour
+              </Button>
             </div>
           </div>
         </div>

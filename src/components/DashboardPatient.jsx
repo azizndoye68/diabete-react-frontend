@@ -370,7 +370,13 @@ function DashboardPatient() {
             <Col md={4}>
               <Card
                 className="action-card h-100"
-                onClick={() => navigate("/carnet")}
+                onClick={() => {
+                  if (patientId) {
+                    navigate(`/medecin/patient/${patientId}/carnet`);
+                  } else {
+                    navigate("/carnet");
+                  }
+                }}
               >
                 <Card.Body className="text-center p-3">
                   <div className="action-icon bg-primary mb-2">
@@ -387,7 +393,13 @@ function DashboardPatient() {
             <Col md={4}>
               <Card
                 className="action-card h-100"
-                onClick={() => navigate("/statistiques")}
+                onClick={() => {
+                  if (patientId) {
+                    navigate(`/medecin/patient/${patientId}/statistiques`);
+                  } else {
+                    navigate("/patient/statistiques");
+                  }
+                }}
               >
                 <Card.Body className="text-center p-3">
                   <div className="action-icon bg-purple mb-2">
@@ -404,7 +416,13 @@ function DashboardPatient() {
             <Col md={4}>
               <Card
                 className="action-card h-100"
-                onClick={() => navigate("/patient/education")}
+                onClick={() => {
+                  if (patientId) {
+                    navigate(`/medecin/patient/${patientId}/education`);
+                  } else {
+                    navigate("/patient/education");
+                  }
+                }}
               >
                 <Card.Body className="text-center p-3">
                   <div className="action-icon bg-info mb-2">

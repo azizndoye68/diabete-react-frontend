@@ -19,7 +19,7 @@
   background: linear-gradient(135deg, #38ef7d 0%, #11998e 100%);
   color: white;
   padding: 0.75rem 3rem;
-  box-shadow: 0 4px 20px rgba(102, 126, 234, 0.15);
+  box-shadow: 0 4px 20px rgba(5, 96, 38, 0.15);
   position: relative;
   overflow: hidden;
 }
@@ -148,8 +148,8 @@
 
 .tab-link:hover {
   transform: translateY(-3px);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-  border-color: rgba(102, 126, 234, 0.3) !important;
+  box-shadow: 0 4px 15px rgba(3, 130, 83, 0.1);
+  border-color: rgba(2, 93, 50, 0.3) !important;
 }
 
 .tab-link.active {
@@ -157,7 +157,7 @@
   color: white !important;
   border-color: transparent !important;
   transform: translateY(-3px);
-  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 6px 20px rgba(4, 125, 75, 0.3);
 }
 
 /* Icône d'onglet */

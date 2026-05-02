@@ -237,7 +237,7 @@ function AjouterDonneeJournee() {
               <Button
                 variant="light"
                 className="action-header-btn"
-                onClick={() => navigate(patientId ? `/medecin/patient/${patientId}` : '/dashboard-patient')}
+                onClick={() => navigate(patientId ? `/medecin/patient/${patientId}/dashboard` : '/dashboard-patient')}
               >
                 <i className="bi bi-arrow-left me-2"></i>
                 Retour
