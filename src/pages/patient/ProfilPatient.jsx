@@ -13,6 +13,21 @@ function ProfilPatient() {
   const [successMsg, setSuccessMsg] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
 
+  // ── Mot de passe ──
+  const [savingPwd, setSavingPwd] = useState(false);
+  const [successPwd, setSuccessPwd] = useState("");
+  const [errorPwd, setErrorPwd] = useState("");
+  const [passwordData, setPasswordData] = useState({
+    oldPassword: "",
+    newPassword: "",
+    confirmPassword: "",
+  });
+  const [showPassword, setShowPassword] = useState({
+    old: false,
+    new: false,
+    confirm: false,
+  });
+
   const [formData, setFormData] = useState({
     nom: "",
     prenom: "",
@@ -88,6 +103,50 @@ function ProfilPatient() {
     setErrorMsg("");
   };
 
+  // ── Mot de passe ──
+  const handlePasswordChange = (e) => {
+    setPasswordData({ ...passwordData, [e.target.name]: e.target.value });
+    setErrorPwd("");
+  };
+
+  const toggleShow = (field) => {
+    setShowPassword({ ...showPassword, [field]: !showPassword[field] });
+  };
+
+  const handleSavePassword = async () => {
+    setSuccessPwd("");
+    setErrorPwd("");
+
+    if (!passwordData.oldPassword || !passwordData.newPassword || !passwordData.confirmPassword) {
+      setErrorPwd("Veuillez remplir tous les champs.");
+      return;
+    }
+    if (passwordData.newPassword !== passwordData.confirmPassword) {
+      setErrorPwd("Le nouveau mot de passe et sa confirmation ne correspondent pas.");
+      return;
+    }
+    if (passwordData.newPassword.length < 5) {
+      setErrorPwd("Le nouveau mot de passe doit contenir au moins 5 caractères.");
+      return;
+    }
+
+    setSavingPwd(true);
+    try {
+      await api.put("/api/auth/update-password", {
+        oldPassword: passwordData.oldPassword,
+        newPassword: passwordData.newPassword,
+      });
+      setPasswordData({ oldPassword: "", newPassword: "", confirmPassword: "" });
+      setSuccessPwd("Mot de passe mis à jour avec succès !");
+      setTimeout(() => setSuccessPwd(""), 4000);
+    } catch (err) {
+      const msg = err?.response?.data?.message || "Ancien mot de passe incorrect.";
+      setErrorPwd(msg);
+    } finally {
+      setSavingPwd(false);
+    }
+  };
+
   const getInitiales = () => {
     if (!patient) return "?";
     return `${patient.prenom?.[0] || ""}${patient.nom?.[0] || ""}`.toUpperCase();
@@ -97,6 +156,16 @@ function ProfilPatient() {
     if (!type) return "--";
     return type.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
   };
+
+  const getPasswordStrength = (pwd) => {
+    if (!pwd) return null;
+    if (pwd.length < 5)  return { level: "Faible",    color: "#ef4444", width: "25%"  };
+    if (pwd.length < 8)  return { level: "Moyen",     color: "#f59e0b", width: "55%"  };
+    if (pwd.length < 12) return { level: "Fort",      color: "#20c997", width: "80%"  };
+    return                      { level: "Très fort", color: "#11998e", width: "100%" };
+  };
+
+  const strength = getPasswordStrength(passwordData.newPassword);
 
   if (loading) {
     return (
@@ -117,7 +186,7 @@ function ProfilPatient() {
       <div className="profil-patient-content">
         <Container fluid className="px-4">
 
-          {/* Alertes */}
+          {/* Alertes profil */}
           {successMsg && (
             <div className="profil-pat-alert success">
               <i className="bi bi-check-circle-fill me-2"></i>{successMsg}
@@ -356,7 +425,7 @@ function ProfilPatient() {
               </Card>
 
               {/* Bloc localisation */}
-              <Card className="profil-pat-form-card">
+              <Card className="profil-pat-form-card mb-4">
                 <Card.Body className="p-4">
                   <h6 className="profil-pat-section-title mb-4">
                     <i className="bi bi-geo-alt-fill me-2"></i>Localisation
@@ -428,6 +497,150 @@ function ProfilPatient() {
                       </button>
                     </div>
                   )}
+                </Card.Body>
+              </Card>
+
+              {/* ===== BLOC MOT DE PASSE ===== */}
+              <Card className="profil-pat-form-card profil-pat-pwd-card">
+                <Card.Body className="p-4">
+                  <h6 className="profil-pat-section-title mb-4">
+                    <i className="bi bi-key-fill me-2"></i>Changer le mot de passe
+                  </h6>
+
+                  {/* Alertes mot de passe */}
+                  {successPwd && (
+                    <div className="profil-pat-alert success mb-3">
+                      <i className="bi bi-check-circle-fill me-2"></i>{successPwd}
+                    </div>
+                  )}
+                  {errorPwd && (
+                    <div className="profil-pat-alert error mb-3">
+                      <i className="bi bi-exclamation-triangle-fill me-2"></i>{errorPwd}
+                    </div>
+                  )}
+
+                  <Row className="g-3">
+
+                    {/* Ancien mot de passe */}
+                    <Col md={12}>
+                      <Form.Group>
+                        <Form.Label className="profil-pat-label">
+                          <i className="bi bi-lock me-1"></i>Mot de passe actuel
+                        </Form.Label>
+                        <div className="profil-pat-pwd-wrapper">
+                          <Form.Control
+                            type={showPassword.old ? "text" : "password"}
+                            name="oldPassword"
+                            value={passwordData.oldPassword}
+                            onChange={handlePasswordChange}
+                            className="profil-pat-input profil-pat-input-pwd"
+                            placeholder="Entrez votre mot de passe actuel"
+                          />
+                          <button type="button" className="profil-pat-pwd-toggle" onClick={() => toggleShow("old")}>
+                            <i className={`bi bi-eye${showPassword.old ? "-slash" : ""}`}></i>
+                          </button>
+                        </div>
+                      </Form.Group>
+                    </Col>
+
+                    {/* Nouveau mot de passe */}
+                    <Col md={6}>
+                      <Form.Group>
+                        <Form.Label className="profil-pat-label">
+                          <i className="bi bi-lock-fill me-1"></i>Nouveau mot de passe
+                        </Form.Label>
+                        <div className="profil-pat-pwd-wrapper">
+                          <Form.Control
+                            type={showPassword.new ? "text" : "password"}
+                            name="newPassword"
+                            value={passwordData.newPassword}
+                            onChange={handlePasswordChange}
+                            className="profil-pat-input profil-pat-input-pwd"
+                            placeholder="Minimum 5 caractères"
+                          />
+                          <button type="button" className="profil-pat-pwd-toggle" onClick={() => toggleShow("new")}>
+                            <i className={`bi bi-eye${showPassword.new ? "-slash" : ""}`}></i>
+                          </button>
+                        </div>
+                        {passwordData.newPassword && strength && (
+                          <div className="profil-pat-strength mt-2">
+                            <div className="profil-pat-strength-bar">
+                              <div className="profil-pat-strength-fill"
+                                style={{ width: strength.width, background: strength.color }}>
+                              </div>
+                            </div>
+                            <span className="profil-pat-strength-label" style={{ color: strength.color }}>
+                              {strength.level}
+                            </span>
+                          </div>
+                        )}
+                      </Form.Group>
+                    </Col>
+
+                    {/* Confirmation */}
+                    <Col md={6}>
+                      <Form.Group>
+                        <Form.Label className="profil-pat-label">
+                          <i className="bi bi-lock-fill me-1"></i>Confirmer le mot de passe
+                        </Form.Label>
+                        <div className="profil-pat-pwd-wrapper">
+                          <Form.Control
+                            type={showPassword.confirm ? "text" : "password"}
+                            name="confirmPassword"
+                            value={passwordData.confirmPassword}
+                            onChange={handlePasswordChange}
+                            className={`profil-pat-input profil-pat-input-pwd${
+                              passwordData.confirmPassword
+                                ? passwordData.newPassword !== passwordData.confirmPassword
+                                  ? " profil-pat-input-error"
+                                  : " profil-pat-input-success"
+                                : ""
+                            }`}
+                            placeholder="Répétez le nouveau mot de passe"
+                          />
+                          <button type="button" className="profil-pat-pwd-toggle" onClick={() => toggleShow("confirm")}>
+                            <i className={`bi bi-eye${showPassword.confirm ? "-slash" : ""}`}></i>
+                          </button>
+                        </div>
+                        {passwordData.confirmPassword && passwordData.newPassword !== passwordData.confirmPassword && (
+                          <small className="profil-pat-field-msg profil-pat-field-msg--error">
+                            <i className="bi bi-x-circle me-1"></i>Les mots de passe ne correspondent pas
+                          </small>
+                        )}
+                        {passwordData.confirmPassword && passwordData.newPassword === passwordData.confirmPassword && (
+                          <small className="profil-pat-field-msg profil-pat-field-msg--success">
+                            <i className="bi bi-check-circle me-1"></i>Les mots de passe correspondent
+                          </small>
+                        )}
+                      </Form.Group>
+                    </Col>
+                  </Row>
+
+                  {/* Conseil sécurité */}
+                  <div className="profil-pat-security-tip mt-3">
+                    <i className="bi bi-lightbulb-fill me-2"></i>
+                    Utilisez au moins 8 caractères, mélangez lettres, chiffres et symboles pour un mot de passe sécurisé.
+                  </div>
+
+                  {/* Actions */}
+                  <div className="profil-pat-form-actions mt-4">
+                    <button
+                      className="btn-cancel-pat"
+                      onClick={() => {
+                        setPasswordData({ oldPassword: "", newPassword: "", confirmPassword: "" });
+                        setErrorPwd("");
+                        setSuccessPwd("");
+                      }}
+                    >
+                      <i className="bi bi-x-lg me-2"></i>Réinitialiser
+                    </button>
+                    <button className="btn-save-pat" onClick={handleSavePassword} disabled={savingPwd}>
+                      {savingPwd
+                        ? <><span className="spinner-border spinner-border-sm me-2"></span>Enregistrement...</>
+                        : <><i className="bi bi-key-fill me-2"></i>Mettre à jour le mot de passe</>
+                      }
+                    </button>
+                  </div>
                 </Card.Body>
               </Card>
 

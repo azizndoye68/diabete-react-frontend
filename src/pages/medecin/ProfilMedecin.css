@@ -263,6 +263,114 @@
 }
 
 /* ================================ */
+/* MOT DE PASSE                     */
+/* ================================ */
+.profil-pwd-card {
+  border-left-color: #11998e !important;
+}
+
+/* Input avec padding pour le bouton œil */
+.profil-input-pwd {
+  padding-right: 2.8rem !important;
+}
+
+/* Variants de validation */
+.profil-input-pwd-error {
+  border-color: #dc3545 !important;
+}
+
+.profil-input-pwd-error:focus {
+  border-color: #dc3545 !important;
+  box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.15) !important;
+}
+
+.profil-input-pwd-success {
+  border-color: #20c997 !important;
+}
+
+.profil-input-pwd-success:focus {
+  border-color: #20c997 !important;
+  box-shadow: 0 0 0 0.2rem rgba(32, 201, 151, 0.15) !important;
+}
+
+/* Wrapper position relative pour le toggle */
+.profil-pwd-wrapper {
+  position: relative;
+}
+
+.profil-pwd-toggle {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: #adb5bd;
+  cursor: pointer;
+  padding: 0;
+  font-size: 1rem;
+  line-height: 1;
+  transition: color 0.2s ease;
+}
+
+.profil-pwd-toggle:hover {
+  color: #11998e;
+}
+
+/* Indicateur de force */
+.profil-pwd-strength {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.profil-pwd-strength-bar {
+  flex: 1;
+  height: 5px;
+  background: #e9ecef;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.profil-pwd-strength-fill {
+  height: 100%;
+  border-radius: 10px;
+  transition: width 0.4s ease, background 0.4s ease;
+}
+
+.profil-pwd-strength-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+/* Messages inline champ */
+.profil-pwd-field-msg {
+  display: flex;
+  align-items: center;
+  font-size: 0.78rem;
+  font-weight: 500;
+  margin-top: 0.3rem;
+}
+
+.profil-pwd-field-msg--error   { color: #dc3545; }
+.profil-pwd-field-msg--success { color: #20c997; }
+
+/* Conseil sécurité */
+.profil-security-tip {
+  background: linear-gradient(135deg, rgba(17, 153, 142, 0.06), rgba(56, 239, 125, 0.06));
+  border: 1.5px dashed rgba(17, 153, 142, 0.25);
+  border-radius: 10px;
+  padding: 0.65rem 1rem;
+  font-size: 0.82rem;
+  color: #11998e;
+  display: flex;
+  align-items: center;
+  font-weight: 500;
+}
+
+
+/* ================================ */
 /* BOUTONS                          */
 /* ================================ */
 .btn-edit-profil {

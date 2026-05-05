@@ -61,7 +61,7 @@ function SidebarAdmin({ admin, onShowAide }) {
       {/* ── Profil ── */}
       <div
         className="sa-profile"
-        onClick={() => navigate("/admin/profile")}
+        onClick={() => navigate("/admin/profil")}
         title={admin?.username || ""}
       >
         <div className="sa-avatar-wrap">
